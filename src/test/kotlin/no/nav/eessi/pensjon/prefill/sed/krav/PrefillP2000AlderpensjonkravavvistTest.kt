@@ -18,8 +18,6 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-@Mariam
-
 class PrefillP2000AlderpensjonkravavvistTest {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(67)

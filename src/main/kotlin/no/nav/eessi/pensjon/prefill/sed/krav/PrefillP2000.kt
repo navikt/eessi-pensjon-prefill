@@ -28,6 +28,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
     ): SED {
         postPrefill(prefillData, sak)
 
+        println("@@: ${sak?.sak?.toJson()}")
         val pensjon = populerPensjon(prefillData, sak?.sak)
         val nav = prefillPDLNav(prefillData, personData, pensjon?.kravDato)
 
@@ -87,6 +88,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
         val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
 
         logger.debug("""Prefilldata: ${prefillData.toJson()}""")
+        logger.debug("""Prefilldatøø: ${prefillData.kravDato?.toJson()}""")
 
         //valider pensjoninformasjon,
         return try {

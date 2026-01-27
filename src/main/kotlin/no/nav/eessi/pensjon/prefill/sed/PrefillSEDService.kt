@@ -75,7 +75,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 PrefillP2000(prefillPDLnav).prefillSed(
                     prefillData,
                     personDataCollection,
-                    pensjonCollection?.p2xxxMeldingOmPensjonDto
+                    P2xxxMeldingOmPensjonDto(pensjonCollection?.vedtak as P2xxxMeldingOmPensjonDto.Vedtak , pensjonCollection.sak as P2xxxMeldingOmPensjonDto.Sak)
                 )
             }
 

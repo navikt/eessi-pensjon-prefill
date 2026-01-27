@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
 import org.springframework.web.client.RestTemplate
 
+
 object PrefillTestHelper {
 
 //    fun lesPensjonsdataVedtakFraFil(responseXMLfilename: String): PensjonsinformasjonService {

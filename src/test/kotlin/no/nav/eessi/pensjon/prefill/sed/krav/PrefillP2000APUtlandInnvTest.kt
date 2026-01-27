@@ -1,14 +1,24 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
+import io.mockk.every
+import io.mockk.mockk
 import io.mockk.spyk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
+import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
+import no.nav.eessi.pensjon.prefill.InnhentingService
+import no.nav.eessi.pensjon.prefill.PersonDataService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
@@ -21,44 +31,93 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.web.client.RestTemplate
+import java.time.LocalDate
 
-@Mariam
 class PrefillP2000APUtlandInnvTest {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
     private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(70)
     private val pesysSaksnummer = "14398627"
+    private val pesysService: PesysService = mockk()
 
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var pensjonCollection: PensjonCollection
     private lateinit var personDataCollection: PersonDataCollection
+    private lateinit var personDataService: PersonDataService
+
+
+
+    fun readJsonResponse(file: String): String {
+        return javaClass.getResource(file)!!.readText()
+    }
 
     @BeforeEach
     fun setup() {
+        every { pesysService.hentP2000data(any()) } returns mockk(){
+            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                sakType = EessiSakType.ALDER,
+                kravHistorikk = listOf(
+                    P2xxxMeldingOmPensjonDto.KravHistorikk(
+                        mottattDato = LocalDate.of(2015, 11, 25),
+                        kravType = EessiKravGjelder.F_BH_KUN_UTL,
+                        virkningstidspunkt = LocalDate.of(2015, 11, 25),
+                    )
+                ),
+                ytelsePerMaaned = emptyList(),
+                forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
+                status = EessiSakStatus.TIL_BEHANDLING,
+            )
+            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
+        }
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
-
-        
+        personDataService = mockk(relaxed = true)
 
 //        val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-AP-UTL-INNV-24015012345_PlanB.xml")
-//        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        val innhentingService = InnhentingService(personDataService = personDataService, pesysService = pesysService)
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(P2000, personFnr, penSaksnummer = pesysSaksnummer).apply {
-//            partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
-//            partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(P2000, personFnr, penSaksnummer = pesysSaksnummer, kravDato = "2015-11-25")
+            .apply {
+            partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
+            partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
 
-//        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
-
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
     }
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
+        println("prefilldata@@: ${prefillData.toJson()}")
+        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
+
+        println("P2000: $prefillData")
 
         assertNotNull(P2000.nav?.krav)
         assertEquals("2015-11-25", P2000.nav?.krav?.dato)
+//            pensjonCollection = PensjonCollection(p2xxxMeldingOmPensjonDto = P2xxxMeldingOmPensjonDto(
+//                sak = P2xxxMeldingOmPensjonDto.Sak(
+//                    sakType = EessiSakType.ALDER,
+//                    kravHistorikk = listOf(
+//                        P2xxxMeldingOmPensjonDto.KravHistorikk(
+//                            mottattDato = LocalDate.of(2025, 12, 12)
+//                        )
+//                    ),
+//                    ytelsePerMaaned = emptyList(),
+//                    status = EessiSakStatus.INNV,
+//
+//                    )
+//            ))
+////
+//            val prefillData = PrefillDataModel(bruker = PersonInfo("3216546897", null, false),
+//                avdod = PersonInfo(personFnr, null, false),
+//                sedType = P2000,
+//                kravDato = "2025-12-12",
+//                buc = P_BUC_01,
+//                euxCaseID = "123456",
+//                institution = listOf(InstitusjonItem("NO", "Inst"))
+//            )
 
     }
 

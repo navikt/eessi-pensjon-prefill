@@ -30,7 +30,7 @@ data class P2xxxMeldingOmPensjonDto(
     // TODO: Valdiere senere
     data class KravHistorikk(
         val kravId: String? = null,
-        val kravType: String? = null,
+        val kravType: EessiKravGjelder? = null,
         val kravStatus: EessiSakStatus? = null,
         val kravArsak: String? = null,
         val mottattDato: LocalDate? = null,

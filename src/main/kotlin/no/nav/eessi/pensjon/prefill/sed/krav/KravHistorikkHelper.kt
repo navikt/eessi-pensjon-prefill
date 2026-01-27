@@ -19,19 +19,19 @@ object KravHistorikkHelper {
         hentKravHistorikkMedKravType(listOf(EessiKravGjelder.F_BH_MED_UTL, EessiKravGjelder.F_BH_KUN_UTL, EessiKravGjelder.REVURD, EessiKravGjelder.F_BH_BO_UTL, EessiKravGjelder.SLUTT_BH_UTL), kravHistorikkListe)
 
     fun finnKravHistorikk(kravType: EessiKravGjelder, kravHistorikkListe: List<KravHistorikk>?): List<KravHistorikk>? {
-        return sortertKravHistorikk(kravHistorikkListe)?.filter { it.kravType == kravType.name }
+        return sortertKravHistorikk(kravHistorikkListe)?.filter { it.kravType == kravType }
     }
 
     private fun hentKravHistorikkMedKravType(kravType: List<EessiKravGjelder>, kravHistorikkListe: List<KravHistorikk>?): KravHistorikk {
         val sortList = sortertKravHistorikk(kravHistorikkListe)
-        val sortListFraKravIndex = sortList?.sortedBy { kravType.indexOfFirst { type -> type.name == it.kravType } }
+        val sortListFraKravIndex = sortList?.sortedBy { kravType.indexOfFirst { type -> type == it.kravType } }
 
         if (sortListFraKravIndex != null && sortListFraKravIndex.size > 1) {
             logger.warn("Listen med krav er større enn én. Krav: {${sortList.size}")
         }
 
         sortListFraKravIndex?.forEach { kravHistorikk ->
-            if (kravHistorikk.kravType in kravType.map { it.name } ) {
+            if (kravHistorikk.kravType in kravType) {
                 logger.info("Fant ${kravHistorikk.kravType} med virkningstidspunkt: ${kravHistorikk.virkningstidspunkt}")
                 return kravHistorikk
             }
@@ -88,7 +88,7 @@ object KravHistorikkHelper {
         val sortList = sortertKravHistorikk(kravHistorikkListe)
         if (sortList == null || sortList.size > 1) return null
         logger.debug("leter etter kravtype: $penKravtype")
-        return sortList.firstOrNull { kravhist -> kravhist.kravType == penKravtype.name}
+        return sortList.firstOrNull { kravhist -> kravhist.kravType == penKravtype}
             .also { logger.debug("fant ${it?.kravType} med kravÅrsak: ${it?.kravArsak} med virkningstidspunkt dato : ${it?.virkningstidspunkt}") }
 
     }

@@ -22,7 +22,7 @@ private const val FNR = "46784678467"
 private const val SAKTYPE_ALDER = "ALDER"
 private const val SAKTYPE_UFORE = "UFOREP"
 
-@Daniel
+
 
 class InnhentingServiceTest {
 

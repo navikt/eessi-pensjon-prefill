@@ -137,10 +137,10 @@ object PrefillP2xxxPensjon {
 
         avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, EessiKravGjelder.FORSTEG_BH)
 
-        val behandleKunUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.F_BH_KUN_UTL.name } ?: false
-        val forsBehandMedUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.F_BH_MED_UTL.name } ?: false
-        val sluttBehandlingUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.SLUTT_BH_UTL.name } ?: false
-        val forstegangsBehandBoUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.F_BH_BO_UTL.name } ?: false
+        val behandleKunUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.F_BH_KUN_UTL } ?: false
+        val forsBehandMedUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.F_BH_MED_UTL } ?: false
+        val sluttBehandlingUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.SLUTT_BH_UTL } ?: false
+        val forstegangsBehandBoUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.F_BH_BO_UTL } ?: false
 
         val vedtakErTom = (vedtak == null)
 
@@ -176,7 +176,7 @@ object PrefillP2xxxPensjon {
     }
 
     private fun kunDenneKravTypeIHistorikk(sak: Sak?, kravType: EessiKravGjelder): Boolean {
-        val historikkForKravtype = sak?.kravHistorikk?.filter { it.kravType ==  kravType.name}
+        val historikkForKravtype = sak?.kravHistorikk?.filter { it.kravType ==  kravType}
         return (historikkForKravtype != null && historikkForKravtype.size == sak.kravHistorikk.size)
     }
 
