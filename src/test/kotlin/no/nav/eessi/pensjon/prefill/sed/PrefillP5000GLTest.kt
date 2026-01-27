@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
+@Daniel
+
 class PrefillP5000GLTest {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(65)

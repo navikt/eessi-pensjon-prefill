@@ -49,6 +49,7 @@ private const val AKTOER_ID_2 = "0009876543210"
 private const val AKTOER_ID_AVDOD_MOR = "12312312441"
 private const val AKTOER_ID_AVDOD_FAR = "3323332333233323"
 
+@Daniel
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc

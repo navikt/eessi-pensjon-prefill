@@ -50,6 +50,8 @@ import org.springframework.web.client.RestTemplate
 private const val NPID_VOKSEN = "01220049651"
 private const val RINA_SAK = "22874955"
 
+@Daniel
+
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class, PrefillUfoereIntegrationTest.TestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc
