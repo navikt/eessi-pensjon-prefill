@@ -89,7 +89,6 @@ class PrefillP15000IntegrationTest {
     @BeforeEach
     fun setUp() {
         every { kodeverkClient.finnLandkode(any()) } returns "XQ"
-//        every { pensjoninformasjonservice.hentRelevantVedtakHvisFunnet(any()) } returns null
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
         every { personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
@@ -98,17 +97,6 @@ class PrefillP15000IntegrationTest {
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_3)) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", reservert = true, mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_4)) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo("melleby11@melby.no", true, true, false, "11111111", FNR_VOKSEN_3)
-
-//        val v1Kravhistorikk = V1KravHistorikk()
-//        v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
-
-//        val barnepSak = v1Sak(BARNEP.name)
-//        barnepSak.kravHistorikkListe = V1KravHistorikkListe()
-//        barnepSak.kravHistorikkListe.kravHistorikkListe.add(v1Kravhistorikk)
-//
-//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns barnepSak
-
-//        every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true)
     }
 
     @Test
@@ -117,16 +105,9 @@ class PrefillP15000IntegrationTest {
         every { personService.hentIdent(IdentGruppe.AKTORID, Npid(NPID)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(Npid(NPID)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", NPID, AKTOER_ID_2, true)
 
-        val avdod = avdod(FNR_VOKSEN_4, EessiSakType.GJENLEV)
+        val avdod = avdod(NPID, EessiSakType.BARNEP)
 
         every { pesysService.hentP15000data(eq("123123123")) } returns avdod
-
-//        val avdod = avdod(NPID)
-
-//        val pensjonsinformasjon = Pensjonsinformasjon()
-//        pensjonsInformasjon(pensjonsinformasjon)
-//        pensjonsinformasjon.avdod = avdod
-//        pensjonsinformasjon.vedtak = V1Vedtak()
 
         val apijson =  dummyApijson(sakid = SAK_ID, vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = NPID)
 
@@ -151,13 +132,6 @@ class PrefillP15000IntegrationTest {
 
         val avdod = avdod(FNR_VOKSEN_4, EessiSakType.GJENLEV)
         every { pesysService.hentP15000data(eq("123123123")) } returns avdod
-        every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true)
-
-//        val pensjonsinformasjon = Pensjonsinformasjon()
-//        pensjonsInformasjon(pensjonsinformasjon)
-//        pensjonsinformasjon.avdod = avdod
-//        pensjonsinformasjon.vedtak = V1Vedtak()
-
         val apijson =  dummyApijson(sakid = SAK_ID, vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_4)
 
         val result = mockMvc.perform(post("/sed/prefill")
@@ -266,21 +240,14 @@ class PrefillP15000IntegrationTest {
 
     @Test
     @Throws(Exception::class)
-    @Disabled("maper til gammel helper")
     fun `prefill P15000 P_BUC_10 hvor saktype er ALDER men data fra pensjonsinformasjon gir UFOREP som resulterer i en bad request`() {
         every { personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
-        every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
-            every { sakType } returns EessiSakType.UFOREP.name
-        }
+        val avdod = avdod(FNR_VOKSEN, EessiSakType.UFOREP)
+        every { pesysService.hentP15000data(eq("123123123")) } returns avdod
 
-//        v1Sak(UFOREP.name)
-
-//        val pensjonsinformasjon = Pensjonsinformasjon()
-//        pensjonsInformasjon(pensjonsinformasjon)
-
-        val apijson = dummyApijson(sakid = "22874955", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.UFOREP, kravdato = "2020-01-01")
+        val apijson = dummyApijson(sakid = "22874955", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.ALDER, kravdato = "2020-01-01")
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -299,10 +266,6 @@ class PrefillP15000IntegrationTest {
         every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
             every { sakType } returns EessiSakType.ALDER.name
         }
-//        v1Sak(ALDER.name)
-//
-//        val pensjonsinformasjon = Pensjonsinformasjon()
-//        pensjonsInformasjon(pensjonsinformasjon)
 
         val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.UFOREP, kravdato = "2020-01-01")
 
@@ -322,11 +285,6 @@ class PrefillP15000IntegrationTest {
         every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
             every { sakType } returns EessiSakType.ALDER.name
         }
-//        v1Sak(ALDER.name)
-//
-//        val pensjonsinformasjon = Pensjonsinformasjon()
-//        pensjonsInformasjon(pensjonsinformasjon)
-
         val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.ALDER, kravdato = "2020-01-01")
 
         mockMvc.perform(post("/sed/prefill")
@@ -343,11 +301,6 @@ class PrefillP15000IntegrationTest {
 
         every {personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID ))  } returns (NorskIdent(FNR_VOKSEN))
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
-
-//        v1Sak(ALDER.name)
-//
-//        val pensjonsinformasjon = Pensjonsinformasjon()
-//        pensjonsInformasjon(pensjonsinformasjon)
 
         val avdod = avdod(FNR_VOKSEN_4, EessiSakType.ALDER)
         every { pesysService.hentP15000data(eq("123123123")) } returns avdod
@@ -371,14 +324,6 @@ class PrefillP15000IntegrationTest {
         every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
             every { sakType } returns EessiSakType.UFOREP.name
         }
-
-//        v1Sak(UFOREP.name)
-//
-//        val pensjonsinformasjon = Pensjonsinformasjon()
-//        pensjonsInformasjon(pensjonsinformasjon)
-
-
-
         val apijson = dummyApijson(
             sakid = "22874955", vedtakid = "123123123" ,
             aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.UFOREP, kravdato = "2020-01-01")
@@ -403,14 +348,6 @@ class PrefillP15000IntegrationTest {
         every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
             every { sakType } returns EessiSakType.GJENLEV.name
         }
-//        every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true)
-
-//        val aldersak = v1Sak(UFOREP.name)
-//
-//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns aldersak
-//
-//        val pensjonsinformasjon = Pensjonsinformasjon()
-//        pensjonsInformasjon(pensjonsinformasjon)
 
         val apijson = dummyApijson(sakid = SAK_ID, vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_2)
 
@@ -434,11 +371,6 @@ class PrefillP15000IntegrationTest {
         every { personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentIdent(IdentGruppe.AKTORID, NorskIdent(FNR_VOKSEN_2)) } returns AktoerId(AKTOER_ID_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN, AKTOER_ID)
-
-        every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
-            every { sakType } returns EessiSakType.GJENLEV.name
-        }
-
 
         val avdodperson = PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)
             .copy(bostedsadresse = null, oppholdsadresse = null, kontaktadresse = null, kontaktinformasjonForDoedsbo = KontaktinformasjonForDoedsbo(
@@ -464,21 +396,8 @@ class PrefillP15000IntegrationTest {
             ))
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns avdodperson
 
-//        v1Sak(UFOREP.name)
-
-//        val avdod = V1Avdod()
-//        avdod.avdodFar = FNR_VOKSEN_2
-//        avdod.avdodFarAktorId = AKTOER_ID_2
-//        avdod.avdodMor = AKTOER_ID_AVDOD_MOR
-
-//        val pensjonsinformasjon = Pensjonsinformasjon()
-//        pensjonsInformasjon(pensjonsinformasjon)
-//        pensjonsinformasjon.vedtak = V1Vedtak()
-//        pensjonsinformasjon.vedtak.vedtakStatus = "INNV"
-//        pensjonsinformasjon.avdod = avdod
-
-
-
+        val avdod = avdod(FNR_VOKSEN_2, EessiSakType.GJENLEV)
+        every { pesysService.hentP15000data(eq("123123123")) } returns avdod
         every { kodeverkClient.finnLandkode("SWE") } returns "SE"
 
         val apijson = dummyApijson(sakid = SAK_ID, vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_2)
@@ -665,32 +584,14 @@ class PrefillP15000IntegrationTest {
             }
             """.trimIndent()
 
-    private fun avdod(fnr: String, sakType: EessiSakType): P15000overfoeringAvPensjonssakerTilEessiDto {
+    private fun avdod(fnr: String?, sakType: EessiSakType): P15000overfoeringAvPensjonssakerTilEessiDto {
         return P15000overfoeringAvPensjonssakerTilEessiDto(
             sakType= sakType.name,
-            avdod = fnr,
-            avdodFar = AKTOER_ID_AVDOD_FAR,
+            avdod = null,
+            avdodFar = fnr,
             avdodMor = AKTOER_ID_AVDOD_MOR
         )
     }
-
-//    private fun pensjonsInformasjon(pensjonsinformasjon: Pensjonsinformasjon) : Pensjonsinformasjon {
-//        pensjonsinformasjon.vedtak = V1Vedtak()
-//        pensjonsinformasjon.vedtak.vedtakStatus = "INNV"
-//
-//        every { pensjoninformasjonservice.hentMedVedtak("123123123") } returns pensjonsinformasjon
-//        return pensjonsinformasjon
-//    }
-
-//    private fun v1Sak(sakType: String): V1Sak {
-//        val sak = V1Sak()
-//        sak.sakType = sakType
-//        sak.sakId = 22915555L
-//        sak.status = "INNV"
-//
-//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
-//        return sak
-//    }
 
     private fun relasjonTilAvdod(): String = """"relasjontilavdod" : { "relasjon" : "06" },""" }
 
