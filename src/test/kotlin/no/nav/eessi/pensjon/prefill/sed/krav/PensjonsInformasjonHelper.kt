@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravStatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravStatus.TIL_BEHANDLING
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import java.time.LocalDate
@@ -38,6 +39,10 @@ object PensjonsInformasjonHelper {
 //        this.belop = belop ?: 0
 //        this.belopUtenAvkorting = belopUtenAvkorting ?: 0
 //    }
+
+    fun readJsonResponse(file: String): String {
+        return javaClass.getResource(file)!!.readText()
+    }
 
     fun createKravHistorikk(
         kravId: String = "12345",

@@ -6,19 +6,14 @@ import io.mockk.spyk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
-import no.nav.eessi.pensjon.eux.model.sed.KravType
-import no.nav.eessi.pensjon.prefill.BasePrefillNav
-import no.nav.eessi.pensjon.prefill.InnhentingService
-import no.nav.eessi.pensjon.prefill.PersonDataService
-import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.PesysService
+import no.nav.eessi.pensjon.eux.model.sed.P2000
+import no.nav.eessi.pensjon.prefill.*
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
-import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
+import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType
+import no.nav.eessi.pensjon.prefill.models.pensjon.*
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.YtelsePerMaaned
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
@@ -31,7 +26,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.web.client.RestTemplate
 import java.time.LocalDate
 
 class PrefillP2000APUtlandInnvTest {
@@ -46,8 +40,6 @@ class PrefillP2000APUtlandInnvTest {
     private lateinit var pensjonCollection: PensjonCollection
     private lateinit var personDataCollection: PersonDataCollection
     private lateinit var personDataService: PersonDataService
-
-
 
     fun readJsonResponse(file: String): String {
         return javaClass.getResource(file)!!.readText()
@@ -65,7 +57,18 @@ class PrefillP2000APUtlandInnvTest {
                         virkningstidspunkt = LocalDate.of(2015, 11, 25),
                     )
                 ),
-                ytelsePerMaaned = emptyList(),
+                ytelsePerMaaned = listOf(YtelsePerMaaned(
+                    fom = LocalDate.of(2015, 11, 25),
+                    belop = 123,
+                    ytelseskomponentListe = listOf(P6000MeldingOmVedtakDto.Ytelseskomponent(
+                        YtelseskomponentType.GAP.name,
+                        444
+                    ),
+                        P6000MeldingOmVedtakDto.Ytelseskomponent(
+                            YtelseskomponentType.TP.name,
+                            445
+                        )))
+                ),
                 forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
                 status = EessiSakStatus.TIL_BEHANDLING,
             )
@@ -74,7 +77,6 @@ class PrefillP2000APUtlandInnvTest {
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
         personDataService = mockk(relaxed = true)
 
-//        val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2000-AP-UTL-INNV-24015012345_PlanB.xml")
         val innhentingService = InnhentingService(personDataService = personDataService, pesysService = pesysService)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(P2000, personFnr, penSaksnummer = pesysSaksnummer, kravDato = "2015-11-25")
@@ -89,41 +91,16 @@ class PrefillP2000APUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        println("prefilldata@@: ${prefillData.toJson()}")
         val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
-
-        println("P2000: $prefillData")
 
         assertNotNull(P2000.nav?.krav)
         assertEquals("2015-11-25", P2000.nav?.krav?.dato)
-//            pensjonCollection = PensjonCollection(p2xxxMeldingOmPensjonDto = P2xxxMeldingOmPensjonDto(
-//                sak = P2xxxMeldingOmPensjonDto.Sak(
-//                    sakType = EessiSakType.ALDER,
-//                    kravHistorikk = listOf(
-//                        P2xxxMeldingOmPensjonDto.KravHistorikk(
-//                            mottattDato = LocalDate.of(2025, 12, 12)
-//                        )
-//                    ),
-//                    ytelsePerMaaned = emptyList(),
-//                    status = EessiSakStatus.INNV,
-//
-//                    )
-//            ))
-////
-//            val prefillData = PrefillDataModel(bruker = PersonInfo("3216546897", null, false),
-//                avdod = PersonInfo(personFnr, null, false),
-//                sedType = P2000,
-//                kravDato = "2025-12-12",
-//                buc = P_BUC_01,
-//                euxCaseID = "123456",
-//                institution = listOf(InstitusjonItem("NO", "Inst"))
-//            )
 
     }
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon og mottasbasertpaa satt til botid`() {
-        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,) as no.nav.eessi.pensjon.eux.model.sed.P2000
+        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,) as P2000
 
         assertNotNull(P2000.nav?.krav)
         assertEquals("2015-11-25", P2000.nav?.krav?.dato)
@@ -132,45 +109,18 @@ class PrefillP2000APUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 med belop`() {
-
-//        val ytelsePerMaaned = PensjonsInformasjonHelper.createYtelsePerMaaned(
-//            mottarMinstePensjonsniva = true,
-//            belop = 123,
-//            belopUtenAvkorting = 111,
-//            fomDate = PensjonsInformasjonHelper.dummyDate(20),
-//            tomDate = PensjonsInformasjonHelper.dummyDate(30)
-//        ).apply {
-//            ytelseskomponentListe.addAll(
-//                listOf(
-//                    PensjonsInformasjonHelper.createYtelseskomponent(
-//                        type = YtelseskomponentType.GAP,
-//                        belopTilUtbetaling = 444,
-//                        belopUtenAvkorting = 333
-//                    ),
-//                    PensjonsInformasjonHelper.createYtelseskomponent(
-//                        type = YtelseskomponentType.TP,
-//                        belopTilUtbetaling = 444,
-//                        belopUtenAvkorting = 333
-//                    )
-//                )
-//            )
-//        }
-//        val gjenlevendHistorikk = PensjonsInformasjonHelper.createKravHistorikk(KravArsak.GJNL_SKAL_VURD.name, PenKravtype.F_BH_MED_UTL.name)
-
         // setter opp tilgang til mocking av selektive data
         val spykPensjonCollection = spyk(pensjonCollection)
-
-//        every { spykPensjonCollection.sak } returns PensjonsInformasjonHelper.createSak(gjenlevendHistorikk, ytelsePerMaaned)
 
         val P2000 = prefillSEDService.prefill(
             prefillData,
             personDataCollection,
             spykPensjonCollection,
             null,
-        ) as no.nav.eessi.pensjon.eux.model.sed.P2000
+        ) as P2000
 
         assertEquals("444", P2000.p2000pensjon?.ytelser?.firstOrNull()?.totalbruttobeloepbostedsbasert)
-        assertEquals("444", P2000.p2000pensjon?.ytelser?.firstOrNull()?.totalbruttobeloeparbeidsbasert)
+        assertEquals("445", P2000.p2000pensjon?.ytelser?.firstOrNull()?.totalbruttobeloeparbeidsbasert)
         assertEquals("123", P2000.p2000pensjon?.ytelser?.firstOrNull()?.beloep?.firstOrNull()?.beloep)
 
     }
