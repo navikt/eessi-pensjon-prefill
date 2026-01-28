@@ -1,6 +1,11 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType
+import no.nav.eessi.pensjon.eux.model.sed.KravType
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravStatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
+import java.time.LocalDate
 import java.util.*
 import javax.xml.datatype.DatatypeFactory
 import javax.xml.datatype.XMLGregorianCalendar
@@ -34,20 +39,21 @@ object PensjonsInformasjonHelper {
 //        this.belopUtenAvkorting = belopUtenAvkorting ?: 0
 //    }
 
-//    fun createKravHistorikk(
-//        kravArsak: String? = null,
-//        kravType: String? = null,
-//        mottattDato: XMLGregorianCalendar? = null,
-//        virkningstidspunkt: XMLGregorianCalendar? = null,
-//        status: Sakstatus? = null,
-//    ) = V1KravHistorikk().apply {
-//        this.kravArsak = kravArsak ?: ""
-//        this.kravType = kravType ?: ""
-//        this.mottattDato = mottattDato ?: dummyDate()
-//        this.virkningstidspunkt = virkningstidspunkt ?: dummyDate()
-//        this.status = status?.name ?: ""
-//    }
-
+    fun createKravHistorikk(
+        kravId: String = "12345",
+        kravType: EessiKravGjelder = EessiKravGjelder.SLUTT_BH_UTL,
+        kravStatus: EessiSakStatus = EessiSakStatus.TIL_BEHANDLING,
+        kravArsak: String = "NY_SOKNAD",
+        mottattDato: LocalDate = LocalDate.of(2024, 1, 15),
+        virkningstidspunkt: LocalDate = LocalDate.of(2024, 2, 1)
+    ) = P2xxxMeldingOmPensjonDto.KravHistorikk(
+        kravId = kravId,
+        kravType = kravType,
+        kravStatus = kravStatus,
+        kravArsak = kravArsak,
+        mottattDato = mottattDato,
+        virkningstidspunkt = virkningstidspunkt
+    )
 //    fun createSak(
 //        kravHistorikk: V1KravHistorikk? = null,
 //        ytelsePerMaaned: V1YtelsePerMaaned? = null,
