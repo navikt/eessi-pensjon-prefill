@@ -1,9 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus.AVSL
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus.INNV
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 
 /**
      *  [07] Førtidspensjon
@@ -11,10 +8,10 @@ import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
      *  [10] Alderspensjon
      *  [11] Etterlattepensjon
      */
-     fun mapSaktype(saktype: EessiSakType?): String {
+     fun mapSaktype(saktype: EessiFellesDto.EessiSakType?): String {
             return when (saktype) {
-                EessiSakType.UFOREP -> "08"
-                EessiSakType.ALDER -> "10"
+                EessiFellesDto.EessiSakType.UFOREP -> "08"
+                EessiFellesDto.EessiSakType.ALDER -> "10"
                 else -> "11"
             }
     }
@@ -24,11 +21,11 @@ import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
      *  [02] Innvilget
      *  [03] Avslått
      */
-    fun mapSakstatus(sakstatus: EessiSakStatus): String {
+    fun mapSakstatus(sakstatus: EessiFellesDto.EessiSakStatus): String {
         return try {
             when (sakstatus) {
-                INNV -> "02"
-                AVSL -> "03"
+                EessiFellesDto.EessiSakStatus.INNV -> "02"
+                EessiFellesDto.EessiSakStatus.AVSL -> "03"
                 else -> "01"
             }
         } catch (ex: Exception) {

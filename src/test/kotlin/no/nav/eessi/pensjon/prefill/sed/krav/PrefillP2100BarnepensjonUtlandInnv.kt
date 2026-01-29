@@ -12,13 +12,10 @@ import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravArsak
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
-import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.prefill.sed.krav.PensjonsInformasjonHelper.readJsonResponse
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -51,14 +48,14 @@ class PrefillP2100BarnepensjonUtlandInnv {
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
                         mottattDato = LocalDate.of(2025, 1, 1),
-                        kravType = EessiKravGjelder.F_BH_KUN_UTL,
-                        kravArsak = EessiKravArsak.TILST_DOD.name,
+                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
+                        kravArsak = EessiFellesDto.EessiKravAarsak.TILST_DOD,
                         virkningstidspunkt = LocalDate.of(2015, 11, 25),
                     )
                 ),
                 ytelsePerMaaned = emptyList(),
                 forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
-                status = EessiSakStatus.TIL_BEHANDLING,
+                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
             )
             every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
         }

@@ -36,7 +36,7 @@ data class PrefillDataModel(
 ) {
 
     override fun toString(): String {
-        return "DataModel: SedType: ${sedType.name}, bucType: $buc, penSakId: $penSaksnummer, vedtakId: $vedtakId, euxCaseId: $euxCaseID"
+        return "DataModel: SedType: ${sedType}, bucType: $buc, penSakId: $penSaksnummer, vedtakId: $vedtakId, euxCaseId: $euxCaseID"
     }
 
     fun getPartSEDasJson(key: String): String? {

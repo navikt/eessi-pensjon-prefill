@@ -1,10 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import no.nav.eessi.pensjon.eux.model.sed.KravType
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravStatus
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravStatus.TIL_BEHANDLING
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import java.time.LocalDate
 import java.util.*
@@ -46,9 +42,9 @@ object PensjonsInformasjonHelper {
 
     fun createKravHistorikk(
         kravId: String = "12345",
-        kravType: EessiKravGjelder = EessiKravGjelder.SLUTT_BH_UTL,
-        kravStatus: EessiSakStatus = EessiSakStatus.TIL_BEHANDLING,
-        kravArsak: String = "NY_SOKNAD",
+        kravType: EessiFellesDto.EessiKravGjelder = EessiFellesDto.EessiKravGjelder.SLUTT_BH_UTL,
+        kravStatus: EessiFellesDto.EessiSakStatus = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
+        kravArsak: EessiFellesDto.EessiKravAarsak = EessiFellesDto.EessiKravAarsak.NY_SOKNAD,
         mottattDato: LocalDate = LocalDate.of(2024, 1, 15),
         virkningstidspunkt: LocalDate = LocalDate.of(2024, 2, 1)
     ) = P2xxxMeldingOmPensjonDto.KravHistorikk(

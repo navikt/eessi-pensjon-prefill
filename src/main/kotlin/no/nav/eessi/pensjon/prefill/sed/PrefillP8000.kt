@@ -2,8 +2,7 @@ package no.nav.eessi.pensjon.prefill.sed
 
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType.ALDER
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType.UFOREP
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P8000AnmodningOmTilleggsinformasjon
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -30,10 +29,10 @@ class PrefillP8000(private val prefillSed: PrefillSed) {
         val kravhistorikkGjenlev = sak?.harKravhistorikkGjenlevende
 
         logger.debug("*** SAK: ${sak?.sakType}, referanseTilPerson: ${prefillData.refTilPerson}, gjenlevende: ${gjenlevendeBruker!= null} ***")
-        return if (prefillData.refTilPerson == ReferanseTilPerson.SOKER && sak?.sakType in listOf(ALDER.name, UFOREP.name) && gjenlevendeBruker != null) {
+        return if (prefillData.refTilPerson == ReferanseTilPerson.SOKER && sak?.sakType in listOf(EessiFellesDto.EessiSakType.ALDER, EessiFellesDto.EessiSakType.UFOREP) && gjenlevendeBruker != null) {
             logger.info("Prefill P8000 forenklet preutfylling for gjenlevende uten avdød, Ferdig.")
             sedP8000(eessielm, gjenlevendeBruker.person, gjenlevendeBruker.adresse, prefillData, null)
-        } else if (prefillData.refTilPerson == ReferanseTilPerson.SOKER && sak?.sakType in listOf(ALDER.name, UFOREP.name) && kravhistorikkGjenlev != null) {
+        } else if (prefillData.refTilPerson == ReferanseTilPerson.SOKER && sak?.sakType in listOf(EessiFellesDto.EessiSakType.ALDER, EessiFellesDto.EessiSakType.UFOREP) && kravhistorikkGjenlev != null) {
             logger.info("Prefill P8000 forenklet preutfylling for gjenlevende med revurdering uten avdød, Ferdig.")
             sedP8000(eessielm, gjenlevendeBruker?.person, gjenlevendeBruker?.adresse, prefillData, null)
         } else {

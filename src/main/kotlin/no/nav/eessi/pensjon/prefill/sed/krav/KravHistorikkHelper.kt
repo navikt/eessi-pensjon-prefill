@@ -1,8 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravArsak
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.KravHistorikk
 import org.slf4j.Logger
@@ -16,13 +14,13 @@ object KravHistorikkHelper {
     }
 
     fun hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(kravHistorikkListe: List<KravHistorikk>?): KravHistorikk =
-        hentKravHistorikkMedKravType(listOf(EessiKravGjelder.F_BH_MED_UTL, EessiKravGjelder.F_BH_KUN_UTL, EessiKravGjelder.REVURD, EessiKravGjelder.F_BH_BO_UTL, EessiKravGjelder.SLUTT_BH_UTL), kravHistorikkListe)
+        hentKravHistorikkMedKravType(listOf(EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL, EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL, EessiFellesDto.EessiKravGjelder.REVURD, EessiFellesDto.EessiKravGjelder.F_BH_BO_UTL, EessiFellesDto.EessiKravGjelder.SLUTT_BH_UTL), kravHistorikkListe)
 
-    fun finnKravHistorikk(kravType: EessiKravGjelder, kravHistorikkListe: List<KravHistorikk>?): List<KravHistorikk>? {
+    fun finnKravHistorikk(kravType: EessiFellesDto.EessiKravGjelder, kravHistorikkListe: List<KravHistorikk>?): List<KravHistorikk>? {
         return sortertKravHistorikk(kravHistorikkListe)?.filter { it.kravType == kravType }
     }
 
-    private fun hentKravHistorikkMedKravType(kravType: List<EessiKravGjelder>, kravHistorikkListe: List<KravHistorikk>?): KravHistorikk {
+    private fun hentKravHistorikkMedKravType(kravType: List<EessiFellesDto.EessiKravGjelder>, kravHistorikkListe: List<KravHistorikk>?): KravHistorikk {
         val sortList = sortertKravHistorikk(kravHistorikkListe)
         val sortListFraKravIndex = sortList?.sortedBy { kravType.indexOfFirst { type -> type == it.kravType } }
 
@@ -41,50 +39,50 @@ object KravHistorikkHelper {
     }
 
     fun hentKravhistorikkForGjenlevende(kravHistorikkListe: List<KravHistorikk>?): KravHistorikk? {
-            val kravHistorikk = kravHistorikkListe?.filter { krav -> krav.kravArsak == EessiKravArsak.GJNL_SKAL_VURD.name || krav.kravArsak == EessiKravArsak.TILST_DOD.name }
+            val kravHistorikk = kravHistorikkListe?.filter { krav -> krav.kravArsak == EessiFellesDto.EessiKravAarsak.GJNL_SKAL_VURD || krav.kravArsak == EessiFellesDto.EessiKravAarsak.TILST_DOD }
             if (kravHistorikk?.isNotEmpty() == true) {
                 return kravHistorikk.first()
             }
-            logger.warn("Fant ikke Kravhistorikk med bruk av kravårsak: ${EessiKravArsak.GJNL_SKAL_VURD.name} eller ${EessiKravArsak.TILST_DOD.name} ")
+            logger.warn("Fant ikke Kravhistorikk med bruk av kravårsak: ${EessiFellesDto.EessiKravAarsak.GJNL_SKAL_VURD} eller ${EessiFellesDto.EessiKravAarsak.TILST_DOD} ")
             return null
     }
 
     fun hentKravhistorikkForGjenlevendeOgNySoknad(kravHistorikkListe: List<KravHistorikk>?): KravHistorikk? {
-        val kravHistorikk = kravHistorikkListe?.filter { krav -> krav.kravArsak == EessiKravArsak.GJNL_SKAL_VURD.name || krav.kravArsak == EessiKravArsak.TILST_DOD.name || krav.kravArsak == EessiKravArsak.NY_SOKNAD.name }
+        val kravHistorikk = kravHistorikkListe?.filter { krav -> krav.kravArsak == EessiFellesDto.EessiKravAarsak.GJNL_SKAL_VURD || krav.kravArsak == EessiFellesDto.EessiKravAarsak.TILST_DOD || krav.kravArsak == EessiFellesDto.EessiKravAarsak.NY_SOKNAD }
         if (kravHistorikk?.isNotEmpty() == true) {
             return kravHistorikk.first()
         }
-        logger.warn("Fant ikke Kravhistorikk med bruk av kravårsak: ${EessiKravArsak.GJNL_SKAL_VURD.name} , ${EessiKravArsak.TILST_DOD.name} eller ${EessiKravArsak.NY_SOKNAD.name} fra kravliste: \n${kravHistorikkListe.toString()}")
+        logger.warn("Fant ikke Kravhistorikk med bruk av kravårsak: ${EessiFellesDto.EessiKravAarsak.GJNL_SKAL_VURD} , ${EessiFellesDto.EessiKravAarsak.TILST_DOD} eller ${EessiFellesDto.EessiKravAarsak.NY_SOKNAD} fra kravliste: \n${kravHistorikkListe.toString()}")
         return null
     }
 
     fun hentKravHistorikkMedKravStatusTilBehandling(kravHistorikkListe: List<KravHistorikk>?): KravHistorikk {
         val sortList = sortertKravHistorikk(kravHistorikkListe)
         sortList?.forEach {
-            logger.debug("leter etter Krav status med ${EessiSakStatus.TIL_BEHANDLING}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
-            if (EessiSakStatus.TIL_BEHANDLING.name == it.kravStatus?.name) {
-                logger.debug("Fant Kravhistorikk med ${it.kravStatus.name}")
+            logger.debug("leter etter Krav status med ${EessiFellesDto.EessiSakStatus.TIL_BEHANDLING}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
+            if (EessiFellesDto.EessiSakStatus.TIL_BEHANDLING == it.kravStatus) {
+                logger.debug("Fant Kravhistorikk med ${it.kravStatus}")
                 return it
             }
         }
-        logger.error("Fant ikke noe Kravhistorikk..${EessiSakStatus.TIL_BEHANDLING}. Mangler vilkårsprlving/vedtak. følger ikke normal behandling")
+        logger.error("Fant ikke noe Kravhistorikk..${EessiFellesDto.EessiSakStatus.TIL_BEHANDLING}. Mangler vilkårsprlving/vedtak. følger ikke normal behandling")
         return KravHistorikk()
     }
 
     fun hentKravHistorikkMedKravStatusAvslag(kravHistorikkListe: List<KravHistorikk>?): KravHistorikk {
         val sortList = sortertKravHistorikk(kravHistorikkListe)
         sortList?.forEach {
-            logger.debug("leter etter Krav status med ${EessiSakStatus.AVSL}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
-            if (EessiSakStatus.AVSL.name == it.kravStatus?.name) {
-                logger.debug("Fant Kravhistorikk med ${it.kravStatus.name}")
+            logger.debug("leter etter Krav status med ${EessiFellesDto.EessiSakStatus.AVSL}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
+            if (EessiFellesDto.EessiSakStatus.AVSL == it.kravStatus) {
+                logger.debug("Fant Kravhistorikk med ${it.kravStatus}")
                 return it
             }
         }
-        logger.error("Fant ikke noe Kravhistorikk..${EessiSakStatus.AVSL}. Mangler vilkårsprøving. følger ikke normal behandling")
+        logger.error("Fant ikke noe Kravhistorikk..${EessiFellesDto.EessiSakStatus.AVSL}. Mangler vilkårsprøving. følger ikke normal behandling")
         return KravHistorikk()
     }
 
-    fun hentKravHistorikkMedValgtKravType(kravHistorikkListe: List<KravHistorikk>?, penKravtype: EessiKravGjelder): KravHistorikk? {
+    fun hentKravHistorikkMedValgtKravType(kravHistorikkListe: List<KravHistorikk>?, penKravtype: EessiFellesDto.EessiKravGjelder): KravHistorikk? {
         val sortList = sortertKravHistorikk(kravHistorikkListe)
         if (sortList == null || sortList.size > 1) return null
         logger.debug("leter etter kravtype: $penKravtype")
@@ -98,13 +96,13 @@ object KravHistorikkHelper {
             val gjenLevKravarsak = hentKravhistorikkForGjenlevende(pensak?.kravHistorikk)
             if (gjenLevKravarsak != null) return gjenLevKravarsak
 
-            val kravKunUtland = hentKravHistorikkMedValgtKravType(pensak?.kravHistorikk, EessiKravGjelder.F_BH_KUN_UTL)
+            val kravKunUtland = hentKravHistorikkMedValgtKravType(pensak?.kravHistorikk, EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL)
             if (kravKunUtland != null) return  kravKunUtland
 
             logger.info("Sakstatus: ${pensak?.status},sakstype: ${pensak?.sakType}")
             return when (pensak?.status) {
-                EessiSakStatus.TIL_BEHANDLING -> hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikk)
-                EessiSakStatus.AVSL -> hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikk)
+                EessiFellesDto.EessiSakStatus.TIL_BEHANDLING -> hentKravHistorikkMedKravStatusTilBehandling(pensak.kravHistorikk)
+                EessiFellesDto.EessiSakStatus.AVSL -> hentKravHistorikkMedKravStatusAvslag(pensak.kravHistorikk)
                 else -> hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak?.kravHistorikk)
             }
 

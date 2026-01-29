@@ -7,7 +7,7 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType.*
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.utils.toJson
@@ -75,8 +75,10 @@ class InnhentingService(
     fun hentIdent(norskIdent: Ident): String? = personDataService.hentIdent(IdentGruppe.AKTORID, norskIdent)?.id
 
     fun hentPensjoninformasjonCollection(prefillData: PrefillDataModel): PensjonCollection {
-        val eessipensjonSakTyper = listOf(ALDER, BARNEP, GJENLEV, UFOREP)
-        val pensakTyper = listOf(GENRL, OMSORG) + eessipensjonSakTyper
+        val eessipensjonSakTyper = listOf(EessiFellesDto.EessiSakType.ALDER,
+            EessiFellesDto.EessiSakType.BARNEP, EessiFellesDto.EessiSakType.GJENLEV, EessiFellesDto.EessiSakType.UFOREP
+        )
+        val pensakTyper = listOf(EessiFellesDto.EessiSakType.GENRL, EessiFellesDto.EessiSakType.OMSORG) + eessipensjonSakTyper
         return when (val sedType = prefillData.sedType) {
 
             P2000 -> {

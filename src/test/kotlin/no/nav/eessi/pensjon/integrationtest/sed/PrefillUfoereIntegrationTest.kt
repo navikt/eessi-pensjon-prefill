@@ -26,10 +26,8 @@ import no.nav.eessi.pensjon.prefill.PersonPDLMock.medKjoenn
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medSivilstand
 import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravArsak
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
@@ -104,15 +102,15 @@ class PrefillUfoereIntegrationTest {
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
                         mottattDato = LocalDate.parse("2020-08-08"),
-                        kravType = EessiKravGjelder.F_BH_MED_UTL,
+                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL,
                         virkningstidspunkt = LocalDate.parse("2019-07-15"),
-                        kravStatus = EessiSakStatus.INNV,
-                        kravArsak = EessiKravArsak.NY_SOKNAD.name
+                        kravStatus = EessiFellesDto.EessiSakStatus.INNV,
+                        kravArsak = EessiFellesDto.EessiKravAarsak.NY_SOKNAD
                     )
                 ),
                 ytelsePerMaaned = emptyList(),
                 forsteVirkningstidspunkt = null,
-                status = EessiSakStatus.INNV,
+                status = EessiFellesDto.EessiSakStatus.INNV,
             )
             every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
         }

@@ -3,10 +3,10 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType.ALDER
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType.UFOREP
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.ALDER
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.UFOREP
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.*
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.Sak
 import no.nav.eessi.pensjon.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
@@ -20,6 +20,24 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
+import kotlin.Boolean
+import kotlin.Exception
+import kotlin.IllegalArgumentException
+import kotlin.String
+import kotlin.also
+import kotlin.collections.List
+import kotlin.collections.filter
+import kotlin.collections.firstOrNull
+import kotlin.collections.forEach
+import kotlin.collections.listOf
+import kotlin.collections.none
+import kotlin.collections.sortedBy
+import kotlin.getOrElse
+import kotlin.getValue
+import kotlin.lazy
+import kotlin.let
+import kotlin.runCatching
+import kotlin.toString
 
 const val kravdatoMeldingOmP2100TilSaksbehandler = "Kravdato fra det opprinnelige vedtak med gjenlevenderett er angitt i SED P2100"
 
@@ -135,12 +153,12 @@ object PrefillP2xxxPensjon {
     private fun validerGyldigKravtypeOgArsak(sak: Sak?, sedType: SedType, vedtak: Vedtak?) {
         logger.info("start på validering av $sedType")
 
-        avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, EessiKravGjelder.FORSTEG_BH)
+        avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, EessiFellesDto.EessiKravGjelder.FORSTEG_BH)
 
-        val behandleKunUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.F_BH_KUN_UTL } ?: false
-        val forsBehandMedUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.F_BH_MED_UTL } ?: false
-        val sluttBehandlingUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.SLUTT_BH_UTL } ?: false
-        val forstegangsBehandBoUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiKravGjelder.F_BH_BO_UTL } ?: false
+        val behandleKunUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL } ?: false
+        val forsBehandMedUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL } ?: false
+        val sluttBehandlingUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiFellesDto.EessiKravGjelder.SLUTT_BH_UTL } ?: false
+        val forstegangsBehandBoUtlandErTom = sak?.kravHistorikk?.none { it.kravType == EessiFellesDto.EessiKravGjelder.F_BH_BO_UTL } ?: false
 
         val vedtakErTom = (vedtak == null)
 
@@ -168,14 +186,14 @@ object PrefillP2xxxPensjon {
     }
 
     //felles kode for validering av P2000, P2100 og P2200
-    fun avsluttHvisKunDenneKravTypeIHistorikk(sak: Sak?, sedType: SedType, kravType: EessiKravGjelder) {
+    fun avsluttHvisKunDenneKravTypeIHistorikk(sak: Sak?, sedType: SedType, kravType: EessiFellesDto.EessiKravGjelder) {
         if (kunDenneKravTypeIHistorikk(sak, kravType))  {
             logger.warn("Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
         }
     }
 
-    private fun kunDenneKravTypeIHistorikk(sak: Sak?, kravType: EessiKravGjelder): Boolean {
+    private fun kunDenneKravTypeIHistorikk(sak: Sak?, kravType: EessiFellesDto.EessiKravGjelder): Boolean {
         val historikkForKravtype = sak?.kravHistorikk?.filter { it.kravType ==  kravType}
         return (historikkForKravtype != null && historikkForKravtype.size == sak.kravHistorikk.size)
     }

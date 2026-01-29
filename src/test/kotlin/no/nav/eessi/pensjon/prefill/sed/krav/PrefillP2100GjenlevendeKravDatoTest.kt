@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.sed.KravType
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import org.junit.jupiter.api.Test
@@ -28,7 +28,7 @@ class PrefillP2100GjenlevendeKravDatoTest {
             mockk<PrefillP2xxxPensjon>(relaxed = true).avsluttHvisKunDenneKravTypeIHistorikk(
                 any(),
                 any(),
-                EessiKravGjelder.FORSTEG_BH
+                EessiFellesDto.EessiKravGjelder.FORSTEG_BH
             )
         }
 

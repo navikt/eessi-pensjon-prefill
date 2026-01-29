@@ -49,28 +49,30 @@ class PrefillP2000APUtlandInnvTest {
     fun setup() {
         every { pesysService.hentP2000data(any()) } returns mockk(){
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
-                sakType = EessiSakType.ALDER,
+                sakType = EessiFellesDto.EessiSakType.ALDER,
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
                         mottattDato = LocalDate.of(2015, 11, 25),
-                        kravType = EessiKravGjelder.F_BH_KUN_UTL,
+                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
                         virkningstidspunkt = LocalDate.of(2015, 11, 25),
                     )
                 ),
                 ytelsePerMaaned = listOf(YtelsePerMaaned(
                     fom = LocalDate.of(2015, 11, 25),
                     belop = 123,
-                    ytelseskomponentListe = listOf(P6000MeldingOmVedtakDto.Ytelseskomponent(
-                        YtelseskomponentType.GAP.name,
-                        444
-                    ),
-                        P6000MeldingOmVedtakDto.Ytelseskomponent(
+                    ytelseskomponentListe = listOf(
+                        EessiFellesDto.Ytelseskomponent(
+                            YtelseskomponentType.GAP.name,
+                            444
+                        ),
+                        EessiFellesDto.Ytelseskomponent(
                             YtelseskomponentType.TP.name,
                             445
-                        )))
+                        )
+                    ))
                 ),
                 forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
-                status = EessiSakStatus.TIL_BEHANDLING,
+                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
             )
             every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
         }

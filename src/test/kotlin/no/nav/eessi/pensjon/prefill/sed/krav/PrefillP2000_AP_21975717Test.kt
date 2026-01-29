@@ -17,7 +17,6 @@ import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo.Companion.validate
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother.initialPrefillDataModel
-import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType
 import no.nav.eessi.pensjon.prefill.models.pensjon.*
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.YtelsePerMaaned
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -71,11 +70,11 @@ class PrefillP2000_AP_21975717Test {
 
         every { pesysService.hentP2000data(any()) } returns mockk(){
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
-                sakType = EessiSakType.ALDER,
+                sakType = EessiFellesDto.EessiSakType.ALDER,
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
                         mottattDato = LocalDate.of(2015, 6, 16),
-                        kravType = EessiKravGjelder.F_BH_KUN_UTL,
+                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
                         virkningstidspunkt = LocalDate.of(2016, 6, 16),
                     )
                 ),
@@ -85,7 +84,7 @@ class PrefillP2000_AP_21975717Test {
                     ytelseskomponentListe = emptyList()
                 )),
                 forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
-                status = EessiSakStatus.TIL_BEHANDLING,
+                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
             )
             every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
         }

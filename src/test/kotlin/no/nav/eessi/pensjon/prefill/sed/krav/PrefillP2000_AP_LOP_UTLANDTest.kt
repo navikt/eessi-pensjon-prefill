@@ -13,9 +13,8 @@ import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother.initialPrefillDataModel
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.krav.PensjonsInformasjonHelper.readJsonResponse
@@ -55,12 +54,12 @@ class PrefillP2000_AP_LOP_UTLANDTest {
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
                         mottattDato = LocalDate.of(2014, 1, 13),
-                        kravType = EessiKravGjelder.F_BH_KUN_UTL,
+                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
                     )
                 ),
                 ytelsePerMaaned = emptyList(),
                 forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
-                status = EessiSakStatus.TIL_BEHANDLING,
+                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
             )
             every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
         }

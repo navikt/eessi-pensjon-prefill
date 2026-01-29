@@ -8,7 +8,6 @@ import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_03
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.SedType.P2200
-import no.nav.eessi.pensjon.eux.model.sed.KravType
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.Postnummer
@@ -21,13 +20,9 @@ import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravArsak
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravStatus
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
-import no.nav.eessi.pensjon.prefill.sed.krav.PensjonsInformasjonHelper
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -87,15 +82,15 @@ class PrefillErrorIntegrationTest {
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
                         mottattDato = null,
-                        kravType = EessiKravGjelder.REVURD,
+                        kravType = EessiFellesDto.EessiKravGjelder.REVURD,
                         virkningstidspunkt = null,
-                        kravStatus = EessiSakStatus.AVSL,
-                        kravArsak = EessiKravArsak.GJNL_SKAL_VURD.name
+                        kravStatus = EessiFellesDto.EessiSakStatus.AVSL,
+                        kravArsak = EessiFellesDto.EessiKravAarsak.GJNL_SKAL_VURD
                     )
                 ),
                 ytelsePerMaaned = emptyList(),
                 forsteVirkningstidspunkt = null,
-                status = EessiSakStatus.INNV,
+                status = EessiFellesDto.EessiSakStatus.INNV,
             )
             every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = false)
         }

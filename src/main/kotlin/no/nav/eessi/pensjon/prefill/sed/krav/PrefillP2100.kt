@@ -4,9 +4,9 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder.FORSTEG_BH
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType.ALDER
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType.UFOREP
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiKravGjelder.FORSTEG_BH
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.ALDER
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.UFOREP
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.Sak
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
