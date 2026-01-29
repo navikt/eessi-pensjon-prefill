@@ -24,7 +24,13 @@ import no.nav.eessi.pensjon.prefill.PersonPDLMock.medFodsel
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medForeldre
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medKjoenn
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medSivilstand
+import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravArsak
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -46,21 +52,18 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
+import java.time.LocalDate
 
 private const val NPID_VOKSEN = "01220049651"
 private const val RINA_SAK = "22874955"
 
 //Daniel
-
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class, PrefillUfoereIntegrationTest.TestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc
 @DirtiesContext
 @EmbeddedKafka
 class PrefillUfoereIntegrationTest {
-
-    @MockkBean
-    private lateinit var pensjonsinformasjonOidcRestTemplate: RestTemplate
 
     @MockkBean
     private lateinit var personService: PersonService
@@ -70,6 +73,9 @@ class PrefillUfoereIntegrationTest {
 
     @MockkBean
     private lateinit var kodeverkClient: KodeverkClient
+
+    @MockkBean
+    lateinit var pesysService: PesysService
 
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -91,6 +97,25 @@ class PrefillUfoereIntegrationTest {
     fun setUp() {
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
         every { kodeverkClient.finnLandkode(any()) } returns "XQ"
+
+        every { pesysService.hentP2200data(any()) } returns mockk{
+            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                sakType = EessiSakType.UFOREP,
+                kravHistorikk = listOf(
+                    P2xxxMeldingOmPensjonDto.KravHistorikk(
+                        mottattDato = LocalDate.parse("2020-08-08"),
+                        kravType = EessiKravGjelder.F_BH_MED_UTL,
+                        virkningstidspunkt = LocalDate.parse("2019-07-15"),
+                        kravStatus = EessiSakStatus.INNV,
+                        kravArsak = EessiKravArsak.NY_SOKNAD.name
+                    )
+                ),
+                ytelsePerMaaned = emptyList(),
+                forsteVirkningstidspunkt = null,
+                status = EessiSakStatus.INNV,
+            )
+            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
+        }
     }
 
     @Test
@@ -99,7 +124,7 @@ class PrefillUfoereIntegrationTest {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN)
-//        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-AVSL.xml")
+
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22922563", aktoerId = AKTOER_ID, sed = P2200.name)
@@ -162,12 +187,12 @@ class PrefillUfoereIntegrationTest {
                   }
                 },
                 "krav" : {
-                  "dato" : "2020-07-01"
+                  "dato" : "2020-08-08"
                 }
               },
               "pensjon" : {
                 "kravDato" : {
-                  "dato" : "2020-07-01"
+                  "dato" : "2020-08-08"
                 }
               },
               "sedGVer" : "4",
@@ -175,6 +200,7 @@ class PrefillUfoereIntegrationTest {
             }          
         """.trimIndent()
         JSONAssert.assertEquals(response, validResponse, false)
+
     }
 
     @Test
@@ -232,10 +258,6 @@ class PrefillUfoereIntegrationTest {
         every { personService.hentPerson(NorskIdent(pinBarn1)) } returns barn1
         every { personService.hentPerson(NorskIdent(pinBarn2)) } returns barn2
         every { personService.hentPerson(NorskIdent(pinBarn3)) } returns barn3
-
-        //pensjoninformasjon avsl.
-//        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-AVSL.xml")
-
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         val apijson = dummyApijson(sakid = "22922563", aktoerId = aktoerHovedperson, sed = P2200.name)
@@ -512,12 +534,12 @@ class PrefillUfoereIntegrationTest {
                   "relasjontilbruker43" : "BARN"                  
                 } ],
                 "krav" : {
-                  "dato" : "2020-07-01"
+                  "dato" : "2020-08-08"
                 }
               },
               "pensjon" : {
                 "kravDato" : {
-                  "dato" : "2020-07-01"
+                  "dato" : "2020-08-08"
                 }
               },
               "sedGVer" : "4",
@@ -536,12 +558,6 @@ class PrefillUfoereIntegrationTest {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_2)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_2)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN)
-
-//        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns
-//                PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
-
-//        every { pensjonsinformasjonOidcRestTemplate.exchange(eq("/vedtak/5134513451345"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns
-//                PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-APUtland-301.xml")
 
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
@@ -566,12 +582,6 @@ class PrefillUfoereIntegrationTest {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns Npid(NPID_VOKSEN)
         every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", NPID_VOKSEN)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN)
-
-//        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns
-//                PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
-
-//        every { pensjonsinformasjonOidcRestTemplate.exchange(eq("/vedtak/5134513451345"), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns
-//                PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-APUtland-301.xml")
 
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
@@ -642,12 +652,12 @@ class PrefillUfoereIntegrationTest {
                       }
                     },
                     "krav" : {
-                      "dato" : "2019-07-15"
+                      "dato" : "2020-08-08"
                     }
                   },
                   "pensjon" : {
                     "kravDato" : {
-                      "dato" : "2019-07-15"
+                      "dato" : "2020-08-08"
                     }
                   }
                 }
