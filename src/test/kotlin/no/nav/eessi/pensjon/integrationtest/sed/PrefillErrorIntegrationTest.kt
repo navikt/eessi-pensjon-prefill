@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.integrationtest.sed
 
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_03
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
@@ -18,8 +19,10 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Npid
 import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravArsak
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravGjelder
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiKravStatus
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakStatus
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiSakType
@@ -63,6 +66,9 @@ class PrefillErrorIntegrationTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
 
+    @MockkBean
+    lateinit var pesysService: PesysService
+
     private companion object {
         const val FNR_VOKSEN = "11067122781"    // KRAFTIG VEGGPRYD
         const val NPID_VOKSEN = "01220049651"
@@ -75,21 +81,24 @@ class PrefillErrorIntegrationTest {
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
         every { krrService.hentPersonerFraKrr(any())  } returns DigitalKontaktinfo( "melleby11@melby.no", true, personident = NPID_VOKSEN)
 
-//        val sak = PensjonsInformasjonHelper.createSak(
-//            PensjonsInformasjonHelper.createKravHistorikk(
-//                EessiKravArsak.GJNL_SKAL_VURD.name,
-//                KravType.ALDER.name,
-//                status = EessiSakStatus.INNV
-//            ), sakType = EessiSakType.UFOREP.name
-//        )
-
-//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
-
-//        P2xxxMeldingOmPensjonDto.Vedtak(false)
-//        vedtak.kravGjelder = "REVURD"
-
-//        every { pensjoninformasjonservice.hentRelevantVedtakHvisFunnet("231231231") } returns vedtak
-
+        every { pesysService.hentP2200data(eq("231231231")) } returns mockk(){
+            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                sakType = EessiSakType.UFOREP,
+                kravHistorikk = listOf(
+                    P2xxxMeldingOmPensjonDto.KravHistorikk(
+                        mottattDato = null,
+                        kravType = EessiKravGjelder.REVURD,
+                        virkningstidspunkt = null,
+                        kravStatus = EessiSakStatus.AVSL,
+                        kravArsak = EessiKravArsak.GJNL_SKAL_VURD.name
+                    )
+                ),
+                ytelsePerMaaned = emptyList(),
+                forsteVirkningstidspunkt = null,
+                status = EessiSakStatus.INNV,
+            )
+            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = false)
+        }
     }
 
     @Test
