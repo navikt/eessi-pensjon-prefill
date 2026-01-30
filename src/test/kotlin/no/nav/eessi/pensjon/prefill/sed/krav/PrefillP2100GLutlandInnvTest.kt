@@ -46,9 +46,10 @@ class PrefillP2100GLutlandInnvTest {
                 sakType = EessiFellesDto.EessiSakType.ALDER,
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
-                        mottattDato = LocalDate.of(2015, 11, 25),
+                        mottattDato = LocalDate.of(2019, 6, 1),
                         kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
                         virkningstidspunkt = LocalDate.of(2015, 11, 25),
+                        kravArsak = EessiFellesDto.EessiKravAarsak.NY_SOKNAD
                     )
                 ),
                 ytelsePerMaaned = listOf(

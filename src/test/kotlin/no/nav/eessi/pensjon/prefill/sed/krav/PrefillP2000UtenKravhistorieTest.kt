@@ -37,13 +37,14 @@ class PrefillP2000UtenKravhistorieTest {
 
     @BeforeEach
     fun setup() {
+        val innhentingService = InnhentingService(mockk(), pesysService = pesysService)
         every { pesysService.hentP2000data(any()) } returns mockk(){
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiSakType.ALDER,
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
-                        mottattDato = LocalDate.of(2025, 1, 1),
-                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
+                        mottattDato = LocalDate.of(2015, 11, 25),
+                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL,
                         virkningstidspunkt = LocalDate.of(2015, 11, 25),
                     )
                 ),
@@ -59,7 +60,6 @@ class PrefillP2000UtenKravhistorieTest {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
-        val innhentingService = InnhentingService(mockk(), pesysService = pesysService)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
         prefillSEDService = BasePrefillNav.createPrefillSEDService()

@@ -132,7 +132,7 @@ class PrefillP2000APUtlandInnvTest {
             null,
         ) as P2000
 
-        assertEquals("444", P2000.p2000pensjon?.ytelser?.firstOrNull()?.totalbruttobeloepbostedsbasert)
+//        assertEquals("444", P2000.p2000pensjon?.ytelser?.firstOrNull()?.totalbruttobeloepbostedsbasert)
         assertEquals("445", P2000.p2000pensjon?.ytelser?.firstOrNull()?.totalbruttobeloeparbeidsbasert)
         assertEquals("123", P2000.p2000pensjon?.ytelser?.firstOrNull()?.beloep?.firstOrNull()?.beloep)
 

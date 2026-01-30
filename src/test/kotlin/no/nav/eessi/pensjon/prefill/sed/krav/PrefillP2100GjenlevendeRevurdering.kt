@@ -49,7 +49,7 @@ class PrefillP2100GjenlevendeRevurdering {
                 sakType = EessiSakType.GJENLEV,
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
-                        mottattDato = LocalDate.of(2015, 11, 25),
+                        mottattDato = LocalDate.of(2020, 2, 12),
                         kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
                         virkningstidspunkt = LocalDate.of(2015, 11, 25),
                     )

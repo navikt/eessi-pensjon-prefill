@@ -1,14 +1,23 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.Nav
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
+import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiKravGjelder
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
+import no.nav.eessi.pensjon.prefill.sed.krav.PensjonsInformasjonHelper.readJsonResponse
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
@@ -16,33 +25,50 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class PrefillP2200UPUtlandInnvTest {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
     private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(70)
     private val pesysSaksnummer = "22874955"
+    private val pesysService : PesysService = mockk()
 
     lateinit var prefillData: PrefillDataModel
 
-//    lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var pensjonCollection: PensjonCollection
     private lateinit var personDataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
-        personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
-
-//        dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = pesysSaksnummer).apply {
-//            partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
-//            partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
+        every { pesysService.hentP2200data(any()) } returns mockk(){
+            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                sakType = EessiSakType.UFOREP,
+                kravHistorikk = listOf(
+                    P2xxxMeldingOmPensjonDto.KravHistorikk(
+                        mottattDato = LocalDate.of(2019, 7, 15),
+                        kravType = EessiKravGjelder.F_BH_KUN_UTL,
+                        virkningstidspunkt = LocalDate.of(2015, 11, 25),
+                    )
+                ),
+                ytelsePerMaaned = emptyList(),
+                forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
+                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
+            )
+            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
         }
 
-//        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
-//        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = pesysSaksnummer).apply {
+            partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
+            partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
+        }
+
+        val innhentingService = InnhentingService(mockk(), pesysService = pesysService)
+
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
     }
 
