@@ -84,31 +84,35 @@ class InnhentingService(
             P2000 -> {
                 val p2000data = prefillData.vedtakId?.let { pesysService.hentP2000data(prefillData.vedtakId) }
                 PensjonCollection(
-                    sak = p2000data?.sak.takeIf { p2000data?.sak?.sakType == EessiFellesDto.EessiSakType.ALDER } ,
-                    vedtak = p2000data?.vedtak,
-                    sedType = sedType
-                )
-            }
-            P2200 -> {
-                val p2200data = prefillData.vedtakId?.let { pesysService.hentP2200data(prefillData.vedtakId) }
-                PensjonCollection(
-                    sak = p2200data?.sak.takeIf { p2200data?.sak?.sakType == EessiFellesDto.EessiSakType.UFOREP } ,
-                    vedtak = p2200data?.vedtak,
+                    p2xxxMeldingOmPensjonDto = p2000data?.takeIf { p2000data.sak?.sakType == EessiFellesDto.EessiSakType.ALDER } ,
+                    vedtakId = prefillData.vedtakId,
                     sedType = sedType
                 )
             }
             P2100 -> {
                 val p2100data = prefillData.vedtakId?.let { pesysService.hentP2100data(prefillData.vedtakId) }
                 PensjonCollection(
-                    sak = p2100data?.sak.takeIf { p2100data?.sak?.sakType in eessipensjonSakTyper } ,
-                    vedtak = p2100data?.vedtak,
+                    p2xxxMeldingOmPensjonDto = p2100data.takeIf { p2100data?.sak?.sakType in eessipensjonSakTyper } ,
+                    vedtakId = prefillData.vedtakId,
                     sedType = sedType
                 )
             }
-            P6000 -> PensjonCollection(
-                p6000Data = prefillData.vedtakId?.let { pesysService.hentP6000data(it) },
-                sedType = sedType
-            ).also { logger.debug("Svar fra Pesys nytt endepunkt: ${it.toJson()}")}
+            P2200 -> {
+                val p2200data = prefillData.vedtakId?.let { pesysService.hentP2200data(prefillData.vedtakId) }
+                PensjonCollection(
+                    p2xxxMeldingOmPensjonDto = p2200data?.takeIf { p2200data.sak?.sakType == EessiFellesDto.EessiSakType.UFOREP } ,
+                    vedtakId = prefillData.vedtakId,
+                    sedType = sedType
+                )
+            }
+            P6000 -> {
+                validerVedtak(prefillData)
+                return PensjonCollection(
+                    p6000Data = prefillData.vedtakId?.let { pesysService.hentP6000data(it) },
+                    vedtakId = prefillData.vedtakId,
+                    sedType = sedType
+                ).also { logger.debug("Svar fra Pesys nytt endepunkt: ${it.toJson()}")}
+            }
             P8000 -> {
                 if (prefillData.buc == P_BUC_05) {
                         try {
@@ -135,7 +139,7 @@ class InnhentingService(
         }
     }
 
-    fun hentVedtak(prefillData: PrefillDataModel): String {
+    fun validerVedtak(prefillData: PrefillDataModel): String {
         val vedtakId = prefillData.vedtakId
         vedtakId?.let { return it }
 

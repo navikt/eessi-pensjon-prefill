@@ -51,8 +51,8 @@ class RestTemplateConfig(
     @Bean
     fun krrRestTemplate() = opprettRestTemplate(krrUrl, "krr-credentials")
 
-    @Bean
-    fun pensjoninformasjonRestTemplate() = opprettRestTemplate(pensjonUrl, "pensjon-credentials")
+//    @Bean
+//    fun pensjoninformasjonRestTemplate() = opprettRestTemplate(pensjonUrl, "pensjon-credentials")
 
     @Bean
     fun pesysClientRestTemplate() = opprettRestTemplate(pesysUrl, "pensjon-credentials")

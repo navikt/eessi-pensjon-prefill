@@ -6,7 +6,7 @@ import java.time.LocalDate
 
 data class P2xxxMeldingOmPensjonDto(
     val vedtak: Vedtak?,
-    val sak: Sak,
+    val sak: Sak?,
 ) {
     data class Sak(
         val sakType: EessiFellesDto.EessiSakType,
@@ -23,7 +23,7 @@ data class P2xxxMeldingOmPensjonDto(
     ) : YtelsePerMndBase(fom, belop,ytelseskomponentListe)
 
     data class Vedtak(
-        val boddArbeidetUtland: Boolean?,
+        val boddArbeidetUtland: Boolean? = null,
     ) : VedtakInterface
 
     // TODO: Valdiere senere

@@ -45,8 +45,8 @@ import org.springframework.web.client.RestTemplate
 @EmbeddedKafka
 class SedPrefillPDLIntegrationSpringTest {
 
-    @MockkBean
-    lateinit var pensjonsinformasjonOidcRestTemplate: RestTemplate
+//    @MockkBean
+//    lateinit var pensjonsinformasjonOidcRestTemplate: RestTemplate
 
     @MockkBean
     lateinit var kodeverkClient: KodeverkClient

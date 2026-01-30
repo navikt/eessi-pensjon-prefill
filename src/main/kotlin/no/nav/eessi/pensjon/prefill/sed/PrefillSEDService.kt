@@ -75,21 +75,21 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 PrefillP2000(prefillPDLnav).prefillSed(
                     prefillData,
                     personDataCollection,
-                    P2xxxMeldingOmPensjonDto(pensjonCollection?.vedtak as P2xxxMeldingOmPensjonDto.Vedtak , pensjonCollection.sak as P2xxxMeldingOmPensjonDto.Sak)
+                    P2xxxMeldingOmPensjonDto(pensjonCollection?.hentVedtak() , pensjonCollection?.hentSak())
                 )
             }
 
             P2200 -> PrefillP2200(prefillPDLnav).prefill(
                 prefillData,
                 personDataCollection,
-                pensjonCollection?.sak as P2xxxMeldingOmPensjonDto.Sak,
-                pensjonCollection.vedtak as P2xxxMeldingOmPensjonDto.Vedtak
+                pensjonCollection?.hentSak(),
+                pensjonCollection?.hentVedtak()
             )
             P2100 -> {
                 val sedpair = PrefillP2100(prefillPDLnav).prefillSed(
                     prefillData,
                     personDataCollection,
-                    pensjonCollection?.p2xxxMeldingOmPensjonDto?.sak
+                    pensjonCollection?.hentSak()
                 )
                 prefillData.melding = sedpair.first
                 sedpair.second
