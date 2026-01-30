@@ -44,7 +44,7 @@ class PrefillP2100BarnepensjonUtlandInnv {
     fun setup() {
         every { pesysService.hentP2100data(any()) } returns mockk(){
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
-                sakType = EessiSakType.ALDER,
+                sakType = EessiSakType.UFOREP,
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
                         mottattDato = LocalDate.of(2025, 1, 1),

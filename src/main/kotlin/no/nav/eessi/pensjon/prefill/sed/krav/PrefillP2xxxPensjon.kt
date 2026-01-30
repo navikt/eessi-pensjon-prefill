@@ -261,7 +261,7 @@ object PrefillP2xxxPensjon {
                 beloep = createYtelseItemBelop(ytelsePrmnd),
 
                 //4.1.10.1
-                mottasbasertpaa = basertPaa.let {  BasertPaa.entries.firstOrNull() { it.name == basertPaa } }?.kode,
+                mottasbasertpaa = basertPaa,
 
                 //4.1.10.2
                 totalbruttobeloepbostedsbasert = saktype.let { KSAK.valueOf(it.name) }.let { createYtelseskomponentGrunnpensjon(ytelsePrmnd, it) },

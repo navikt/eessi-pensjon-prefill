@@ -40,7 +40,7 @@ class PrefillP2000AlderPensjonForsteGangTest {
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
                         mottattDato = LocalDate.of(2025, 1, 1),
-                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
+                        kravType = EessiFellesDto.EessiKravGjelder.FORSTEG_BH,
                         virkningstidspunkt = LocalDate.of(2015, 11, 25),
                     )
                 ),
@@ -48,7 +48,7 @@ class PrefillP2000AlderPensjonForsteGangTest {
                 forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
                 status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
             )
-            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
+            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = false)
         }
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
@@ -60,34 +60,9 @@ class PrefillP2000AlderPensjonForsteGangTest {
 
     }
 
-    @Test
-    fun `Sjekk av kravsøknad alderpensjon P2000`() {
-//        val pendata: Pensjonsinformasjon = dataFromPEN.hentPensjonInformasjon(prefillData.bruker.norskIdent, prefillData.bruker.aktorId)
-
-//        assertNotNull(PensjonsinformasjonService.finnSak(prefillData.penSaksnummer, pendata))
-//        assertNotNull(pendata.brukersSakerListe)
-//        assertEquals("ALDER", PensjonsinformasjonService.finnSak(prefillData.penSaksnummer, pendata)?.sakType)
-    }
 
     @Test
     fun `Gitt at kravtype er FORSTEG_BH skal det kastes en exception`() {
-        every { pesysService.hentP2000data(any()) } returns mockk(){
-            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
-                sakType = EessiSakType.ALDER,
-                kravHistorikk = listOf(
-                    P2xxxMeldingOmPensjonDto.KravHistorikk(
-                        mottattDato = LocalDate.of(2025, 1, 1),
-                        kravType = EessiFellesDto.EessiKravGjelder.FORSTEG_BH,
-                        virkningstidspunkt = LocalDate.of(2015, 11, 25),
-                    )
-                ),
-                ytelsePerMaaned = emptyList(),
-                forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
-                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
-            )
-            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
-        }
-
         assertThrows<ResponseStatusException> {
             prefillSEDService.prefill(
                 prefillData,

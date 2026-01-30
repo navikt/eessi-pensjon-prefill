@@ -47,35 +47,8 @@ class PrefillP2000APUtlandInnvTest {
 
     @BeforeEach
     fun setup() {
-        every { pesysService.hentP2000data(any()) } returns mockk(){
-            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
-                sakType = EessiFellesDto.EessiSakType.ALDER,
-                kravHistorikk = listOf(
-                    P2xxxMeldingOmPensjonDto.KravHistorikk(
-                        mottattDato = LocalDate.of(2015, 11, 25),
-                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
-                        virkningstidspunkt = LocalDate.of(2015, 11, 25),
-                    )
-                ),
-                ytelsePerMaaned = listOf(YtelsePerMaaned(
-                    fom = LocalDate.of(2015, 11, 25),
-                    belop = 123,
-                    ytelseskomponentListe = listOf(
-                        EessiFellesDto.Ytelseskomponent(
-                            YtelseskomponentType.GAP.name,
-                            444
-                        ),
-                        EessiFellesDto.Ytelseskomponent(
-                            YtelseskomponentType.TP.name,
-                            445
-                        )
-                    ))
-                ),
-                forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
-                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
-            )
-            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
-        }
+        pesysMock(YtelseskomponentType.GAP.name)
+
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
         personDataService = mockk(relaxed = true)
 
@@ -91,6 +64,41 @@ class PrefillP2000APUtlandInnvTest {
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
     }
 
+    private fun pesysMock(ytelsesKomponentType: String? = YtelseskomponentType.GAP.name) {
+        every { pesysService.hentP2000data(any()) } returns mockk() {
+            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                sakType = EessiFellesDto.EessiSakType.ALDER,
+                kravHistorikk = listOf(
+                    P2xxxMeldingOmPensjonDto.KravHistorikk(
+                        mottattDato = LocalDate.of(2015, 11, 25),
+                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
+                        virkningstidspunkt = LocalDate.of(2015, 11, 25),
+                    )
+                ),
+                ytelsePerMaaned = listOf(
+                    YtelsePerMaaned(
+                        fom = LocalDate.of(2015, 11, 25),
+                        belop = 123,
+                        ytelseskomponentListe = listOf(
+                            EessiFellesDto.Ytelseskomponent(
+                                ytelsesKomponentType,
+                                444
+                            ),
+                            EessiFellesDto.Ytelseskomponent(
+                                YtelseskomponentType.GAP.name,
+                                445
+                            )
+
+                        )
+                    )
+                ),
+                forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
+                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
+            )
+            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
+        }
+    }
+
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
         val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
@@ -102,7 +110,10 @@ class PrefillP2000APUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon og mottasbasertpaa satt til botid`() {
+        pesysMock(YtelseskomponentType.TP.name)
         val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,) as P2000
+
+        println("Botid: ${P2000.p2000pensjon?.ytelser?.toJson()}")
 
         assertNotNull(P2000.nav?.krav)
         assertEquals("2015-11-25", P2000.nav?.krav?.dato)

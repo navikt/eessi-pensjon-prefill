@@ -28,7 +28,6 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
     ): SED {
         postPrefill(prefillData, sak)
 
-        println("@@: ${sak?.sak?.toJson()}")
         val pensjon = populerPensjon(prefillData, sak?.sak)
         val nav = prefillPDLNav(prefillData, personData, pensjon?.kravDato)
 
@@ -105,7 +104,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
                 val ytelser = pensjonsInformasjon.pensjon.ytelser?.first()
                 val belop = ytelser?.beloep?.firstOrNull()
 
-                P2000Pensjon(
+                val pensjon  = P2000Pensjon(
                     kravDato = pensjonsInformasjon.pensjon.kravDato,
                     ytelser = listOf(
                         YtelserItem(
@@ -134,7 +133,9 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
                     forespurtstartdato = pensjonsInformasjon.pensjon.forespurtstartdato.also { logger.debug("forespurtstartdato: $it") },
                     etterspurtedokumenter = pensjonsInformasjon.pensjon.etterspurtedokumenter.also { logger.debug("etterspurtedokumenter: $it") },
                 )
-            } else pensjonsInformasjon.pensjon
+                return pensjon
+            }
+            else pensjonsInformasjon.pensjon
 
         } catch (ex: Exception) {
             logger.error("Feilet ved preutfylling av pensjon, ${ex.message} ")
@@ -143,6 +144,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
         }
     }
 
+    //Regel: MottattBasertPaa skal ikke brukes dersom vi har totalBruttoArbBasert
     private fun settMottattBasertPaa(totalBruttoArbBasert: String?): String? {
         return if (totalBruttoArbBasert.isNullOrEmpty() || totalBruttoArbBasert == "0") {
             BasertPaa.botid.name
