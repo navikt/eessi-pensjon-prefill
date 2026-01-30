@@ -82,25 +82,25 @@ class InnhentingService(
         return when (val sedType = prefillData.sedType) {
 
             P2000 -> {
-                val p2000data = pesysService.hentP2000data(prefillData.vedtakId!!)
+                val p2000data = prefillData.vedtakId?.let { pesysService.hentP2000data(prefillData.vedtakId) }
                 PensjonCollection(
-                    sak = p2000data?.sak,
+                    sak = p2000data?.sak.takeIf { p2000data?.sak?.sakType == EessiFellesDto.EessiSakType.ALDER } ,
                     vedtak = p2000data?.vedtak,
                     sedType = sedType
                 )
             }
             P2200 -> {
-                val p2200data = pesysService.hentP2200data(prefillData.vedtakId!!)
+                val p2200data = prefillData.vedtakId?.let { pesysService.hentP2200data(prefillData.vedtakId) }
                 PensjonCollection(
-                    sak = p2200data?.sak,
+                    sak = p2200data?.sak.takeIf { p2200data?.sak?.sakType == EessiFellesDto.EessiSakType.UFOREP } ,
                     vedtak = p2200data?.vedtak,
                     sedType = sedType
                 )
             }
             P2100 -> {
-                val p2100data = pesysService.hentP2100data(prefillData.vedtakId!!)
+                val p2100data = prefillData.vedtakId?.let { pesysService.hentP2100data(prefillData.vedtakId) }
                 PensjonCollection(
-                    sak = p2100data?.sak,
+                    sak = p2100data?.sak.takeIf { p2100data?.sak?.sakType in eessipensjonSakTyper } ,
                     vedtak = p2100data?.vedtak,
                     sedType = sedType
                 )
@@ -112,8 +112,9 @@ class InnhentingService(
             P8000 -> {
                 if (prefillData.buc == P_BUC_05) {
                         try {
+                            val p8000 = prefillData.vedtakId?.let { pesysService.hentP8000data(it) }
                             PensjonCollection(
-                                p8000Data = prefillData.vedtakId?.let { pesysService.hentP8000data(it) },
+                                p8000Data = p8000.takeIf { p8000?.sakType != null && p8000.sakType in pensakTyper },
                                 sedType = sedType
                             )
                         } catch (ex: Exception) {
