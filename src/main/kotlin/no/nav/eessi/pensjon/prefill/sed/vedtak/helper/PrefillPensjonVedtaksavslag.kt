@@ -25,9 +25,7 @@ object PrefillPensjonVedtaksavslag {
      * /4.1.13.1 - 4.1.13.2.1
      */
     fun createAvlsagsBegrunnelseItem(pendata: Pensjonsinformasjon): List<AvslagbegrunnelseItem>? {
-        logger.info("4.1.13        AvlsagsBegrunnelseItem")
-
-        val avslagbegrunnelse = createAvlsagsBegrunnelse(pendata)
+        val avslagbegrunnelse = createAvlsagsBegrunnelse(pendata).also { logger.info("4.1.13        AvlsagsBegrunnelseItem: $it") }
 
         val item = listOf(
             AvslagbegrunnelseItem(
