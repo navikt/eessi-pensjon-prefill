@@ -26,7 +26,7 @@ object VedtakPensjonDataHelper {
     }
 
     fun erTrygdeTid(pendata: P6000MeldingOmVedtakDto, storreEnn: Int = 30, mindreEnn: Int = 360): Boolean {
-        require(pendata.trygdetidListe.isNotEmpty()) { "trygdetidListe er tom" }
+        if (pendata.trygdetidListe.isEmpty()) { logger.warn("trygdetidListe er tom"); return false }
         val days = summerTrygdeTid(pendata.trygdetidListe)
 
         return days in (storreEnn + 1) until mindreEnn
