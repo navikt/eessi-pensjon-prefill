@@ -20,24 +20,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
-import kotlin.Boolean
-import kotlin.Exception
-import kotlin.IllegalArgumentException
-import kotlin.String
-import kotlin.also
-import kotlin.collections.List
-import kotlin.collections.filter
-import kotlin.collections.firstOrNull
-import kotlin.collections.forEach
-import kotlin.collections.listOf
-import kotlin.collections.none
-import kotlin.collections.sortedBy
-import kotlin.getOrElse
-import kotlin.getValue
-import kotlin.lazy
-import kotlin.let
-import kotlin.runCatching
-import kotlin.toString
 
 const val kravdatoMeldingOmP2100TilSaksbehandler = "Kravdato fra det opprinnelige vedtak med gjenlevenderett er angitt i SED P2100"
 
@@ -103,7 +85,7 @@ object PrefillP2xxxPensjon {
 
         logger.info("Krav (dato) = $krav")
 
-        val ytelse = if (pensak?.ytelsePerMaaned == null) {
+        val ytelse = if (pensak?.ytelsePerMaaned.isNullOrEmpty()) {
             logger.info("Forkortet ytelsebehandling ved ytelsePerMaanedListe = null, status: ${pensak?.status}")
             opprettForkortetYtelsesItem(pensak, personNr, penSaksnummer, andreinstitusjonerItem)
         } else {
