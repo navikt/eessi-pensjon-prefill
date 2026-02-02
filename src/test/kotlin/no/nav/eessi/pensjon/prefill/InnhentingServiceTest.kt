@@ -192,6 +192,9 @@ class InnhentingServiceTest {
         @Test
         fun `Gitt en P8000 med på en P_BUC_05 med saktype ALDER saa skal hentPensjoninformasjonCollection sitt resultat paa saktype returnere ALDER`() {
             val prefillData = prefillDataModel(sedType = P8000, bucType = P_BUC_05, vedtakId = "2321654")
+            every { pesysService.hentP8000data(any()) } returns mockk() {
+                every { sakType } returns EessiFellesDto.EessiSakType.ALDER
+            }
 
             val resultat = innhentingsService.hentPensjoninformasjonCollection(prefillData)
             assertEquals(EessiFellesDto.EessiSakType.ALDER, resultat.p8000Data?.sakType)
