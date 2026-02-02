@@ -7,7 +7,8 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.utils.toJson
@@ -75,22 +76,29 @@ class InnhentingService(
     fun hentIdent(norskIdent: Ident): String? = personDataService.hentIdent(IdentGruppe.AKTORID, norskIdent)?.id
 
     fun hentPensjoninformasjonCollection(prefillData: PrefillDataModel): PensjonCollection {
-        val eessipensjonSakTyper = listOf(EessiFellesDto.EessiSakType.ALDER,
-            EessiFellesDto.EessiSakType.BARNEP, EessiFellesDto.EessiSakType.GJENLEV, EessiFellesDto.EessiSakType.UFOREP
+        val eessipensjonSakTyper = listOf(
+            EessiSakType.ALDER,
+            EessiSakType.BARNEP, EessiSakType.GJENLEV, EessiSakType.UFOREP
         )
-        val pensakTyper = listOf(EessiFellesDto.EessiSakType.GENRL, EessiFellesDto.EessiSakType.OMSORG) + eessipensjonSakTyper
+        val pensakTyper = listOf(EessiSakType.GENRL, EessiSakType.OMSORG) + eessipensjonSakTyper
         return when (val sedType = prefillData.sedType) {
 
             P2000 -> {
                 val p2000data = prefillData.vedtakId?.let { pesysService.hentP2000data(prefillData.vedtakId) }
+                if (p2000data?.sak?.sakType != EessiSakType.ALDER) {
+                    throw ResponseStatusExceptionFeilSak(prefillData, p2000data?.sak)
+                }
                 PensjonCollection(
-                    p2xxxMeldingOmPensjonDto = p2000data?.takeIf { p2000data.sak?.sakType == EessiFellesDto.EessiSakType.ALDER } ,
+                    p2xxxMeldingOmPensjonDto = p2000data.takeIf { p2000data.sak.sakType == EessiSakType.ALDER } ,
                     vedtakId = prefillData.vedtakId,
                     sedType = sedType
                 )
             }
             P2100 -> {
                 val p2100data = prefillData.vedtakId?.let { pesysService.hentP2100data(prefillData.vedtakId) }
+                if (p2100data?.sak?.sakType !in eessipensjonSakTyper) {
+                    throw ResponseStatusExceptionFeilSak(prefillData, p2100data?.sak)
+                }
                 PensjonCollection(
                     p2xxxMeldingOmPensjonDto = p2100data.takeIf { p2100data?.sak?.sakType in eessipensjonSakTyper } ,
                     vedtakId = prefillData.vedtakId,
@@ -99,8 +107,11 @@ class InnhentingService(
             }
             P2200 -> {
                 val p2200data = prefillData.vedtakId?.let { pesysService.hentP2200data(prefillData.vedtakId) }
+                if (p2200data?.sak?.sakType != EessiSakType.UFOREP) {
+                    throw ResponseStatusExceptionFeilSak(prefillData, p2200data?.sak)
+                }
                 PensjonCollection(
-                    p2xxxMeldingOmPensjonDto = p2200data?.takeIf { p2200data.sak?.sakType == EessiFellesDto.EessiSakType.UFOREP } ,
+                    p2xxxMeldingOmPensjonDto = p2200data.takeIf { p2200data.sak.sakType == EessiSakType.UFOREP } ,
                     vedtakId = prefillData.vedtakId,
                     sedType = sedType
                 )
@@ -117,6 +128,9 @@ class InnhentingService(
                 if (prefillData.buc == P_BUC_05) {
                         try {
                             val p8000 = prefillData.vedtakId?.let { pesysService.hentP8000data(it) }
+//                            if (p8000?sak?.sakType != EessiSakType.UFOREP) {
+//                                throw ResponseStatusExceptionFeilSak(prefillData, p2200data?.sak)
+//                            }
                             PensjonCollection(
                                 p8000Data = p8000.takeIf { p8000?.sakType != null && p8000.sakType in pensakTyper },
                                 sedType = sedType
@@ -139,12 +153,27 @@ class InnhentingService(
         }
     }
 
+    private fun ResponseStatusExceptionFeilSak(
+        prefillData: PrefillDataModel,
+        p2200data: P2xxxMeldingOmPensjonDto.Sak?
+    ): ResponseStatusException = ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "Du kan ikke opprette en ${prefillData.sedType} med saktype ${p2200data?.sakType}. (PESYS-saksnr: ${prefillData.penSaksnummer} har sakstype ${p2200data?.sakType})"
+    )
+
     fun validerVedtak(prefillData: PrefillDataModel): String {
         val vedtakId = prefillData.vedtakId
         vedtakId?.let { return it }
 
         throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler vedtakID")
     }
+
+//    fun hentrelevantPensjonSak(penData: P2xxxMeldingOmPensjonDto, sakTypeIsed: EessiSakType) {
+//
+//        if (penData?.sak?. .isNullOrBlank()) throw ManglendeSakIdException("Mangler sakId")
+//        if (fnr.isBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler norskident")
+//
+//    }
 
 //    fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean): P2xxxMeldingOmPensjonDto.Sak? {
 //        logger.debug("sakNr er: ${prefillData.penSaksnummer} aktoerId er: ${prefillData.bruker.aktorId} prøver å hente Sak")

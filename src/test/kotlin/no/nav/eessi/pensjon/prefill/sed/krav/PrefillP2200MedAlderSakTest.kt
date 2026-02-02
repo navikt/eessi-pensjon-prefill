@@ -38,7 +38,7 @@ class PrefillP2200MedAlderSakTest {
     fun setup() {
         every { pesysService.hentP2200data(any()) } returns mockk(){
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
-                sakType = EessiSakType.FAM_PL,
+                sakType = EessiSakType.ALDER,
                 kravHistorikk = emptyList(),
                 ytelsePerMaaned = emptyList(),
                 forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
