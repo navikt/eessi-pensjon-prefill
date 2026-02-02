@@ -32,9 +32,9 @@ object PrefillPensjonVedtaksavslag {
         val item = listOf(
             AvslagbegrunnelseItem(
 
-            //4.1.13.1
-            begrunnelse = avslagbegrunnelse,
-        )
+                //4.1.13.1
+                begrunnelse = avslagbegrunnelse,
+            )
         )
 
         if (avslagbegrunnelse == null)
