@@ -87,7 +87,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
         val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
 
         logger.debug("""Prefilldata: ${prefillData.toJson()}""")
-        logger.debug("""Prefilldatøø: ${prefillData.kravDato?.toJson()}""")
+        logger.debug("""Prefilldato: ${prefillData.kravDato?.toJson()}""")
 
         //valider pensjoninformasjon,
         return try {

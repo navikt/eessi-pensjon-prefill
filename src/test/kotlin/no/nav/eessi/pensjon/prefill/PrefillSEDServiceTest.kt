@@ -31,12 +31,11 @@ class PrefillSEDServiceTest {
     private val etterlatteService: EtterlatteService = mockk()
     private val automatiseringStatistikkService: AutomatiseringStatistikkService = mockk()
     private lateinit var prefillData: PrefillDataModel
-    private lateinit var prefillSEDService: PrefillSEDService
-//    private lateinit var dataFromPEN: PensjonsinformasjonService
+    private var prefillSEDService: PrefillSEDService = mockk()
     private lateinit var prefillService: PrefillService
     private lateinit var personcollection: PersonDataCollection
     private lateinit var personDataCollection: PersonDataCollection
-    private lateinit var prefillNav: PrefillPDLNav
+    private var prefillNav: PrefillPDLNav = mockk()
 
     @Before
     fun setup() {
@@ -49,7 +48,6 @@ class PrefillSEDServiceTest {
 
     @Test
     fun `En p6000 uten vedtak skal gi en delvis utfylt sed`(){
-//        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))
         prefillSEDService = PrefillSEDService(EessiInformasjonMother.standardEessiInfo(), prefillNav)
         val prefill = prefillSEDService.prefillGjenny(prefillData, personDataCollection, null)
@@ -61,6 +59,7 @@ class PrefillSEDServiceTest {
 
     @Test
     fun `prefillGjenny skal defaulte til prefill når den kalles fra gjenny uten 2100 eller 6000`() {
+
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
             SedType.P6000,
             personFnr,
@@ -73,7 +72,7 @@ class PrefillSEDServiceTest {
         val etterlatteRespData = mockk<EtterlatteVedtakResponseData>()
         val expectedSED = mockk<SED>()
 
-        every { prefillSEDService.prefill(prefillData, personDataCollection, null, etterlatteRespData,) } returns expectedSED
+        every { prefillSEDService.prefillGjenny(any(), any(), any())} returns expectedSED
 
         val result = prefillSEDService.prefillGjenny(prefillData, personDataCollection, etterlatteRespData)
 

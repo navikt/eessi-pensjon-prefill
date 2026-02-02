@@ -43,16 +43,17 @@ class PrefillP2000UtenKravhistorieTest {
                 sakType = EessiSakType.ALDER,
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
-                        mottattDato = LocalDate.of(2015, 11, 25),
+//                        mottattDato = LocalDate.of(2015, 11, 25),
                         kravType = EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL,
                         virkningstidspunkt = LocalDate.of(2015, 11, 25),
+                        kravStatus = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING
                     )
                 ),
                 ytelsePerMaaned = emptyList(),
                 forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
                 status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
             )
-            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
+            every { vedtak } returns null
         }
         personDataCollection = PersonPDLMock.createEnkeWithBarn(personFnr, barn1Fnr, barn2Fnr)
 
