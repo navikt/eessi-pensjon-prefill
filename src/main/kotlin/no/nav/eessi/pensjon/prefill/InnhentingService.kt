@@ -80,7 +80,6 @@ class InnhentingService(
             EessiSakType.BARNEP, EessiSakType.GJENLEV, EessiSakType.UFOREP
         )
         val pensakTyper = listOf(EessiSakType.GENRL, EessiSakType.OMSORG) + eessipensjonSakTyper
-//        if (prefillData.penSaksnummer.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId") //TODO: verifiser om denne er nødvendig
         return when (val sedType = prefillData.sedType) {
 
             P2000 -> {
@@ -117,6 +116,7 @@ class InnhentingService(
                 )
             }
             P6000 -> {
+                if (prefillData.penSaksnummer.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId")
                 validerVedtak(prefillData)
                 return PensjonCollection(
                     p6000Data = prefillData.vedtakId?.let { pesysService.hentP6000data(it) },
