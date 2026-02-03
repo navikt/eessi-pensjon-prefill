@@ -80,11 +80,11 @@ class PrefillP2000APUtlandInnvTest {
                         fom = LocalDate.of(2015, 11, 25),
                         belop = 123,
                         ytelseskomponentListe = listOf(
-                            EessiFellesDto.Ytelseskomponent(
+                            Ytelseskomponent(
                                 YtelseskomponentType.TP.name,
                                 444
                             ),
-                            EessiFellesDto.Ytelseskomponent(
+                            Ytelseskomponent(
                                 YtelseskomponentType.GAP.name,
                                 444
                             )

@@ -16,6 +16,7 @@ import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.Ytelseskomponent
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -59,7 +60,7 @@ class PrefillP2100GjenlevendeRevurdering {
                         fom = LocalDate.of(2015, 11, 25),
                         belop = 123,
                         ytelseskomponentListe = listOf(
-                            EessiFellesDto.Ytelseskomponent(
+                            Ytelseskomponent(
                                 YtelseskomponentType.GAP.name,
                                 444
                             )

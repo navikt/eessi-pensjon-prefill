@@ -44,7 +44,7 @@ data class P6000MeldingOmVedtakDto(
         val mottarMinstePensjonsniva: Boolean, // P6000
         val vinnendeBeregningsmetode: String, //P6000
         override val belop: Int, // P2000, P2200, P6000
-        override val ytelseskomponentListe: List<EessiFellesDto.Ytelseskomponent>, //P6000
+        override val ytelseskomponentListe: List<Ytelseskomponent>, //P6000
     ) : YtelsePerMndBase(fom, belop,ytelseskomponentListe)
 
     data class Trygdetid(

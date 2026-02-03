@@ -21,9 +21,4 @@ object EessiFellesDto { // brukes kun for namespace.
     enum class EessiSakType {
         AFP, AFP_PRIVAT, ALDER, BARNEP, FAM_PL, GAM_YRK, GENRL, GJENLEV, GRBL, KRIGSP, OMSORG, UFOREP
     }
-
-    data class Ytelseskomponent(
-        val ytelsesKomponentType: String?,
-        val belopTilUtbetaling: Int,
-    )
 }

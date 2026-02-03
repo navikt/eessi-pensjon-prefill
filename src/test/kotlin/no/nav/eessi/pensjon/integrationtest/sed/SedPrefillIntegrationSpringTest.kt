@@ -30,6 +30,7 @@ import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.Ytelseskomponent
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.ApiSubject
@@ -160,11 +161,11 @@ class SedPrefillIntegrationSpringTest {
                     vinnendeBeregningsmetode = "FOLKETRYGD",
                     belop = 16644,
                     ytelseskomponentListe = listOf(
-                        EessiFellesDto.Ytelseskomponent(
+                        Ytelseskomponent(
                             ytelsesKomponentType = "GP", belopTilUtbetaling = 8322
-                        ), EessiFellesDto.Ytelseskomponent(
+                        ), Ytelseskomponent(
                             ytelsesKomponentType = "TP", belopTilUtbetaling = 5398
-                        ), EessiFellesDto.Ytelseskomponent(
+                        ), Ytelseskomponent(
                             ytelsesKomponentType = "ST", belopTilUtbetaling = 2924
                         )
                     )
@@ -277,7 +278,7 @@ class SedPrefillIntegrationSpringTest {
                         fom = LocalDate.parse("2019-06-01"),
                         belop = 18384,
                         ytelseskomponentListe = listOf(
-                            EessiFellesDto.Ytelseskomponent(
+                            Ytelseskomponent(
                                 ytelsesKomponentType = "UT_ORDINER", belopTilUtbetaling = 18384
                             )
                         )
@@ -577,7 +578,7 @@ class SedPrefillIntegrationSpringTest {
                     ytelseskomponentListe = ytelseNode
                         .path("ytelseskomponentListe")
                         .map { kompNode ->
-                            EessiFellesDto.Ytelseskomponent(
+                            Ytelseskomponent(
                                 ytelsesKomponentType = kompNode.path("ytelsesKomponentType").asText(),
                                 belopTilUtbetaling = kompNode.path("belopTilUtbetaling").asInt()
                             )
@@ -624,17 +625,17 @@ class SedPrefillIntegrationSpringTest {
                         fom = LocalDate.parse("2016-03-01"),
                         belop = 14574,
                         ytelseskomponentListe = listOf(
-                            EessiFellesDto.Ytelseskomponent(
+                            Ytelseskomponent(
                                 ytelsesKomponentType = "GP", belopTilUtbetaling = 4768
                             ),
-                            EessiFellesDto.Ytelseskomponent(
+                            Ytelseskomponent(
                                 ytelsesKomponentType = "TP", belopTilUtbetaling = 8514
                             ),
 
-                            EessiFellesDto.Ytelseskomponent(
+                            Ytelseskomponent(
                                 ytelsesKomponentType = "IP", belopTilUtbetaling = 1124
                             ),
-                            EessiFellesDto.Ytelseskomponent(
+                            Ytelseskomponent(
                                 ytelsesKomponentType = "GAP", belopTilUtbetaling = 168
                             )
                         ),
@@ -810,10 +811,10 @@ class SedPrefillIntegrationSpringTest {
                         fom = LocalDate.parse("2018-08-01"),
                         belop = 21232,
                         ytelseskomponentListe = listOf(
-                            EessiFellesDto.Ytelseskomponent(
+                            Ytelseskomponent(
                                 ytelsesKomponentType = "GP", belopTilUtbetaling = 7034
                             ),
-                            EessiFellesDto.Ytelseskomponent(
+                            Ytelseskomponent(
                                 ytelsesKomponentType = "TP", belopTilUtbetaling = 14198
                             ),
                         ),
