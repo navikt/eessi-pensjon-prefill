@@ -867,7 +867,7 @@ class SedPrefillIntegrationSpringTest {
 
     /** test på validering av pensjoninformasjon krav **/
     @Test
-    fun `prefill sed med kun utland, ikke korrekt sakid skal kaste en Exception`() {
+    fun `prefill sed med kun utland, manglende kravtype skal kaste en Exception`() {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
 
@@ -876,6 +876,7 @@ class SedPrefillIntegrationSpringTest {
                 sakType = EessiFellesDto.EessiSakType.ALDER,
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
+                        kravStatus = EessiFellesDto.EessiSakStatus.INGEN_STATUS,
                         mottattDato = LocalDate.parse("2020-08-08"),
                     )
                 ),
@@ -889,7 +890,7 @@ class SedPrefillIntegrationSpringTest {
             pesysService.hentP2000data(any())
         } returns mockP2000
 
-        val apijson = dummyApijson(sakid = null, aktoerId = AKTOER_ID, vedtakid = "22580170")
+        val apijson = dummyApijson(sakid = "21920707", aktoerId = AKTOER_ID, vedtakid = "22580170")
         val expectedError =
             """Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland, eller sluttbehandling. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.""".trimIndent()
 
