@@ -7,6 +7,7 @@ import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.eux.model.sed.P2000
+import no.nav.eessi.pensjon.integrationtest.sed.XmlToP2xxxMapper
 import no.nav.eessi.pensjon.prefill.*
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import kotlin.rem
 
 class PrefillP2000APUtlandInnvTest {
 
@@ -40,6 +42,7 @@ class PrefillP2000APUtlandInnvTest {
     private lateinit var pensjonCollection: PensjonCollection
     private lateinit var personDataCollection: PersonDataCollection
     private lateinit var personDataService: PersonDataService
+    private lateinit var innhentingService: InnhentingService
 
     fun readJsonResponse(file: String): String {
         return javaClass.getResource(file)!!.readText()
@@ -47,24 +50,20 @@ class PrefillP2000APUtlandInnvTest {
 
     @BeforeEach
     fun setup() {
-        pesysMock(YtelseskomponentType.GAP.name)
-
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
         personDataService = mockk(relaxed = true)
 
-        val innhentingService = InnhentingService(personDataService = personDataService, pesysService = pesysService)
+        innhentingService = InnhentingService(personDataService = personDataService, pesysService = pesysService)
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(P2000, personFnr, penSaksnummer = pesysSaksnummer, kravDato = "2015-11-25")
             .apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
         }
-
-        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
-        prefillSEDService = BasePrefillNav.createPrefillSEDService()
     }
 
-    private fun pesysMock(ytelsesKomponentType: String? = YtelseskomponentType.GAP.name) {
+    private fun pesysMock(ytelesTyper: List<String>? = listOf<String>(YtelseskomponentType.GAP.name)) {
+
         every { pesysService.hentP2000data(any()) } returns mockk() {
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiFellesDto.EessiSakType.ALDER,
@@ -79,17 +78,14 @@ class PrefillP2000APUtlandInnvTest {
                     YtelsePerMaaned(
                         fom = LocalDate.of(2015, 11, 25),
                         belop = 123,
-                        ytelseskomponentListe = listOf(
+                        
+                        
+                        ytelseskomponentListe = ytelesTyper?.map { type ->
                             Ytelseskomponent(
-                                YtelseskomponentType.TP.name,
-                                444
-                            ),
-                            Ytelseskomponent(
-                                YtelseskomponentType.GAP.name,
+                                YtelseskomponentType.valueOf(type).name,
                                 444
                             )
-
-                        )
+                        } 
                     )
                 ),
                 forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
@@ -101,6 +97,9 @@ class PrefillP2000APUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
+        pesysMock(listOf(YtelseskomponentType.GAP.name, YtelseskomponentType.TP.name))
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
         val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
         assertNotNull(P2000.nav?.krav)
@@ -110,7 +109,10 @@ class PrefillP2000APUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon og mottasbasertpaa satt til botid`() {
-        pesysMock(YtelseskomponentType.TP.name)
+        pesysMock(listOf(YtelseskomponentType.GAP.name))
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
+
         val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,) as P2000
 
         println("Botid: ${P2000.p2000pensjon?.ytelser?.toJson()}")
@@ -122,6 +124,10 @@ class PrefillP2000APUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 med belop`() {
+        pesysMock(listOf(YtelseskomponentType.GAP.name, YtelseskomponentType.TP.name))
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
+
         // setter opp tilgang til mocking av selektive data
         val spykPensjonCollection = spyk(pensjonCollection)
 
@@ -140,6 +146,9 @@ class PrefillP2000APUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
+        pesysMock(listOf(YtelseskomponentType.GAP.name, YtelseskomponentType.TP.name))
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
         val p2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
 
         assertEquals(null, p2000.nav?.barn)
@@ -177,6 +186,10 @@ class PrefillP2000APUtlandInnvTest {
 
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
+        pesysMock(listOf(YtelseskomponentType.GAP.name, YtelseskomponentType.TP.name))
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
+
         val p2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
 
         val json = mapAnyToJson(createMockApiRequest(p2000.toJson()))
