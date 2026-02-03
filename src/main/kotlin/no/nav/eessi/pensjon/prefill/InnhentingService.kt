@@ -80,9 +80,12 @@ class InnhentingService(
             EessiSakType.BARNEP, EessiSakType.GJENLEV, EessiSakType.UFOREP
         )
         val pensakTyper = listOf(EessiSakType.GENRL, EessiSakType.OMSORG) + eessipensjonSakTyper
+
         return when (val sedType = prefillData.sedType) {
 
             P2000 -> {
+                if (prefillData.penSaksnummer.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId")
+
                 val p2000data = prefillData.vedtakId?.let { pesysService.hentP2000data(prefillData.vedtakId) }
                 if (p2000data?.sak?.sakType != EessiSakType.ALDER) {
                     throw ResponseStatusExceptionFeilSak(prefillData, p2000data?.sak?.sakType)
@@ -94,6 +97,7 @@ class InnhentingService(
                 )
             }
             P2100 -> {
+                if (prefillData.penSaksnummer.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId")
                 val p2100data = prefillData.vedtakId?.let { pesysService.hentP2100data(prefillData.vedtakId) }
                 if (p2100data?.sak?.sakType !in eessipensjonSakTyper) {
                     throw ResponseStatusExceptionFeilSak(prefillData, p2100data?.sak?.sakType)
@@ -105,6 +109,7 @@ class InnhentingService(
                 )
             }
             P2200 -> {
+                if (prefillData.penSaksnummer.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId")
                 val p2200data = prefillData.vedtakId?.let { pesysService.hentP2200data(prefillData.vedtakId) }
                 if (p2200data?.sak?.sakType != EessiSakType.UFOREP) {
                     throw ResponseStatusExceptionFeilSak(prefillData, p2200data?.sak?.sakType)
