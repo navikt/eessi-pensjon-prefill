@@ -168,9 +168,8 @@ class InnhentingService(
 
     fun validerVedtak(prefillData: PrefillDataModel): String {
         val vedtakId = prefillData.vedtakId
-        vedtakId?.let { return it }
-
-        throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler vedtakID")
+        if (vedtakId.isNullOrEmpty()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler vedtakID")
+        else return vedtakId
     }
 
 //    fun hentrelevantPensjonSak(penData: P2xxxMeldingOmPensjonDto, sakTypeIsed: EessiSakType) {
