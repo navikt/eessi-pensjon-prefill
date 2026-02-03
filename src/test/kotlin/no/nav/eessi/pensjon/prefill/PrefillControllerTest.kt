@@ -13,8 +13,12 @@ import no.nav.eessi.pensjon.prefill.PersonDataServiceTest.Companion.FNR_VOKSEN
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL
+import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto.Trygdeavtale
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
+import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -23,7 +27,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-
+import java.time.LocalDate
 
 
 class PrefillControllerTest {
@@ -33,7 +37,7 @@ class PrefillControllerTest {
     var mockPrefillSEDService: PrefillSEDService = mockk()
     var personDataService: PersonDataService = mockk()
     var krrService: KrrService = mockk()
-//    var pensjonsinformasjonService: PensjonsinformasjonService = mockk()
+    var pesysService: PesysService = mockk()
     val automatiseringStatistikkService: AutomatiseringStatistikkService = mockk(relaxed = true)
     val etterlatteService: EtterlatteService = mockk(relaxed = true)
     private lateinit var prefillNav: PrefillPDLNav
@@ -45,12 +49,10 @@ class PrefillControllerTest {
         prefillNav = BasePrefillNav.createPrefillNav()
 
         every { mockPrefillSEDService.prefill(any(), any(), any(), any(),) } returns SED(type = P6000)
-//        val innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
-//        val prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService =automatiseringStatistikkService, etterlatteService =etterlatteService, prefillPdlNav = prefillNav)
+        val innhentingService = InnhentingService(personDataService, pesysService = pesysService)
+        val prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService =automatiseringStatistikkService, etterlatteService = etterlatteService, prefillPdlNav = prefillNav)
 
-//        prefillController = PrefillController(
-//            prefillService, auditLogger
-//        )
+        prefillController = PrefillController(prefillService, auditLogger)
     }
 
     @Test
@@ -66,6 +68,22 @@ class PrefillControllerTest {
             aktoerId = "0105094340092"
         )
 
+        every { pesysService.hentP6000data(any()) } returns P6000MeldingOmVedtakDto(
+            sakAlder = P6000MeldingOmVedtakDto.SakAlder(KSAK.ALDER),
+            avdod = P6000MeldingOmVedtakDto.Avdod(null, null, null, null),
+            trygdeavtale = Trygdeavtale(erArt10BruktGP = true, erArt10BruktTP = true),
+            trygdetidListe = emptyList(),
+            vedtak = P6000MeldingOmVedtakDto.Vedtak(
+                LocalDate.now(),
+                F_BH_MED_UTL.name,
+                true,
+                true,
+                LocalDate.now(),
+            ),
+            vilkarsvurderingListe = emptyList(),
+            ytelsePerMaanedListe = emptyList()
+        )
+
         every {personDataService.hentFnrEllerNpidFraAktoerService(any())} returns "12345"
 
         val utfyllMock = ApiRequest.buildPrefillDataModelOnExisting(mockData, PersonInfo(NorskIdent("12345").id, mockData.aktoerId!!), null)
@@ -75,7 +93,6 @@ class PrefillControllerTest {
         } returns( PersonDataCollection(PersonPDLMock.createWith(), PersonPDLMock.createWith()))
 
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", true, true, false, "11111111", FNR_VOKSEN)
-//        every { pensjonsinformasjonService.hentVedtak(any()) } returns Pensjonsinformasjon()
         val nav = Nav(bruker = Bruker(person = Person(fornavn = "Dummy", etternavn = "Dummy", foedselsdato = "1900-10-11", kjoenn = "K")), krav = Krav("1937-12-11"))
         val mockSed = SED(
             type = utfyllMock.sedType,
@@ -93,6 +110,7 @@ class PrefillControllerTest {
         assertEquals("Dummy", sed.nav?.bruker?.person?.fornavn)
         assertEquals("Dummy", sed.nav?.bruker?.person?.etternavn)
     }
+
 }
 
 

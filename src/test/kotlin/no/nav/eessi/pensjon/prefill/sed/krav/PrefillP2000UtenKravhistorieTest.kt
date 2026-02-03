@@ -43,8 +43,6 @@ class PrefillP2000UtenKravhistorieTest {
                 sakType = EessiSakType.ALDER,
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
-//                        mottattDato = LocalDate.of(2015, 11, 25),
-                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL,
                         virkningstidspunkt = LocalDate.of(2015, 11, 25),
                         kravStatus = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING
                     )

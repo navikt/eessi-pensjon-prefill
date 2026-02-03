@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
@@ -24,7 +25,9 @@ class PrefillP8000GLmedUtlandInnvTest {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(65)
     private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(75)
+
     private val pesysSaksnummer = "21975717"
+    private val pesysService : PesysService = mockk()
 
     lateinit var sed: SED
     lateinit var prefill: PrefillP8000
@@ -42,9 +45,8 @@ class PrefillP8000GLmedUtlandInnvTest {
         personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(avdodPersonFnr, "112233445566"))
 
-//        val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("/pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
-//        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonInformasjonService)
-//        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+        val innhentingService = InnhentingService(mockk(), pesysService = pesysService)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
         sed = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)

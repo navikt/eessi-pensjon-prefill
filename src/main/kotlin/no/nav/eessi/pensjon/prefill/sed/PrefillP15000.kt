@@ -38,12 +38,12 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         logger.debug("Vedtak har avdød? ${p15000PensjonssakDto?.avdod != null}")
 
         if (kravType != GJENLEV && kravType.name != sakType) {
-//            if (sakType == null) {
-//                val errorMsg =
-//                    "Ved opprettelse av krav SED må saksbehandling være fullført i Pesys ( vilkårsprøving o.l ) og jordklode i brukerkontekst kan ikke benyttes"
-//                logger.warn(errorMsg)
-//                throw ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg)
-//            }
+            if (sakType.isNullOrEmpty()) {
+                val errorMsg =
+                    "Ved opprettelse av krav SED må saksbehandling være fullført i Pesys ( vilkårsprøving o.l ) og jordklode i brukerkontekst kan ikke benyttes"
+                logger.warn(errorMsg)
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, errorMsg)
+            }
             val errorMsg =
                 "Du kan ikke opprette ${sedTypeAsText(kravType)} i en ${sakTypeAsText(sakType)} (PESYS-saksnr: $penSaksnummer har sakstype ${sakType})"
             logger.warn(errorMsg)
