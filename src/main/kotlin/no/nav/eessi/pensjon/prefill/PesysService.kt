@@ -13,22 +13,22 @@ class PesysService(
     private val pesysClientRestTemplate: RestTemplate
 ) {
 
-    fun hentP2000data(vedtaksId: String): P2xxxMeldingOmPensjonDto? =
+    fun hentP2000data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
         pesysClientRestTemplate.getForEntity<P2xxxMeldingOmPensjonDto>("/sed/p2000/$vedtaksId").body
 
-    fun hentP2100data(vedtaksId: String): P2xxxMeldingOmPensjonDto? =
+    fun hentP2100data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
         pesysClientRestTemplate.getForEntity<P2xxxMeldingOmPensjonDto>("/sed/p21000/$vedtaksId").body
 
-    fun hentP2200data(vedtaksId: String): P2xxxMeldingOmPensjonDto? =
+    fun hentP2200data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
         pesysClientRestTemplate.getForEntity<P2xxxMeldingOmPensjonDto>("/sed/p22000/$vedtaksId").body
 
-    fun hentP6000data(vedtaksId: String): P6000MeldingOmVedtakDto? =
+    fun hentP6000data(vedtaksId: String?): P6000MeldingOmVedtakDto? =
         pesysClientRestTemplate.getForEntity<P6000MeldingOmVedtakDto>("/sed/p6000/$vedtaksId").body
 
-    fun hentP8000data(vedtaksId: String): P8000AnmodningOmTilleggsinformasjon? =
-        pesysClientRestTemplate.getForEntity<P8000AnmodningOmTilleggsinformasjon>("/sed/p8000/$vedtaksId").body
+    fun hentP8000data(sakId: String): P8000AnmodningOmTilleggsinformasjon? =
+        pesysClientRestTemplate.getForEntity<P8000AnmodningOmTilleggsinformasjon>("/sed/p8000/$sakId").body
 
-    fun hentP15000data(vedtaksId: String): P15000overfoeringAvPensjonssakerTilEessiDto? =
+    fun hentP15000data(vedtaksId: String?, sakId: String): P15000overfoeringAvPensjonssakerTilEessiDto? =
         pesysClientRestTemplate.getForEntity<P15000overfoeringAvPensjonssakerTilEessiDto>("/sed/p15000/$vedtaksId").body
 
 }
