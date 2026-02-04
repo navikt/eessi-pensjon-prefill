@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.prefill.PersonDataServiceTest.Companion.FNR_VOKSEN
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto.Trygdeavtale
@@ -69,7 +70,7 @@ class PrefillControllerTest {
         )
 
         every { pesysService.hentP6000data(any()) } returns P6000MeldingOmVedtakDto(
-            sakAlder = P6000MeldingOmVedtakDto.SakAlder(KSAK.ALDER),
+            sakAlder = P6000MeldingOmVedtakDto.SakAlder(EessiFellesDto.EessiSakType.ALDER),
             avdod = P6000MeldingOmVedtakDto.Avdod(null, null, null, null),
             trygdeavtale = Trygdeavtale(erArt10BruktGP = true, erArt10BruktTP = true),
             trygdetidListe = emptyList(),

@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.eux.model.sed.AvslagbegrunnelseItem
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -94,7 +95,7 @@ object PrefillPensjonVedtaksavslag {
         when {
             harBoddArbeidetUtland -> {
                 when {
-                    KSAK.UFOREP == sakType -> {
+                    EessiFellesDto.EessiSakType.UFOREP == sakType -> {
                         when {
                             erAlder && erAvslagVilkarsproving -> return "03"
                             (erHensiktmessigBeh || erHensArbrettTiltak) && erAvslagVilkarsproving -> return "08"

@@ -133,7 +133,7 @@ class SedPrefillIntegrationSpringTest {
                 avdodFarBoddArbeidetUtland = true,
                 avdodMorBoddArbeidetUtland = true
             ), sakAlder = P6000MeldingOmVedtakDto.SakAlder(
-                sakType = KSAK.BARNEP // Assuming KSAK has BARNEP as an enum value
+                sakType = EessiFellesDto.EessiSakType.BARNEP // Assuming KSAK has BARNEP as an enum value
             ), trygdeavtale = null, // No data in XML for Trygdeavtale
             trygdetidListe = listOf(
                 P6000MeldingOmVedtakDto.Trygdetid(
@@ -352,7 +352,7 @@ class SedPrefillIntegrationSpringTest {
 
         val mockP6000MeldingOmVedtakDto = P6000MeldingOmVedtakDto(
             sakAlder = P6000MeldingOmVedtakDto.SakAlder(
-                sakType = KSAK.ALDER
+                sakType = EessiFellesDto.EessiSakType.ALDER
             ), trygdeavtale = null, // No data in XML for Trygdeavtale
             avdod = null,
             vedtak = P6000MeldingOmVedtakDto.Vedtak(

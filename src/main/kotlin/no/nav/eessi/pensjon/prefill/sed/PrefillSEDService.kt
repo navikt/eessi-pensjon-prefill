@@ -5,7 +5,7 @@ import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.PensjonCollection
+import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav

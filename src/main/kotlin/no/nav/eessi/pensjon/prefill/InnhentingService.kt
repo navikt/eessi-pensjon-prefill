@@ -5,7 +5,7 @@ import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
-import no.nav.eessi.pensjon.prefill.models.PensjonCollection
+import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
 import no.nav.eessi.pensjon.shared.api.ApiRequest

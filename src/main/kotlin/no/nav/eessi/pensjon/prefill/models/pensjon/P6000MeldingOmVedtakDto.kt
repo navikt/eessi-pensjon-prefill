@@ -22,7 +22,7 @@ data class P6000MeldingOmVedtakDto(
     )
 
     data class SakAlder(
-        val sakType: KSAK, // P2000 blant mange andre
+        val sakType: EessiFellesDto.EessiSakType, // P2000 blant mange andre
     )
 
     data class Trygdeavtale(

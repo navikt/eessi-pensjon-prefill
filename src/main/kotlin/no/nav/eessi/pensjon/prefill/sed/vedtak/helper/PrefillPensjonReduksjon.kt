@@ -63,11 +63,11 @@ object PrefillPensjonReduksjon {
         logger.debug("5.1.1         ReduksjonType")
         val sakType = pendata.sakAlder.sakType
 
-        if (sakType == KSAK.UFOREP && hentTilleggsPensjon(pendata))
+        if (sakType.name == KSAK.UFOREP.name && hentTilleggsPensjon(pendata))
             return "02"
-        if (sakType == KSAK.GJENLEV && hentGrunnPersjon(pendata) || hentTilleggsPensjon(pendata))
+        if (sakType.name == KSAK.GJENLEV.name && hentGrunnPersjon(pendata) || hentTilleggsPensjon(pendata))
             return "02"
-        if (sakType == KSAK.BARNEP && hentGrunnPersjon(pendata))
+        if (sakType.name == KSAK.BARNEP.name && hentGrunnPersjon(pendata))
             return "02"
 
         return null
@@ -92,11 +92,11 @@ object PrefillPensjonReduksjon {
         logger.debug("5.1.4         ReduksjonArtikkelType")
         val sakType = pendata.sakAlder.sakType
 
-        if (sakType == KSAK.UFOREP && hentTilleggsPensjon(pendata))
+        if (sakType.name == KSAK.UFOREP.name && hentTilleggsPensjon(pendata))
             return "02"
-        if (sakType == KSAK.GJENLEV && hentGrunnPersjon(pendata) || hentTilleggsPensjon(pendata))
+        if (sakType.name == KSAK.GJENLEV.name && hentGrunnPersjon(pendata) || hentTilleggsPensjon(pendata))
             return "02"
-        if (sakType == KSAK.BARNEP && hentGrunnPersjon(pendata))
+        if (sakType.name == KSAK.BARNEP.name && hentGrunnPersjon(pendata))
             return "02"
 
         return null

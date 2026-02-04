@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.integrationtest
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.Ytelseskomponent
 import java.io.File
@@ -42,8 +43,8 @@ object XmlToP6000Mapper {
         // SakAlder
         val sakAlderNode = root.findFieldByLocalName("sakAlder") ?: root.path("sakAlder")
         val sakAlder = P6000MeldingOmVedtakDto.SakAlder(
-            sakType = sakAlderNode.findFieldByLocalName("sakType")?.asText()?.let { no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK.valueOf(it) }
-                ?: no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK.ALDER
+            sakType = sakAlderNode.findFieldByLocalName("sakType")?.asText()?.let { EessiFellesDto.EessiSakType.valueOf(it) }
+                ?: EessiFellesDto.EessiSakType.ALDER
         )
 
         // Trygdeavtale

@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.eux.model.sed.KravtypeItem
 import no.nav.eessi.pensjon.eux.model.sed.Sak
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -43,7 +44,7 @@ object PrefillPensjonSak {
     */
     private fun createArtikkel54(pendata: P6000MeldingOmVedtakDto): String? {
         logger.debug("6.1       createArtikkel54")
-        return if (KSAK.UFOREP == pendata.sakAlder.sakType) {
+        return if (EessiFellesDto.EessiSakType.UFOREP == pendata.sakAlder.sakType) {
             return "0"
         } else null
     }

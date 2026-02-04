@@ -6,6 +6,7 @@ import no.nav.eessi.pensjon.eux.model.sed.BeregningItem
 import no.nav.eessi.pensjon.eux.model.sed.Periode
 import no.nav.eessi.pensjon.eux.model.sed.Ukjent
 import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType.*
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.YtelsePerMndBase
 import no.nav.eessi.pensjon.utils.simpleFormat
@@ -19,11 +20,11 @@ object PrefillPensjonVedtaksbelop {
     /**
      *  4.1.7.3.1. Gross amount
      */
-    fun createBelop(ytelsePrMnd: P6000MeldingOmVedtakDto.YtelsePerMaaned, sakType: KSAK): String {
+    fun createBelop(ytelsePrMnd: P6000MeldingOmVedtakDto.YtelsePerMaaned, sakType: EessiFellesDto.EessiSakType): String {
         logger.info("4.1.7.3.1         Gross amount")
         val belop = ytelsePrMnd.belop
 
-        if (KSAK.UFOREP == sakType) {
+        if (EessiFellesDto.EessiSakType.UFOREP == sakType) {
             val uforUtOrd = VedtakPensjonDataHelper.hentYtelseskomponentBelop("UT_ORDINER,UT_TBF,UT_TBS", ytelsePrMnd)
             if (uforUtOrd > belop) {
                 return uforUtOrd.toString()
@@ -40,10 +41,10 @@ object PrefillPensjonVedtaksbelop {
      *  Hentet ytelseskomponentType fra YtelseKomponentTypeCode.java (PESYS)
      *      GAP =Garantitillegg
      */
-    fun createYtelseskomponentGrunnpensjon(ytelsePrMnd: YtelsePerMndBase, sakType: KSAK): String? {
+    fun createYtelseskomponentGrunnpensjon(ytelsePrMnd: YtelsePerMndBase, sakType: EessiFellesDto.EessiSakType): String? {
         logger.info("4.1.7.3.3         Grunnpensjon")
 
-        if (KSAK.UFOREP != sakType) {
+        if (EessiFellesDto.EessiSakType.UFOREP != sakType) {
             return VedtakPensjonDataHelper.hentYtelseskomponentBelop(
                 "$GAP, $GP, $GAT, $PT, $ST, $MIN_NIVA_TILL_INDV, $MIN_NIVA_TILL_PPAR, $AP_GJT_KAP19", ytelsePrMnd).toString()
         }
@@ -55,10 +56,10 @@ object PrefillPensjonVedtaksbelop {
      *
      *  Her skal det automatisk vises brutto tilleggspensjon for de ulike beregningsperioder  Brutto inntektspensjon for alderspensjon beregnet etter kapittel 20.
      */
-    fun createYtelseskomponentTilleggspensjon(ytelsePrMnd: YtelsePerMndBase, sakType: KSAK): String? {
+    fun createYtelseskomponentTilleggspensjon(ytelsePrMnd: YtelsePerMndBase, sakType: EessiFellesDto.EessiSakType): String? {
         logger.info("4.1.7.3.4         Tilleggspensjon")
 
-        if (KSAK.UFOREP != sakType) {
+        if (EessiFellesDto.EessiSakType.UFOREP != sakType) {
             return VedtakPensjonDataHelper.hentYtelseskomponentBelop("$TP,$IP", ytelsePrMnd).toString()
         }
         return null
@@ -119,7 +120,7 @@ object PrefillPensjonVedtaksbelop {
         )
     }
 
-    private fun createBeregningItem(ytelsePrMnd: P6000MeldingOmVedtakDto.YtelsePerMaaned, sakType: KSAK): BeregningItem {
+    private fun createBeregningItem(ytelsePrMnd: P6000MeldingOmVedtakDto.YtelsePerMaaned, sakType: EessiFellesDto.EessiSakType): BeregningItem {
         logger.info("4.1.7         BeregningItem (Repeterbart)")
 
         return BeregningItem(

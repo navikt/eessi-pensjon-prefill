@@ -246,10 +246,10 @@ object PrefillP2xxxPensjon {
                 mottasbasertpaa = basertPaa,
 
                 //4.1.10.2
-                totalbruttobeloepbostedsbasert = saktype.let { KSAK.valueOf(it.name) }.let { createYtelseskomponentGrunnpensjon(ytelsePrmnd, it) },
+                totalbruttobeloepbostedsbasert = saktype.let { EessiFellesDto.EessiSakType.valueOf(it.name) }.let { createYtelseskomponentGrunnpensjon(ytelsePrmnd, it) },
 
                 //4.1.10.3
-                totalbruttobeloeparbeidsbasert = saktype.let { KSAK.valueOf(it.name) }.let { createYtelseskomponentTilleggspensjon( ytelsePrmnd, it) },
+                totalbruttobeloeparbeidsbasert = saktype.let { EessiFellesDto.EessiSakType.valueOf(it.name) }.let { createYtelseskomponentTilleggspensjon( ytelsePrmnd, it) },
         )
     }
 

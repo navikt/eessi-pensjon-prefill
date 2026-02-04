@@ -4,6 +4,7 @@ import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.eux.model.sed.Grunnlag
 import no.nav.eessi.pensjon.eux.model.sed.Opptjening
 import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksavslag.createAvlsagsBegrunnelseItem
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksavslag.sjekkForVilkarsvurderingListeHovedytelseellerAvslag
@@ -74,9 +75,17 @@ object PrefillPensjonVedtak {
         logger.info("4.1.1         VedtakTypePension: $sakType")
 
         return when (sakType) {
-            KSAK.ALDER ->  "01"
-            KSAK.UFOREP -> "02"
-            KSAK.BARNEP, KSAK.GJENLEV -> "03"
+            EessiFellesDto.EessiSakType.ALDER ->  "01"
+            EessiFellesDto.EessiSakType.UFOREP -> "02"
+            EessiFellesDto.EessiSakType.BARNEP, EessiFellesDto.EessiSakType.GJENLEV -> "03"
+            EessiFellesDto.EessiSakType.AFP -> TODO()
+            EessiFellesDto.EessiSakType.AFP_PRIVAT -> TODO()
+            EessiFellesDto.EessiSakType.FAM_PL -> TODO()
+            EessiFellesDto.EessiSakType.GAM_YRK -> TODO()
+            EessiFellesDto.EessiSakType.GENRL -> TODO()
+            EessiFellesDto.EessiSakType.GRBL -> TODO()
+            EessiFellesDto.EessiSakType.KRIGSP -> TODO()
+            EessiFellesDto.EessiSakType.OMSORG -> TODO()
         }
     }
 
@@ -97,7 +106,7 @@ object PrefillPensjonVedtak {
         //hvis avslag returner vi tomt verdi
         if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return null
 
-        return if (sakType == KSAK.BARNEP) BasertPaa.annet
+        return if (sakType == EessiFellesDto.EessiSakType.BARNEP) BasertPaa.annet
         //TODO: Her må vi sjekke om dette blir riktig
         else {
             when (isMottarMinstePensjonsniva(pendata)) {
@@ -151,7 +160,7 @@ object PrefillPensjonVedtak {
         val erMellombehandling = "MELLOMBH" == kravGjelder
         val erRevurdering = kravGjelder == "REVURD"
 
-        if (KSAK.UFOREP != sakType && erInnvilgelse
+        if (EessiFellesDto.EessiSakType.UFOREP != sakType && erInnvilgelse
                 && (erForsteGangBehandlingNorgeUtland || erMellombehandling || erForsteGangBehandlingBosattUtland)) {
                 return "01"
         }
@@ -161,10 +170,10 @@ object PrefillPensjonVedtak {
         if (erRevurdering)
             return "03"
 
-        if (KSAK.UFOREP == sakType && (erForsteGangBehandlingNorgeUtland || erMellombehandling))
+        if (EessiFellesDto.EessiSakType.UFOREP == sakType && (erForsteGangBehandlingNorgeUtland || erMellombehandling))
             return "04"
 
-        if (KSAK.UFOREP == sakType && erForsteGangBehandlingBosattUtland)
+        if (EessiFellesDto.EessiSakType.UFOREP == sakType && erForsteGangBehandlingBosattUtland)
             return "01"
 
         logger.debug("              Ingen verdier funnet. (null)")
@@ -199,7 +208,7 @@ object PrefillPensjonVedtak {
         logger.info("4.1.12        Framtidigtrygdetid ${pendata.sakAlder.sakType}")
 
         return when (pendata.sakAlder.sakType) {
-            KSAK.ALDER -> "0"
+            EessiFellesDto.EessiSakType.ALDER -> "0"
             else -> {
                 "1"
             }
@@ -222,16 +231,16 @@ object PrefillPensjonVedtak {
         val resultatGjenlevendetillegg = pendata.vilkarsvurderingListe.firstOrNull()?.harResultatGjenlevendetillegg?: false
         val vinnendeMetode = hentVinnendeBergeningsMetode(pendata) ?: ""
 
-        if ((KSAK.ALDER == sakType || KSAK.UFOREP == sakType) && !resultatGjenlevendetillegg)
+        if ((EessiFellesDto.EessiSakType.ALDER == sakType || EessiFellesDto.EessiSakType.UFOREP == sakType) && !resultatGjenlevendetillegg)
             return "01"
 
-        if (KSAK.ALDER == sakType && resultatGjenlevendetillegg && vinnendeMetode != "RETT_TIL_GJT")
+        if (EessiFellesDto.EessiSakType.ALDER == sakType && resultatGjenlevendetillegg && vinnendeMetode != "RETT_TIL_GJT")
             return "01"
 
-        if (KSAK.ALDER == sakType && resultatGjenlevendetillegg && "RETT_TIL_GJT" == vinnendeMetode)
+        if (EessiFellesDto.EessiSakType.ALDER == sakType && resultatGjenlevendetillegg && "RETT_TIL_GJT" == vinnendeMetode)
             return "02"
 
-        if (KSAK.GJENLEV == sakType || KSAK.BARNEP == sakType) {
+        if (EessiFellesDto.EessiSakType.GJENLEV == sakType || EessiFellesDto.EessiSakType.BARNEP == sakType) {
             return "03"
         }
 
