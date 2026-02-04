@@ -31,7 +31,6 @@ import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.Ytelseskomponent
-import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.ApiSubject
 import no.nav.eessi.pensjon.shared.api.SubjectFnr
@@ -293,7 +292,7 @@ class SedPrefillIntegrationSpringTest {
             every { sak } returns sakMock
             every { vedtak } returns null
         }
-        every { pesysService.hentP2000data(id) } returns mockP2000
+        every { pesysService.hentP2000data(id,any(), any()) } returns mockP2000
     }
 
     @Test
@@ -505,7 +504,7 @@ class SedPrefillIntegrationSpringTest {
         val person = PersonPDLMock.createWith()
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns person
-        every { pesysService.hentP2000data(any()) } returns readP2000FromXml("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
+        every { pesysService.hentP2000data(any(),any(), any()) } returns readP2000FromXml("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
 
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, vedtakid = "21337890")
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
@@ -647,7 +646,7 @@ class SedPrefillIntegrationSpringTest {
             every { vedtak } returns null
         }
         every {
-            pesysService.hentP2000data(any())
+            pesysService.hentP2000data(any(),any(),any())
         } returns mockP2000
 
         val apijson = dummyApijson(sakid = "21841174", aktoerId = AKTOER_ID, vedtakid = "21337890")
@@ -709,7 +708,7 @@ class SedPrefillIntegrationSpringTest {
             )
             every { vedtak } returns null
         }
-        every { pesysService.hentP2000data(any()) } returns mockP2000
+        every { pesysService.hentP2000data(any(),any(),any()) } returns mockP2000
         val apijson = dummyApijson(sakid = "22932784", aktoerId = AKTOER_ID, vedtakid = "21337890")
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
             sed = P2000
@@ -761,7 +760,7 @@ class SedPrefillIntegrationSpringTest {
             )
             every { vedtak } returns null
         }
-        every { pesysService.hentP2000data(any()) } returns mockP2000
+        every { pesysService.hentP2000data(any(),any(), any()) } returns mockP2000
 
         val apijson = dummyApijson(sakid = "22889955", aktoerId = AKTOER_ID, vedtakid = "22889955")
         val response = prefillFraRestOgVerifiserResultet(apijson)
@@ -826,7 +825,7 @@ class SedPrefillIntegrationSpringTest {
             every { vedtak } returns null
         }
         every {
-            pesysService.hentP2000data(any())
+            pesysService.hentP2000data(any(),any(),any())
         } returns mockP2000
 
         val apijson = dummyApijson(sakid = "22580170", aktoerId = AKTOER_ID, vedtakid = "5134513451345")
@@ -888,7 +887,7 @@ class SedPrefillIntegrationSpringTest {
             every { vedtak } returns null
         }
         every {
-            pesysService.hentP2000data(any())
+            pesysService.hentP2000data(any(),any(),any())
         } returns mockP2000
 
         val apijson = dummyApijson(sakid = "21920707", aktoerId = AKTOER_ID, vedtakid = "22580170")
@@ -920,7 +919,7 @@ class SedPrefillIntegrationSpringTest {
             )
             every { vedtak } returns null
         }
-        every { pesysService.hentP2000data(any()) } returns mockP2000
+        every { pesysService.hentP2000data(any(),any(),any()) } returns mockP2000
 
         val apijson = dummyApijson(sakid = "22580170", aktoerId = AKTOER_ID, vedtakid = "22580170")
 
@@ -956,7 +955,7 @@ class SedPrefillIntegrationSpringTest {
             )
             every { vedtak } returns null
         }
-        every { pesysService.hentP2100data(any()) } returns mockP2000
+        every { pesysService.hentP2100data(any(),any(), any()) } returns mockP2000
 
         every { kodeverkClient.finnLandkode(any()) } returns "NO"
 

@@ -76,7 +76,7 @@ class PrefillErrorIntegrationTest {
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
         every { krrService.hentPersonerFraKrr(any())  } returns DigitalKontaktinfo( "melleby11@melby.no", true, personident = NPID_VOKSEN)
 
-        every { pesysService.hentP2200data(eq("231231231")) } returns mockk(){
+        every { pesysService.hentP2200data(eq("231231231"),any(),any()) } returns mockk(){
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiSakType.UFOREP,
                 kravHistorikk = listOf(

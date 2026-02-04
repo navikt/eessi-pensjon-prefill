@@ -34,7 +34,7 @@ class InnhentingServiceTest {
     }
 
     fun setup() {
-        every { pesysService.hentP2100data(any()) } returns mockk() {
+        every { pesysService.hentP2100data(any(),any(),any()) } returns mockk() {
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiFellesDto.EessiSakType.GJENLEV,
                 kravHistorikk = listOf(
@@ -141,7 +141,7 @@ class InnhentingServiceTest {
 
         @BeforeEach
         fun setup() {
-            every { pesysService.hentP2100data(any()) } returns mockk() {
+            every { pesysService.hentP2100data(any(),any(),any()) } returns mockk() {
                 every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                     sakType = EessiFellesDto.EessiSakType.ALDER,
                     kravHistorikk = listOf(
@@ -169,7 +169,7 @@ class InnhentingServiceTest {
 
         @Test
         fun `Gitt en P15000 med saktype UFORE saa skal hentPensjoninformasjonCollection sitt resultat paa saktype returnere UFOREP`() {
-            every { pesysService.hentP15000data(any()) } returns mockk() {
+            every { pesysService.hentP15000data(any(),any()) } returns mockk() {
                 every { sakType } returns EessiFellesDto.EessiSakType.UFOREP.name
 
             }

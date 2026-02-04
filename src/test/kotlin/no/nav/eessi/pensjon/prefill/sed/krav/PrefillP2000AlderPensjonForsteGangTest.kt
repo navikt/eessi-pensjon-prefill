@@ -34,7 +34,7 @@ class PrefillP2000AlderPensjonForsteGangTest {
 
     @BeforeEach
     fun setup() {
-        every { pesysService.hentP2000data(any()) } returns mockk(){
+        every { pesysService.hentP2000data(any(),any(), any()) } returns mockk(){
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiSakType.ALDER,
                 kravHistorikk = listOf(

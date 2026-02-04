@@ -45,7 +45,7 @@ class PrefillP2100GjenlevendeRevurdering {
 
     @Test
     fun `forventet korrekt utfylt P2100 uforepensjon med kap4 og 9`() {
-        every { pesysService.hentP2100data(any()) } returns mockk(){
+        every { pesysService.hentP2100data(any(),any(),any()) } returns mockk(){
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiSakType.GJENLEV,
                 kravHistorikk = listOf(

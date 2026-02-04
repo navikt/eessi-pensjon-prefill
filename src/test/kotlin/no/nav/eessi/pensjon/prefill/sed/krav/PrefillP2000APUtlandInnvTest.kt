@@ -7,7 +7,6 @@ import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
 import no.nav.eessi.pensjon.eux.model.sed.P2000
-import no.nav.eessi.pensjon.integrationtest.sed.XmlToP2xxxMapper
 import no.nav.eessi.pensjon.prefill.*
 import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -28,7 +27,6 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
-import kotlin.rem
 
 class PrefillP2000APUtlandInnvTest {
 
@@ -64,7 +62,7 @@ class PrefillP2000APUtlandInnvTest {
 
     private fun pesysMock(ytelesTyper: List<String>? = listOf<String>(YtelseskomponentType.GAP.name)) {
 
-        every { pesysService.hentP2000data(any()) } returns mockk() {
+        every { pesysService.hentP2000data(any(),any(),any()) } returns mockk() {
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiFellesDto.EessiSakType.ALDER,
                 kravHistorikk = listOf(

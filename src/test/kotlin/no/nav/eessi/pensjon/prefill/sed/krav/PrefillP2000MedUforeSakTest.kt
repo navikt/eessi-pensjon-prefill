@@ -9,11 +9,9 @@ import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
-import no.nav.eessi.pensjon.prefill.models.YtelseskomponentType
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
-import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.BeforeEach
@@ -39,7 +37,7 @@ class PrefillP2000MedUforeSakTest {
     @BeforeEach
     fun setup() {
         innhentingService = InnhentingService(mockk(), pesysService = pesysService)
-        every { pesysService.hentP2000data(any()) } returns mockk(){
+        every { pesysService.hentP2000data(any(),any(), any()) } returns mockk(){
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiSakType.UFOREP,
                 kravHistorikk = listOf(

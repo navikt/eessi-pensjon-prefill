@@ -38,7 +38,7 @@ class PrefillP2200UforpensjonTest {
 
     @BeforeEach
     fun setup() {
-        every { pesysService.hentP2200data(any()) } returns mockk(){
+        every { pesysService.hentP2200data(any(),any(),any()) } returns mockk(){
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiSakType.UFOREP,
                 kravHistorikk = listOf(

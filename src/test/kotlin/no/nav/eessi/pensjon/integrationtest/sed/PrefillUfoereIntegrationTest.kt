@@ -96,7 +96,7 @@ class PrefillUfoereIntegrationTest {
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
         every { kodeverkClient.finnLandkode(any()) } returns "XQ"
 
-        every { pesysService.hentP2200data(any()) } returns mockk{
+        every { pesysService.hentP2200data(any(),any(), any()) } returns mockk{
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiSakType.UFOREP,
                 kravHistorikk = listOf(

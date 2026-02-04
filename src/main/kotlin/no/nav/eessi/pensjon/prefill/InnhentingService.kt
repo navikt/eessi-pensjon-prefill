@@ -81,58 +81,61 @@ class InnhentingService(
         )
         val pensakTyper = listOf(EessiSakType.GENRL, EessiSakType.OMSORG) + eessipensjonSakTyper
 
+        val penSak = prefillData.penSaksnummer
+        val fnr = prefillData.bruker.norskIdent
+        val vedtaksId = prefillData.vedtakId
         return when (val sedType = prefillData.sedType) {
 
             P2000 -> {
-                if (prefillData.penSaksnummer.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId")
+                if (penSak.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId")
 
-                val p2000data = prefillData.vedtakId?.let { pesysService.hentP2000data(prefillData.vedtakId) }
+                val p2000data = vedtaksId?.let { pesysService.hentP2000data(vedtaksId, fnr, penSak) }
                 if (p2000data?.sak?.sakType != EessiSakType.ALDER) {
                     throw ResponseStatusExceptionFeilSak(prefillData, p2000data?.sak?.sakType)
                 }
                 PensjonCollection(
                     p2xxxMeldingOmPensjonDto = p2000data.takeIf { p2000data.sak.sakType == EessiSakType.ALDER } ,
-                    vedtakId = prefillData.vedtakId,
+                    vedtakId = vedtaksId,
                     sedType = sedType
                 )
             }
             P2100 -> {
-                if (prefillData.penSaksnummer.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId")
-                val p2100data = prefillData.vedtakId?.let { pesysService.hentP2100data(prefillData.vedtakId) }
+                if (penSak.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId")
+                val p2100data = vedtaksId?.let { pesysService.hentP2100data(vedtaksId,fnr, penSak) }
                 if (p2100data?.sak?.sakType !in eessipensjonSakTyper) {
                     throw ResponseStatusExceptionFeilSak(prefillData, p2100data?.sak?.sakType)
                 }
                 PensjonCollection(
                     p2xxxMeldingOmPensjonDto = p2100data.takeIf { p2100data?.sak?.sakType in eessipensjonSakTyper } ,
-                    vedtakId = prefillData.vedtakId,
+                    vedtakId = vedtaksId,
                     sedType = sedType
                 )
             }
             P2200 -> {
-                if (prefillData.penSaksnummer.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId")
-                val p2200data = prefillData.vedtakId?.let { pesysService.hentP2200data(prefillData.vedtakId) }
+                if (penSak.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId")
+                val p2200data = vedtaksId?.let { pesysService.hentP2200data(vedtaksId,fnr, penSak) }
                 if (p2200data?.sak?.sakType != EessiSakType.UFOREP) {
                     throw ResponseStatusExceptionFeilSak(prefillData, p2200data?.sak?.sakType)
                 }
                 PensjonCollection(
                     p2xxxMeldingOmPensjonDto = p2200data.takeIf { p2200data.sak.sakType == EessiSakType.UFOREP } ,
-                    vedtakId = prefillData.vedtakId,
+                    vedtakId = vedtaksId,
                     sedType = sedType
                 )
             }
             P6000 -> {
-                if (prefillData.penSaksnummer.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId")
+                if (penSak.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId")
                 validerVedtak(prefillData)
                 return PensjonCollection(
-                    p6000Data = prefillData.vedtakId?.let { pesysService.hentP6000data(it) },
-                    vedtakId = prefillData.vedtakId,
+                    p6000Data = vedtaksId?.let { pesysService.hentP6000data(it) },
+                    vedtakId = vedtaksId,
                     sedType = sedType
                 ).also { logger.debug("Svar fra Pesys nytt endepunkt: ${it.toJson()}")}
             }
             P8000 -> {
                 if (prefillData.buc == P_BUC_05) {
                         try {
-                            val p8000 = prefillData.vedtakId?.let { pesysService.hentP8000data(it) }
+                            val p8000 = vedtaksId?.let { pesysService.hentP8000data(it) }
                             if (p8000?.sakType !in pensakTyper ) {
                                 throw ResponseStatusExceptionFeilSak(prefillData, p8000?.sakType)
                             }
@@ -150,7 +153,7 @@ class InnhentingService(
             }
             P15000 -> {
                 PensjonCollection(
-                    p15000Data = prefillData.vedtakId?.let { pesysService.hentP15000data(it) },
+                    p15000Data = vedtaksId?.let { pesysService.hentP15000data(it,penSak!!) },
                     sedType = sedType
                 )
             }

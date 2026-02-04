@@ -10,7 +10,6 @@ import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiKravGjelder
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -36,7 +35,7 @@ class PrefillP2200MedAlderSakTest {
 
     @BeforeEach
     fun setup() {
-        every { pesysService.hentP2200data(any()) } returns mockk(){
+        every { pesysService.hentP2200data(any(),any(),any()) } returns mockk(){
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiSakType.ALDER,
                 kravHistorikk = emptyList(),
