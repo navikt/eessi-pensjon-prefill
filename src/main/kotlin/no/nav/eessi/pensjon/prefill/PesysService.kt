@@ -14,21 +14,58 @@ class PesysService(
 ) {
 
     fun hentP2000data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        pesysClientRestTemplate.getForEntity<P2xxxMeldingOmPensjonDto>("/sed/p2000/$vedtaksId").body
+        pesysClientRestTemplate.getForEntity<P2xxxMeldingOmPensjonDto>(
+            leggTilParameter("/sed/p2000", listOf(
+                "vedtaksId" to vedtaksId,
+                "fnr" to fnr,
+                "sakId" to sakId
+            ))
+        ).body
 
     fun hentP2100data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        pesysClientRestTemplate.getForEntity<P2xxxMeldingOmPensjonDto>("/sed/p21000/$vedtaksId").body
+        pesysClientRestTemplate.getForEntity<P2xxxMeldingOmPensjonDto>(
+            leggTilParameter("/sed/p21000", listOf(
+                "vedtaksId" to vedtaksId,
+                "fnr" to fnr,
+                "sakId" to sakId
+            ))
+        ).body
 
     fun hentP2200data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        pesysClientRestTemplate.getForEntity<P2xxxMeldingOmPensjonDto>("/sed/p22000/$vedtaksId").body
+        pesysClientRestTemplate.getForEntity<P2xxxMeldingOmPensjonDto>(
+            leggTilParameter("/sed/p22000", listOf(
+                "vedtaksId" to vedtaksId,
+                "fnr" to fnr,
+                "sakId" to sakId
+            ))
+        ).body
 
     fun hentP6000data(vedtaksId: String?): P6000MeldingOmVedtakDto? =
-        pesysClientRestTemplate.getForEntity<P6000MeldingOmVedtakDto>("/sed/p6000/$vedtaksId").body
+        pesysClientRestTemplate.getForEntity<P6000MeldingOmVedtakDto>(
+            leggTilParameter("/sed/p6000", listOf(
+                "vedtaksId" to vedtaksId
+            ))
+        ).body
 
     fun hentP8000data(sakId: String): P8000AnmodningOmTilleggsinformasjon? =
-        pesysClientRestTemplate.getForEntity<P8000AnmodningOmTilleggsinformasjon>("/sed/p8000/$sakId").body
+        pesysClientRestTemplate.getForEntity<P8000AnmodningOmTilleggsinformasjon>(
+            leggTilParameter("/sed/p8000", listOf(
+                "sakId" to sakId
+            ))
+        ).body
 
     fun hentP15000data(vedtaksId: String?, sakId: String): P15000overfoeringAvPensjonssakerTilEessiDto? =
-        pesysClientRestTemplate.getForEntity<P15000overfoeringAvPensjonssakerTilEessiDto>("/sed/p15000/$vedtaksId").body
+        pesysClientRestTemplate.getForEntity<P15000overfoeringAvPensjonssakerTilEessiDto>(
+            leggTilParameter("/sed/p15000", listOf(
+                "vedtaksId" to vedtaksId,
+                "sakId" to sakId
+            ))
+        ).body
 
+    private fun leggTilParameter(baseUrl: String, params: List<Pair<String, String?>>): String {
+        val filtered = params.filter { !it.second.isNullOrBlank() }
+        if (filtered.isEmpty()) return baseUrl
+        val query = filtered.joinToString("&") { "${it.first}=${it.second}" }
+        return "$baseUrl?$query"
+    }
 }
