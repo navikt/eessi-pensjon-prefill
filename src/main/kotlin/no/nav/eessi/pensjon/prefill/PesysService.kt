@@ -4,6 +4,8 @@ import no.nav.eessi.pensjon.prefill.models.pensjon.P15000overfoeringAvPensjonssa
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P8000AnmodningOmTilleggsinformasjon
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.getForEntity
@@ -12,6 +14,8 @@ import org.springframework.web.client.getForEntity
 class PesysService(
     private val pesysClientRestTemplate: RestTemplate
 ) {
+
+    private val logger: Logger = LoggerFactory.getLogger(PesysService::class.java)
 
     fun hentP2000data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
         pesysClientRestTemplate.getForEntity<P2xxxMeldingOmPensjonDto>(
@@ -66,6 +70,6 @@ class PesysService(
         val filtered = params.filter { !it.second.isNullOrBlank() }
         if (filtered.isEmpty()) return baseUrl
         val query = filtered.joinToString("&") { "${it.first}=${it.second}" }
-        return "$baseUrl?$query"
+        return "$baseUrl?$query".also { logger.info("Henter pesys informasjon fra: $baseUrl") }
     }
 }
