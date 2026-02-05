@@ -70,6 +70,6 @@ class PesysService(
         val filtered = params.filter { !it.second.isNullOrBlank() }
         if (filtered.isEmpty()) return baseUrl
         val query = filtered.joinToString("&") { "${it.first}=${it.second}" }
-        return "$baseUrl?$query".also { logger.info("Henter pesys informasjon fra: $baseUrl") }
+        return "$baseUrl?$query".also { logger.debug("Henter pesys informasjon fra: $query") }
     }
 }
