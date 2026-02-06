@@ -8,7 +8,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.getForEntity
+import org.springframework.web.util.UriComponentsBuilder
+import java.net.URI
 
 @Service
 class PesysService(
@@ -18,58 +19,64 @@ class PesysService(
     private val logger: Logger = LoggerFactory.getLogger(PesysService::class.java)
 
     fun hentP2000data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        pesysClientRestTemplate.getForEntity<P2xxxMeldingOmPensjonDto>(
-            leggTilParameter("/sed/p2000", listOf(
-                "vedtaksId" to vedtaksId,
-                "fnr" to fnr,
-                "sakId" to sakId
-            ))
-        ).body
+        get("/sed/p2000",
+            "vedtaksId" to vedtaksId,
+            "fnr" to fnr,
+            "sakId" to sakId
+        )
 
     fun hentP2100data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        pesysClientRestTemplate.getForEntity<P2xxxMeldingOmPensjonDto>(
-            leggTilParameter("/sed/p21000", listOf(
-                "vedtaksId" to vedtaksId,
-                "fnr" to fnr,
-                "sakId" to sakId
-            ))
-        ).body
+        get("/sed/p21000",
+            "vedtaksId" to vedtaksId,
+            "fnr" to fnr,
+            "sakId" to sakId
+        )
 
     fun hentP2200data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        pesysClientRestTemplate.getForEntity<P2xxxMeldingOmPensjonDto>(
-            leggTilParameter("/sed/p22000", listOf(
-                "vedtaksId" to vedtaksId,
-                "fnr" to fnr,
-                "sakId" to sakId
-            ))
-        ).body
+        get("/sed/p22000",
+            "vedtaksId" to vedtaksId,
+            "fnr" to fnr,
+            "sakId" to sakId
+        )
 
     fun hentP6000data(vedtaksId: String?): P6000MeldingOmVedtakDto? =
-        pesysClientRestTemplate.getForEntity<P6000MeldingOmVedtakDto>(
-            leggTilParameter("/sed/p6000", listOf(
-                "vedtaksId" to vedtaksId
-            ))
-        ).body
+        get("/sed/p6000",
+            "vedtaksId" to vedtaksId
+        )
 
     fun hentP8000data(sakId: String): P8000AnmodningOmTilleggsinformasjon? =
-        pesysClientRestTemplate.getForEntity<P8000AnmodningOmTilleggsinformasjon>(
-            leggTilParameter("/sed/p8000", listOf(
-                "sakId" to sakId
-            ))
-        ).body
+        get("/sed/p8000",
+            "sakId" to sakId
+        )
 
     fun hentP15000data(vedtaksId: String?, sakId: String): P15000overfoeringAvPensjonssakerTilEessiDto? =
-        pesysClientRestTemplate.getForEntity<P15000overfoeringAvPensjonssakerTilEessiDto>(
-            leggTilParameter("/sed/p15000", listOf(
-                "vedtaksId" to vedtaksId,
-                "sakId" to sakId
-            ))
-        ).body
+        get("/sed/p15000",
+            "vedtaksId" to vedtaksId,
+            "sakId" to sakId
+        )
 
-    private fun leggTilParameter(baseUrl: String, params: List<Pair<String, String?>>): String {
-        val filtered = params.filter { !it.second.isNullOrBlank() }
-        if (filtered.isEmpty()) return baseUrl
-        val query = filtered.joinToString("&") { "${it.first}=${it.second}" }
-        return "$baseUrl?$query".also { logger.debug("Henter pesys informasjon fra: $query") }
+
+    private inline fun <reified T : Any> get(
+        path: String,
+        vararg params: Pair<String, String?>
+    ): T? {
+        val uri = buildUri(path, params)
+        logger.debug("Henter pesys informasjon fra: $uri")
+        return pesysClientRestTemplate.getForEntity(uri, T::class.java).body
     }
+
+    fun buildUri(
+        path: String,
+        params: Array<out Pair<String, String?>>
+    ): URI =
+        UriComponentsBuilder.fromPath(path)
+            .apply {
+                params
+                    .filter { !it.second.isNullOrBlank() }
+                    .forEach { queryParam(it.first, it.second) }
+            }
+            .build()
+            .encode()
+            .toUri()
 }
+
