@@ -3,7 +3,7 @@ package no.nav.eessi.pensjon.prefill.models.pensjon
 import java.time.LocalDate
 
 object EessiFellesDto { // brukes kun for namespace.
-    enum class EessiSakStatus { TIL_BEHANDLING, INGEN_STATUS, OPPRETTET, UKJENT, TRUKKET, AVBRUTT, AVSL, INNV, OPPHOR, VELG, VETIKKE; }
+    enum class EessiSakStatus { TIL_BEHANDLING, INGEN_STATUS, OPPRETTET, UKJENT, TRUKKET, AVBRUTT, AVSL, INNV, OPPHOR, VELG, VETIKKE, ANNET; }
 
     enum class EessiKravGjelder {
         F_BH_BO_UTL, F_BH_MED_UTL, F_BH_KUN_UTL, FORSTEG_BH, REVURD,  SLUTT_BH_UTL, ANNET
