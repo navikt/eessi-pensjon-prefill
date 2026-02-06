@@ -20,28 +20,28 @@ class PesysService(
 
     fun hentP2000data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
         get("/sed/p2000",
-            "vedtaksId" to vedtaksId,
+            "vedtakId" to vedtaksId,
             "fnr" to fnr,
             "sakId" to sakId
         )
 
     fun hentP2100data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
         get("/sed/p21000",
-            "vedtaksId" to vedtaksId,
+            "vedtakId" to vedtaksId,
             "fnr" to fnr,
             "sakId" to sakId
         )
 
     fun hentP2200data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
         get("/sed/p22000",
-            "vedtaksId" to vedtaksId,
+            "vedtakId" to vedtaksId,
             "fnr" to fnr,
             "sakId" to sakId
         )
 
     fun hentP6000data(vedtaksId: String?): P6000MeldingOmVedtakDto? =
         get("/sed/p6000",
-            "vedtaksId" to vedtaksId
+            "vedtakId" to vedtaksId
         )
 
     fun hentP8000data(sakId: String): P8000AnmodningOmTilleggsinformasjon? =
@@ -51,7 +51,7 @@ class PesysService(
 
     fun hentP15000data(vedtaksId: String?, sakId: String): P15000overfoeringAvPensjonssakerTilEessiDto? =
         get("/sed/p15000",
-            "vedtaksId" to vedtaksId,
+            "vedtakId" to vedtaksId,
             "sakId" to sakId
         )
 

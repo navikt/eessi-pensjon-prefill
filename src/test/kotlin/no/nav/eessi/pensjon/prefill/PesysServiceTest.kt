@@ -18,13 +18,13 @@ class PesysServiceTest {
             val uri = pesysService.buildUri(
             "/sed/p2000",
             arrayOf(
-                "vedtaksId" to "123",
+                "vedtakId" to "123",
                 "fnr" to "456",
                 "sakId" to "789"
             )
         )
 
-        assertEquals("/sed/p2000?vedtaksId=123&fnr=456&sakId=789", uri.toString())
+        assertEquals("/sed/p2000?vedtakId=123&fnr=456&sakId=789", uri.toString())
     }
 
 //    @Test
