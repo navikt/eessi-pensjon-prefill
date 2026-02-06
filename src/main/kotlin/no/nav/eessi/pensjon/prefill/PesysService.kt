@@ -6,11 +6,11 @@ import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P8000AnmodningOmTilleggsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.util.UriComponentsBuilder
-import java.net.URI
-
 @Service
 class PesysService(
     private val pesysClientRestTemplate: RestTemplate
@@ -18,65 +18,58 @@ class PesysService(
 
     private val logger: Logger = LoggerFactory.getLogger(PesysService::class.java)
 
-    fun hentP2000data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        get("/sed/p2000",
-            "vedtakId" to vedtaksId,
+    fun hentP2000data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
+        getWithHeaders("/sed/p2000",
+            "vedtakId" to vedtakId,
             "fnr" to fnr,
             "sakId" to sakId
         )
 
-    fun hentP2100data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        get("/sed/p21000",
-            "vedtakId" to vedtaksId,
+    fun hentP2100data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
+        getWithHeaders("/sed/p21000",
+            "vedtakId" to vedtakId,
             "fnr" to fnr,
             "sakId" to sakId
         )
 
-    fun hentP2200data(vedtaksId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        get("/sed/p22000",
-            "vedtakId" to vedtaksId,
+    fun hentP2200data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
+        getWithHeaders("/sed/p22000",
+            "vedtakId" to vedtakId,
             "fnr" to fnr,
             "sakId" to sakId
         )
 
-    fun hentP6000data(vedtaksId: String?): P6000MeldingOmVedtakDto? =
-        get("/sed/p6000",
-            "vedtakId" to vedtaksId
+    fun hentP6000data(vedtakId: String?): P6000MeldingOmVedtakDto? =
+        getWithHeaders("/sed/p6000",
+            "vedtakId" to vedtakId
         )
 
     fun hentP8000data(sakId: String): P8000AnmodningOmTilleggsinformasjon? =
-        get("/sed/p8000",
+        getWithHeaders("/sed/p8000",
             "sakId" to sakId
         )
 
-    fun hentP15000data(vedtaksId: String?, sakId: String): P15000overfoeringAvPensjonssakerTilEessiDto? =
-        get("/sed/p15000",
-            "vedtakId" to vedtaksId,
+    fun hentP15000data(vedtakId: String?, sakId: String): P15000overfoeringAvPensjonssakerTilEessiDto? =
+        getWithHeaders("/sed/p15000",
+            "vedtakId" to vedtakId,
             "sakId" to sakId
         )
 
 
-    private inline fun <reified T : Any> get(
+    private inline fun <reified T : Any> getWithHeaders(
         path: String,
-        vararg params: Pair<String, String?>
+        vararg headers: Pair<String, String?>
     ): T? {
-        val uri = buildUri(path, params)
-        logger.debug("Henter pesys informasjon fra: $uri")
-        return pesysClientRestTemplate.getForEntity(uri, T::class.java).body
-    }
+        val httpHeaders = HttpHeaders().apply {
+            headers
+                .filter { !it.second.isNullOrBlank() }
+                .forEach { (k, v) -> set(k, v) }
+        }
 
-    fun buildUri(
-        path: String,
-        params: Array<out Pair<String, String?>>
-    ): URI =
-        UriComponentsBuilder.fromPath(path)
-            .apply {
-                params
-                    .filter { !it.second.isNullOrBlank() }
-                    .forEach { queryParam(it.first, it.second) }
-            }
-            .build()
-            .encode()
-            .toUri()
+        logger.debug("Henter pesys informasjon fra: $path (headers=${httpHeaders})")
+
+        val entity = HttpEntity<Void>(httpHeaders)
+        return pesysClientRestTemplate.exchange(path, HttpMethod.GET, entity, T::class.java).body
+    }
 }
 
