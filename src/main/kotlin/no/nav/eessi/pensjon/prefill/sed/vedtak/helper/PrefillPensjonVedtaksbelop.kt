@@ -94,7 +94,7 @@ object PrefillPensjonVedtaksbelop {
 
         return ytelsePerMaaned.map {
            createBeregningItem(it, sakType)
-        }
+        }.also { logger.debug("BeregningItem liste $it") }
     }
 
     /**
@@ -136,6 +136,11 @@ object PrefillPensjonVedtaksbelop {
 
                         //4.1.7.3.4. Gross amount of supplementary pension
                         ytelseskomponentTilleggspensjon = createYtelseskomponentTilleggspensjon(ytelsePrMnd, sakType),
+                ),
+                beloepNetto = BeloepBrutto(
+                    beloep = createBelop(ytelsePrMnd, sakType),
+                    ytelseskomponentGrunnpensjon = createYtelseskomponentGrunnpensjon(ytelsePrMnd, sakType),
+                    ytelseskomponentTilleggspensjon = createYtelseskomponentTilleggspensjon(ytelsePrMnd, sakType),
                 ),
 
                 //4.1.7.4 Currency automatisk hukes for "NOK" norway krone.
