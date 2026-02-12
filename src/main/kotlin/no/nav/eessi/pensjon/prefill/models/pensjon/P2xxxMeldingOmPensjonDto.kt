@@ -19,8 +19,8 @@ data class P2xxxMeldingOmPensjonDto(
     data class YtelsePerMaaned(
         override val fom: LocalDate? = null, // P2000, P2200, P6000
         override val belop: Int? = null, // P2000, P2200, P6000
-        override val ytelseskomponentListe: List<Ytelseskomponent>? = null, //P6000
-    ) : YtelsePerMndBase(fom, belop,ytelseskomponentListe)
+        override val ytelseskomponent: List<Ytelseskomponent>? = null, //P6000
+    ) : YtelsePerMndBase(fom, belop,ytelseskomponent)
 
     data class Vedtak(
         val boddArbeidetUtland: Boolean? = null,

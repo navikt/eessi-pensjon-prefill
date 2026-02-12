@@ -59,7 +59,7 @@ class PrefillP2100GjenlevendeRevurdering {
                     P2xxxMeldingOmPensjonDto.YtelsePerMaaned(
                         fom = LocalDate.of(2015, 11, 25),
                         belop = 123,
-                        ytelseskomponentListe = listOf(
+                        ytelseskomponent = listOf(
                             Ytelseskomponent(
                                 YtelseskomponentType.GAP.name,
                                 444

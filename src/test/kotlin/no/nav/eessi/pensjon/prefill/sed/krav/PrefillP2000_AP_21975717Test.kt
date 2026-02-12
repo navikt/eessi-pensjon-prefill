@@ -81,7 +81,7 @@ class PrefillP2000_AP_21975717Test {
                 ytelsePerMaaned = listOf(YtelsePerMaaned(
                     fom = LocalDate.of(2017, 6, 16),
                     belop = 123,
-                    ytelseskomponentListe = emptyList()
+                    ytelseskomponent = emptyList()
                 )),
                 forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
                 status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,

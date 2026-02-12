@@ -46,7 +46,7 @@ object VedtakPensjonDataHelper {
         val keylist = keys.split(",")
         var summer = 0
         keylist.forEach { keyword ->
-            ytelse.ytelseskomponentListe?.forEach { it2 ->
+            ytelse.ytelseskomponent?.forEach { it2 ->
                 if (keyword.trim() == it2.ytelsesKomponentType) {
                     summer += it2.belopTilUtbetaling
                 }

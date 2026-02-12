@@ -159,7 +159,7 @@ class SedPrefillIntegrationSpringTest {
                     mottarMinstePensjonsniva = false,
                     vinnendeBeregningsmetode = "FOLKETRYGD",
                     belop = 16644,
-                    ytelseskomponentListe = listOf(
+                    ytelseskomponent = listOf(
                         Ytelseskomponent(
                             ytelsesKomponentType = "GP", belopTilUtbetaling = 8322
                         ), Ytelseskomponent(
@@ -276,7 +276,7 @@ class SedPrefillIntegrationSpringTest {
                     P2xxxMeldingOmPensjonDto.YtelsePerMaaned(
                         fom = LocalDate.parse("2019-06-01"),
                         belop = 18384,
-                        ytelseskomponentListe = listOf(
+                        ytelseskomponent = listOf(
                             Ytelseskomponent(
                                 ytelsesKomponentType = "UT_ORDINER", belopTilUtbetaling = 18384
                             )
@@ -574,7 +574,7 @@ class SedPrefillIntegrationSpringTest {
                 P2xxxMeldingOmPensjonDto.YtelsePerMaaned(
                     fom = LocalDate.parse(ytelseNode.path("fom").asText().substring(0, 10)),
                     belop = ytelseNode.path("belop").asInt(),
-                    ytelseskomponentListe = ytelseNode
+                    ytelseskomponent = ytelseNode
                         .path("ytelseskomponentListe")
                         .map { kompNode ->
                             Ytelseskomponent(
@@ -623,7 +623,7 @@ class SedPrefillIntegrationSpringTest {
                     P2xxxMeldingOmPensjonDto.YtelsePerMaaned(
                         fom = LocalDate.parse("2016-03-01"),
                         belop = 14574,
-                        ytelseskomponentListe = listOf(
+                        ytelseskomponent = listOf(
                             Ytelseskomponent(
                                 ytelsesKomponentType = "GP", belopTilUtbetaling = 4768
                             ),
@@ -809,7 +809,7 @@ class SedPrefillIntegrationSpringTest {
                     P2xxxMeldingOmPensjonDto.YtelsePerMaaned(
                         fom = LocalDate.parse("2018-08-01"),
                         belop = 21232,
-                        ytelseskomponentListe = listOf(
+                        ytelseskomponent = listOf(
                             Ytelseskomponent(
                                 ytelsesKomponentType = "GP", belopTilUtbetaling = 7034
                             ),

@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.prefill.models.pensjon
 
 import no.nav.eessi.pensjon.prefill.models.VedtakInterface
-import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK
 import java.time.LocalDate
 
 data class P6000MeldingOmVedtakDto(
@@ -44,8 +43,8 @@ data class P6000MeldingOmVedtakDto(
         val mottarMinstePensjonsniva: Boolean, // P6000
         val vinnendeBeregningsmetode: String, //P6000
         override val belop: Int, // P2000, P2200, P6000
-        override val ytelseskomponentListe: List<Ytelseskomponent>, //P6000
-    ) : YtelsePerMndBase(fom, belop,ytelseskomponentListe)
+        override val ytelseskomponent: List<Ytelseskomponent>, //P6000
+    ) : YtelsePerMndBase(fom, belop,ytelseskomponent)
 
     data class Trygdetid(
         val fom: LocalDate, //P6000

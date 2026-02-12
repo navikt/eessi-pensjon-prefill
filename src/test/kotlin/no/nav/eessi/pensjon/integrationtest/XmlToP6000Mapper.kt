@@ -113,7 +113,7 @@ object XmlToP6000Mapper {
                 mottarMinstePensjonsniva = yNode.findFieldByLocalName("mottarMinstePensjonsniva")?.asBoolean() ?: false,
                 vinnendeBeregningsmetode = yNode.findFieldByLocalName("vinnendeBeregningsmetode")?.asText() ?: "",
                 belop = yNode.findFieldByLocalName("belop")?.asInt() ?: 0,
-                ytelseskomponentListe = yNode.findFieldByLocalName("ytelseskomponentListe")?.map { kompNode ->
+                ytelseskomponent = yNode.findFieldByLocalName("ytelseskomponentListe")?.map { kompNode ->
                     Ytelseskomponent(
                         ytelsesKomponentType = kompNode.findFieldByLocalName("ytelsesKomponentType")?.asText() ?: "",
                         belopTilUtbetaling = kompNode.findFieldByLocalName("belopTilUtbetaling")?.asInt() ?: 0

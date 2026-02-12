@@ -52,7 +52,7 @@ object XmlToP2xxxMapper {
                 P2xxxMeldingOmPensjonDto.YtelsePerMaaned(
                     fom = LocalDate.parse(ytelseNode.path("fom").asText().substring(0, 10)),
                     belop = ytelseNode.path("belop").asInt(),
-                    ytelseskomponentListe = ytelseNode
+                    ytelseskomponent = ytelseNode
                         .path("ytelseskomponentListe")
                         .map { kompNode ->
                             Ytelseskomponent(
@@ -131,7 +131,7 @@ object XmlToP2xxxMapper {
                 P2xxxMeldingOmPensjonDto.YtelsePerMaaned(
                     fom = LocalDate.parse(ytelseNode.path("fom").asText().substring(0, 10)),
                     belop = ytelseNode.path("belop").asInt(),
-                    ytelseskomponentListe = ytelseNode
+                    ytelseskomponent = ytelseNode
                         .path("ytelseskomponentListe")
                         .map { kompNode ->
                             Ytelseskomponent(

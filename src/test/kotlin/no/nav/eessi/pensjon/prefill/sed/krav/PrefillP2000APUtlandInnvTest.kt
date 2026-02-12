@@ -78,7 +78,7 @@ class PrefillP2000APUtlandInnvTest {
                         belop = 123,
                         
                         
-                        ytelseskomponentListe = ytelesTyper?.map { type ->
+                        ytelseskomponent = ytelesTyper?.map { type ->
                             Ytelseskomponent(
                                 YtelseskomponentType.valueOf(type).name,
                                 444
