@@ -85,7 +85,7 @@ class PrefillErrorIntegrationTest {
                         kravType = EessiFellesDto.EessiKravGjelder.REVURD,
                         virkningstidspunkt = null,
                         kravStatus = EessiFellesDto.EessiSakStatus.AVSL,
-                        kravArsak = EessiFellesDto.EessiKravAarsak.GJNL_SKAL_VURD
+                        kravAarsak = EessiFellesDto.EessiKravAarsak.GJNL_SKAL_VURD
                     )
                 ),
                 ytelsePerMaaned = emptyList(),

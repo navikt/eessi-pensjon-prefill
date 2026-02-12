@@ -49,7 +49,7 @@ class PrefillP2100BarnepensjonUtlandInnv {
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
                         mottattDato = LocalDate.of(2020, 8, 20),
                         kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
-                        kravArsak = EessiFellesDto.EessiKravAarsak.TILST_DOD,
+                        kravAarsak = EessiFellesDto.EessiKravAarsak.TILST_DOD,
                         virkningstidspunkt = LocalDate.of(2015, 11, 25),
                     )
                 ),

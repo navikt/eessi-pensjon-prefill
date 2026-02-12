@@ -39,7 +39,7 @@ object KravHistorikkHelper {
     }
 
     fun hentKravhistorikkForGjenlevende(kravHistorikkListe: List<KravHistorikk>?): KravHistorikk? {
-            val kravHistorikk = kravHistorikkListe?.filter { krav -> krav.kravArsak == EessiFellesDto.EessiKravAarsak.GJNL_SKAL_VURD || krav.kravArsak == EessiFellesDto.EessiKravAarsak.TILST_DOD }
+            val kravHistorikk = kravHistorikkListe?.filter { krav -> krav.kravAarsak == EessiFellesDto.EessiKravAarsak.GJNL_SKAL_VURD || krav.kravAarsak == EessiFellesDto.EessiKravAarsak.TILST_DOD }
             if (kravHistorikk?.isNotEmpty() == true) {
                 return kravHistorikk.first()
             }
@@ -48,7 +48,7 @@ object KravHistorikkHelper {
     }
 
     fun hentKravhistorikkForGjenlevendeOgNySoknad(kravHistorikkListe: List<KravHistorikk>?): KravHistorikk? {
-        val kravHistorikk = kravHistorikkListe?.filter { krav -> krav.kravArsak == EessiFellesDto.EessiKravAarsak.GJNL_SKAL_VURD || krav.kravArsak == EessiFellesDto.EessiKravAarsak.TILST_DOD || krav.kravArsak == EessiFellesDto.EessiKravAarsak.NY_SOKNAD }
+        val kravHistorikk = kravHistorikkListe?.filter { krav -> krav.kravAarsak == EessiFellesDto.EessiKravAarsak.GJNL_SKAL_VURD || krav.kravAarsak == EessiFellesDto.EessiKravAarsak.TILST_DOD || krav.kravAarsak == EessiFellesDto.EessiKravAarsak.NY_SOKNAD }
         if (kravHistorikk?.isNotEmpty() == true) {
             return kravHistorikk.first()
         }
@@ -87,7 +87,7 @@ object KravHistorikkHelper {
         if (sortList == null || sortList.size > 1) return null
         logger.debug("leter etter kravtype: $penKravtype")
         return sortList.firstOrNull { kravhist -> kravhist.kravType == penKravtype}
-            .also { logger.debug("fant ${it?.kravType} med kravÅrsak: ${it?.kravArsak} med virkningstidspunkt dato : ${it?.virkningstidspunkt}") }
+            .also { logger.debug("fant ${it?.kravType} med kravÅrsak: ${it?.kravAarsak} med virkningstidspunkt dato : ${it?.virkningstidspunkt}") }
 
     }
 

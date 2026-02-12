@@ -51,7 +51,7 @@ object PensjonsInformasjonHelper {
         kravId = kravId,
         kravType = kravType,
         kravStatus = kravStatus,
-        kravArsak = kravArsak,
+        kravAarsak = kravArsak,
         mottattDato = mottattDato,
         virkningstidspunkt = virkningstidspunkt
     )

@@ -31,7 +31,7 @@ data class P2xxxMeldingOmPensjonDto(
         val kravId: String? = null,
         val kravType: EessiFellesDto.EessiKravGjelder? = null,
         val kravStatus: EessiFellesDto.EessiSakStatus? = null,
-        val kravArsak: EessiFellesDto.EessiKravAarsak? = null,
+        val kravAarsak: EessiFellesDto.EessiKravAarsak? = null,
         val mottattDato: LocalDate? = null,
         val virkningstidspunkt: LocalDate? = null,
     )

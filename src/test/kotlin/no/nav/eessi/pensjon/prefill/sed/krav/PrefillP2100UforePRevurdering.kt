@@ -44,7 +44,7 @@ class PrefillP2100UforePRevurdering {
                         mottattDato = LocalDate.of(2020, 8, 1),
                         kravType = EessiKravGjelder.F_BH_KUN_UTL,
                         virkningstidspunkt = LocalDate.of(2015, 11, 25),
-                        kravArsak = EessiKravAarsak.GJNL_SKAL_VURD
+                        kravAarsak = EessiKravAarsak.GJNL_SKAL_VURD
                     )
                 ),
                 ytelsePerMaaned = emptyList(),

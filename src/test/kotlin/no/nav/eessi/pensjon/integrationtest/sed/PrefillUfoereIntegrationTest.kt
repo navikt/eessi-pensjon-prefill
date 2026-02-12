@@ -105,7 +105,7 @@ class PrefillUfoereIntegrationTest {
                         kravType = EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL,
                         virkningstidspunkt = LocalDate.parse("2019-07-15"),
                         kravStatus = EessiFellesDto.EessiSakStatus.INNV,
-                        kravArsak = EessiFellesDto.EessiKravAarsak.NY_SOKNAD
+                        kravAarsak = EessiFellesDto.EessiKravAarsak.NY_SOKNAD
                     )
                 ),
                 ytelsePerMaaned = emptyList(),

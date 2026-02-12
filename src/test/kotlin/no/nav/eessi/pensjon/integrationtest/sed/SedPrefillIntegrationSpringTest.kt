@@ -265,7 +265,7 @@ class SedPrefillIntegrationSpringTest {
             kravType = EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL,
             virkningstidspunkt = LocalDate.parse("2019-06-01"),
             kravStatus = kravStatus,
-            kravArsak = kravArsak
+            kravAarsak = kravArsak
         )
 
         val sakMock = P2xxxMeldingOmPensjonDto.Sak(
@@ -699,7 +699,7 @@ class SedPrefillIntegrationSpringTest {
                         kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
                         virkningstidspunkt = LocalDate.parse("2019-06-01"),
                         kravStatus = EessiFellesDto.EessiSakStatus.INGEN_STATUS,
-                        kravArsak = EessiFellesDto.EessiKravAarsak.NY_SOKNAD
+                        kravAarsak = EessiFellesDto.EessiKravAarsak.NY_SOKNAD
                     )
                 ),
                 ytelsePerMaaned = emptyList(),
