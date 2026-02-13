@@ -42,7 +42,7 @@ data class P6000MeldingOmVedtakDto(
         override val fom: LocalDate, // P2000, P2200, P6000
         val tom: LocalDate?, // P6000
         val mottarMinstePensjonsniva: Boolean, // P6000
-        val vinnendeBeregningsmetode: String, //P6000
+        val vinnendeBeregningsmetode: String? = null, //P6000
         override val belop: Int, // P2000, P2200, P6000
         @JsonProperty("ytelseskomponenter")
         override val ytelseskomponent: List<Ytelseskomponent>, //P6000

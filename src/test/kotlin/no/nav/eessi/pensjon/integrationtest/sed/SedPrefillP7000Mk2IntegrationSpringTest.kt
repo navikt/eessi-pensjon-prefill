@@ -163,7 +163,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         //4.1.[1].6.[1].1.Utbetales fra
         assertEquals("2020-10-01", tildeltepensjoner.ytelser?.firstOrNull()?.startdatoretttilytelse )
         //4.1.[1].6.[1].1.Utbetales til
-        assertEquals("2030-10-01", tildeltepensjoner.ytelser?.firstOrNull()?.sluttdatoUtbetaling )
+        assertEquals("2030-10-01", tildeltepensjoner.ytelser?.firstOrNull()?.sluttdatoutbetaling )
         //4.1.[1].6.[1].3.Bruttopensjon
         assertEquals("523", belop.beloepBrutto)
         //4.1.[1].6.[1].4.Valuta
