@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 data class P6000MeldingOmVedtakDto(
     val avdod: Avdod?, //P6000
-    val sakAlder: SakAlder?, //P2000, P6000, sikkert flere (sakstype).
+    val sakType: EessiFellesDto.EessiSakType, //P2000, P6000, sikkert flere (sakstype).
     val trygdeavtale: Trygdeavtale?, //P6000
     val trygdetidListe: List<Trygdetid>, // P6000
     val vedtak: Vedtak, // P2000, P2200, P6000
@@ -20,9 +20,9 @@ data class P6000MeldingOmVedtakDto(
         val avdodMorBoddArbeidetUtland: Boolean?, // P6000
     )
 
-    data class SakAlder(
-        val sakType: EessiFellesDto.EessiSakType, // P2000 blant mange andre
-    )
+//    data class SakAlder(
+//        val sakType: EessiFellesDto.EessiSakType, // P2000 blant mange andre
+//    )
 
     data class Trygdeavtale(
         val erArt10BruktGP: Boolean?, // P6000

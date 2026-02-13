@@ -42,10 +42,8 @@ object XmlToP6000Mapper {
 
         // SakAlder
         val sakAlderNode = root.findFieldByLocalName("sakAlder") ?: root.path("sakAlder")
-        val sakAlder = P6000MeldingOmVedtakDto.SakAlder(
-            sakType = sakAlderNode.findFieldByLocalName("sakType")?.asText()?.let { EessiFellesDto.EessiSakType.valueOf(it) }
+        val sakType = sakAlderNode.findFieldByLocalName("sakType")?.asText()?.let { EessiFellesDto.EessiSakType.valueOf(it) }
                 ?: EessiFellesDto.EessiSakType.ALDER
-        )
 
         // Trygdeavtale
         val trygdeavtaleNode = root.findFieldByLocalName("trygdeavtale") ?: root.path("trygdeavtale")
@@ -124,7 +122,7 @@ object XmlToP6000Mapper {
 
         return P6000MeldingOmVedtakDto(
             avdod = avdod,
-            sakAlder = sakAlder,
+            sakType = sakType,
             trygdeavtale = trygdeavtale,
             trygdetidListe = trygdetidListe,
             vedtak = vedtak!!,

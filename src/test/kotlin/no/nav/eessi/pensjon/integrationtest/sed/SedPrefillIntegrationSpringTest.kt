@@ -131,9 +131,9 @@ class SedPrefillIntegrationSpringTest {
                 avdodBoddArbeidetUtland = null,
                 avdodFarBoddArbeidetUtland = true,
                 avdodMorBoddArbeidetUtland = true
-            ), sakAlder = P6000MeldingOmVedtakDto.SakAlder(
-                sakType = EessiFellesDto.EessiSakType.BARNEP // Assuming KSAK has BARNEP as an enum value
-            ), trygdeavtale = null, // No data in XML for Trygdeavtale
+            ),
+            sakType = EessiFellesDto.EessiSakType.BARNEP, // Assuming KSAK has BARNEP as an enum value
+            trygdeavtale = null, // No data in XML for Trygdeavtale
             trygdetidListe = listOf(
                 P6000MeldingOmVedtakDto.Trygdetid(
                     fom = LocalDate.of(2008, 1, 13), tom = LocalDate.of(2020, 8, 20)
@@ -350,9 +350,8 @@ class SedPrefillIntegrationSpringTest {
 //        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-AP-Avslag.xml")
 
         val mockP6000MeldingOmVedtakDto = P6000MeldingOmVedtakDto(
-            sakAlder = P6000MeldingOmVedtakDto.SakAlder(
-                sakType = EessiFellesDto.EessiSakType.ALDER
-            ), trygdeavtale = null, // No data in XML for Trygdeavtale
+            sakType = EessiFellesDto.EessiSakType.ALDER,
+            trygdeavtale = null, // No data in XML for Trygdeavtale
             avdod = null,
             vedtak = P6000MeldingOmVedtakDto.Vedtak(
                 virkningstidspunkt = LocalDate.parse("2020-12-16"),

@@ -91,7 +91,7 @@ object PrefillPensjonVedtaksbelop {
         val ytelsePerMaaned = pendata.ytelsePerMaanedListe
                 .asSequence().sortedBy { it.fom }.toMutableList()
 
-        val sakType = pendata.sakAlder.sakType
+        val sakType = pendata.sakType
 
         return ytelsePerMaaned.map {
            createBeregningItem(it, sakType)

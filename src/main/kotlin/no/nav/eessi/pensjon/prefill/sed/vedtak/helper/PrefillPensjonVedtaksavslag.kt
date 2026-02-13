@@ -66,7 +66,7 @@ object PrefillPensjonVedtaksavslag {
         if (pendata.vilkarsvurderingListe.isEmpty()) {
             return null
         }
-        val sakType = pendata.sakAlder.sakType
+        val sakType = pendata.sakType
 
         val erAvslagVilkarsproving = VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse(pendata) == "AVSL"
 

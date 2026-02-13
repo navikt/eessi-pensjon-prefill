@@ -61,7 +61,7 @@ object PrefillPensjonReduksjon {
      */
     private fun createReduksjonType(pendata: P6000MeldingOmVedtakDto): String? {
         logger.debug("5.1.1         ReduksjonType")
-        val sakType = pendata.sakAlder.sakType
+        val sakType = pendata.sakType
 
         if (sakType.name == KSAK.UFOREP.name && hentTilleggsPensjon(pendata))
             return "02"
@@ -90,7 +90,7 @@ object PrefillPensjonReduksjon {
      */
     private fun createReduksjonArtikkelType(pendata: P6000MeldingOmVedtakDto): String? {
         logger.debug("5.1.4         ReduksjonArtikkelType")
-        val sakType = pendata.sakAlder.sakType
+        val sakType = pendata.sakType
 
         if (sakType.name == KSAK.UFOREP.name && hentTilleggsPensjon(pendata))
             return "02"

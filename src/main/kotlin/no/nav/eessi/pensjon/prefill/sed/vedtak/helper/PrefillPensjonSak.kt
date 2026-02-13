@@ -44,7 +44,7 @@ object PrefillPensjonSak {
     */
     private fun createArtikkel54(pendata: P6000MeldingOmVedtakDto): String? {
         logger.debug("6.1       createArtikkel54")
-        return if (EessiFellesDto.EessiSakType.UFOREP == pendata.sakAlder.sakType) {
+        return if (EessiFellesDto.EessiSakType.UFOREP == pendata.sakType) {
             return "0"
         } else null
     }

@@ -24,7 +24,7 @@ data class PensjonCollection (
     @Suppress("UNCHECKED_CAST")
     fun <T> hentSak(): T? {
         return when (sedType) {
-            SedType.P6000 -> p6000Data?.sakAlder as? T
+            SedType.P6000 -> p6000Data?.sakType as? T
             SedType.P2000, SedType.P2100, SedType.P2200 -> p2xxxMeldingOmPensjonDto?.sak as? T
             else -> null
         }

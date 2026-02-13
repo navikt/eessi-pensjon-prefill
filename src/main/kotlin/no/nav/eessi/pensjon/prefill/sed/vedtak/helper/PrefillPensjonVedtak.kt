@@ -71,7 +71,7 @@ object PrefillPensjonVedtak {
      * 04, 05 og 06 benyttes ikke
      */
     fun createVedtakTypePensionWithRule(pendata: P6000MeldingOmVedtakDto): String {
-        val sakType = pendata.sakAlder.sakType
+        val sakType = pendata.sakType
         logger.info("4.1.1         VedtakTypePension: $sakType")
 
         return when (sakType) {
@@ -100,7 +100,7 @@ object PrefillPensjonVedtak {
     private fun createVedtakGrunnlagPentionWithRule(pendata: P6000MeldingOmVedtakDto): BasertPaa? {
         logger.info("4.1.2         VedtakGrunnlagPention")
 
-        val sakType = pendata.sakAlder.sakType
+        val sakType = pendata.sakType
         logger.info("              Saktype: $sakType")
 
         //hvis avslag returner vi tomt verdi
@@ -146,7 +146,7 @@ object PrefillPensjonVedtak {
     private fun createTypeVedtakPentionWithRule(pendata: P6000MeldingOmVedtakDto): String? {
         logger.info("4.1.4         TypeVedtakPention (vedtak.resultat")
 
-        val sakType = pendata.sakAlder.sakType
+        val sakType = pendata.sakType
         val kravGjelder = pendata.vedtak.kravGjelder
 
         val vedtaksresultat = hentVilkarsResultatHovedytelse(pendata)
@@ -205,9 +205,9 @@ object PrefillPensjonVedtak {
      *  [0] No
      */
     private fun createFramtidigtrygdetid(pendata: P6000MeldingOmVedtakDto): String {
-        logger.info("4.1.12        Framtidigtrygdetid ${pendata.sakAlder.sakType}")
+        logger.info("4.1.12        Framtidigtrygdetid ${pendata.sakType}")
 
-        return when (pendata.sakAlder.sakType) {
+        return when (pendata.sakType) {
             EessiFellesDto.EessiSakType.ALDER -> "0"
             else -> {
                 "1"
@@ -224,9 +224,9 @@ object PrefillPensjonVedtak {
      *
      */
     private fun createOpptjeningForsikredeAnnen(pendata: P6000MeldingOmVedtakDto): String? {
-        logger.info("4.1.11        OpptjeningForsikredeAnnen, sakType: ${pendata.sakAlder.sakType}")
+        logger.info("4.1.11        OpptjeningForsikredeAnnen, sakType: ${pendata.sakType}")
 
-        val sakType = pendata.sakAlder.sakType
+        val sakType = pendata.sakType
 
         val resultatGjenlevendetillegg = pendata.vilkarsvurderingListe.firstOrNull()?.harResultatGjenlevendetillegg?: false
         val vinnendeMetode = hentVinnendeBergeningsMetode(pendata) ?: ""

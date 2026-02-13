@@ -69,7 +69,7 @@ class PrefillControllerTest {
         )
 
         every { pesysService.hentP6000data(any()) } returns P6000MeldingOmVedtakDto(
-            sakAlder = P6000MeldingOmVedtakDto.SakAlder(EessiFellesDto.EessiSakType.ALDER),
+            sakType = EessiFellesDto.EessiSakType.ALDER,
             avdod = P6000MeldingOmVedtakDto.Avdod(null, null, null, null),
             trygdeavtale = Trygdeavtale(erArt10BruktGP = true, erArt10BruktTP = true),
             trygdetidListe = emptyList(),
