@@ -278,8 +278,7 @@ object PrefillP2xxxPensjon {
      *  Start date of entitlement to benefits  - trenger ikke fylles ut
      */
     private fun createStartdatoForRettTilYtelse(pensak: V1Sak): String? {
-        logger.debug("4.1.7         Startdato for ytelse (forsteVirkningstidspunkt) ")
-        return pensak.forsteVirkningstidspunkt?.simpleFormat()
+        return pensak.forsteVirkningstidspunkt?.simpleFormat().also { logger.debug("4.1.7         Startdato for ytelse (forsteVirkningstidspunkt) ") }
     }
 
     private fun createInstitusjon(penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): Institusjon {
