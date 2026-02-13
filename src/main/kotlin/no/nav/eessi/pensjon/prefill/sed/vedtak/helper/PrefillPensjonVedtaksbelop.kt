@@ -72,7 +72,7 @@ object PrefillPensjonVedtaksbelop {
         logger.info("4.1.9         ekstra tilleggpensjon")
 
         var summer = 0
-        pendata.ytelsePerMaanedListe.forEach {
+        pendata.ytelsePerMaaned.forEach {
             summer += VedtakPensjonDataHelper.hentYtelseskomponentBelop("GJENLEV,TBF,TBS,PP,SKJERMT", it)
         }
         val ukjent = Ukjent(beloepBrutto = BeloepBrutto(ytelseskomponentAnnen = summer.toString()))
@@ -88,7 +88,7 @@ object PrefillPensjonVedtaksbelop {
     fun createBeregningItemList(pendata: P6000MeldingOmVedtakDto): List<BeregningItem> {
         logger.info("4.1.7        BeregningItemList")
 
-        val ytelsePerMaaned = pendata.ytelsePerMaanedListe
+        val ytelsePerMaaned = pendata.ytelsePerMaaned
                 .asSequence().sortedBy { it.fom }.toMutableList()
 
         val sakType = pendata.sakType

@@ -12,7 +12,7 @@ object PrefillPensjonVedtaksavslag {
 
     fun sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata: P6000MeldingOmVedtakDto): Boolean {
         try {
-            val hovedytelseAvslag = pendata.vilkarsvurderingListe.first()
+            val hovedytelseAvslag = pendata.vilkarsvurdering.first()
             if (hovedytelseAvslag.resultatHovedytelse == "AVSL" || hovedytelseAvslag.avslagHovedytelse == "AVSL") {
                 return true
             }
@@ -63,7 +63,7 @@ object PrefillPensjonVedtaksavslag {
     fun createAvlsagsBegrunnelse(pendata: P6000MeldingOmVedtakDto): String? {
         logger.info("4.1.13.1          AvlsagsBegrunnelse")
 
-        if (pendata.vilkarsvurderingListe.isEmpty()) {
+        if (pendata.vilkarsvurdering.isEmpty()) {
             return null
         }
         val sakType = pendata.sakType
@@ -71,7 +71,7 @@ object PrefillPensjonVedtaksavslag {
         val erAvslagVilkarsproving = VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse(pendata) == "AVSL"
 
         val harBoddArbeidetUtland = VedtakPensjonDataHelper.harBoddArbeidetUtland(pendata)
-        val erTrygdetidListeTom = pendata.trygdetidListe.isEmpty()
+        val erTrygdetidListeTom = pendata.trygdetid.isEmpty()
 
         val erLavtTidligUttak = VedtakPensjonDataHelper.isVilkarsvurderingAvslagHovedytelseSamme("LAVT_TIDLIG_UTTAK", pendata)
         val erUnder62 = VedtakPensjonDataHelper.isVilkarsvurderingAvslagHovedytelseSamme("UNDER_62", pendata)
@@ -101,7 +101,7 @@ object PrefillPensjonVedtaksavslag {
                             (erHensiktmessigBeh || erHensArbrettTiltak) && erAvslagVilkarsproving -> return "08"
                             erNedsattInntEvne && erAvslagVilkarsproving -> return "04"
                             VedtakPensjonDataHelper.erTrygdeTid(pendata) && erForutMedlem && erAvslagVilkarsproving -> return "02"
-                            pendata.trygdetidListe.isEmpty() && erForutMedlem && erAvslagVilkarsproving -> return "01"
+                            pendata.trygdetid.isEmpty() && erForutMedlem && erAvslagVilkarsproving -> return "01"
                         }
                     }
                     erAvslagVilkarsproving -> {

@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.prefill.models.pensjon
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import no.nav.eessi.pensjon.prefill.models.VedtakInterface
 import java.time.LocalDate
 
@@ -7,10 +8,10 @@ data class P6000MeldingOmVedtakDto(
     val avdod: Avdod?, //P6000
     val sakType: EessiFellesDto.EessiSakType, //P2000, P6000, sikkert flere (sakstype).
     val trygdeavtale: Trygdeavtale?, //P6000
-    val trygdetidListe: List<Trygdetid>, // P6000
+    val trygdetid: List<Trygdetid>, // P6000
     val vedtak: Vedtak, // P2000, P2200, P6000
-    val vilkarsvurderingListe: List<Vilkarsvurdering>, // P6000
-    val ytelsePerMaanedListe: List<YtelsePerMaaned>, //P2000, P2200, P6000
+    val vilkarsvurdering: List<Vilkarsvurdering>, // P6000
+    val ytelsePerMaaned: List<YtelsePerMaaned>, //P2000, P2200, P6000
 ) {
 
     data class Avdod(
@@ -43,6 +44,7 @@ data class P6000MeldingOmVedtakDto(
         val mottarMinstePensjonsniva: Boolean, // P6000
         val vinnendeBeregningsmetode: String, //P6000
         override val belop: Int, // P2000, P2200, P6000
+        @JsonProperty("ytelseskomponenter")
         override val ytelseskomponent: List<Ytelseskomponent>, //P6000
     ) : YtelsePerMndBase(fom, belop,ytelseskomponent)
 

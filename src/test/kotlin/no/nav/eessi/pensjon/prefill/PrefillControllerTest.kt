@@ -72,7 +72,7 @@ class PrefillControllerTest {
             sakType = EessiFellesDto.EessiSakType.ALDER,
             avdod = P6000MeldingOmVedtakDto.Avdod(null, null, null, null),
             trygdeavtale = Trygdeavtale(erArt10BruktGP = true, erArt10BruktTP = true),
-            trygdetidListe = emptyList(),
+            trygdetid = emptyList(),
             vedtak = P6000MeldingOmVedtakDto.Vedtak(
                 LocalDate.now(),
                 F_BH_MED_UTL.name,
@@ -80,8 +80,8 @@ class PrefillControllerTest {
                 true,
                 LocalDate.now(),
             ),
-            vilkarsvurderingListe = emptyList(),
-            ytelsePerMaanedListe = emptyList()
+            vilkarsvurdering = emptyList(),
+            ytelsePerMaaned = emptyList()
         )
 
         every {personDataService.hentFnrEllerNpidFraAktoerService(any())} returns "12345"

@@ -26,8 +26,8 @@ object VedtakPensjonDataHelper {
     }
 
     fun erTrygdeTid(pendata: P6000MeldingOmVedtakDto, storreEnn: Int = 30, mindreEnn: Int = 360): Boolean {
-        if (pendata.trygdetidListe.isEmpty()) { logger.warn("trygdetidListe er tom"); return false }
-        val days = summerTrygdeTid(pendata.trygdetidListe)
+        if (pendata.trygdetid.isEmpty()) { logger.warn("trygdetidListe er tom"); return false }
+        val days = summerTrygdeTid(pendata.trygdetid)
 
         return days in (storreEnn + 1) until mindreEnn
     }
@@ -73,7 +73,7 @@ object VedtakPensjonDataHelper {
     }
 
     private fun hentV1Vilkarsvurdering(pendata: P6000MeldingOmVedtakDto): P6000MeldingOmVedtakDto.Vilkarsvurdering? {
-        return pendata.vilkarsvurderingListe.getOrNull(0)
+        return pendata.vilkarsvurdering.getOrNull(0)
     }
 
     fun hentVilkarsResultatHovedytelse(pendata: P6000MeldingOmVedtakDto): String {
@@ -95,6 +95,6 @@ object VedtakPensjonDataHelper {
     }
 
     fun hentSisteYtelsePerMaaned(pendata: P6000MeldingOmVedtakDto): P6000MeldingOmVedtakDto.YtelsePerMaaned? {
-        return pendata.ytelsePerMaanedListe.maxByOrNull { it.fom }
+        return pendata.ytelsePerMaaned.maxByOrNull { it.fom }
     }
 }

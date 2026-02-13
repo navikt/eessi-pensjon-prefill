@@ -124,10 +124,10 @@ object XmlToP6000Mapper {
             avdod = avdod,
             sakType = sakType,
             trygdeavtale = trygdeavtale,
-            trygdetidListe = trygdetidListe,
+            trygdetid = trygdetidListe,
             vedtak = vedtak!!,
-            vilkarsvurderingListe = vilkarsvurderingListe,
-            ytelsePerMaanedListe = ytelsePerMaanedListe
+            vilkarsvurdering = vilkarsvurderingListe,
+            ytelsePerMaaned = ytelsePerMaanedListe
         )
     }
 

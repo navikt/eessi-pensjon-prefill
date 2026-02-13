@@ -117,9 +117,9 @@ object PrefillP6000Pensjon {
     }
 
     private fun erAvslag(pesysPrefillData: P6000MeldingOmVedtakDto): Boolean {
-        val vilkar = pesysPrefillData.vilkarsvurderingListe
-        val ytelse = pesysPrefillData.ytelsePerMaanedListe
-        val erAvslag = "AVSL" == pesysPrefillData.vilkarsvurderingListe.maxByOrNull { it.fom }?.avslagHovedytelse
+        val vilkar = pesysPrefillData.vilkarsvurdering
+        val ytelse = pesysPrefillData.ytelsePerMaaned
+        val erAvslag = "AVSL" == pesysPrefillData.vilkarsvurdering.maxByOrNull { it.fom }?.avslagHovedytelse
         return (erAvslag || (vilkar.isEmpty() && ytelse.isEmpty()) || ytelse.isEmpty())
     }
 }

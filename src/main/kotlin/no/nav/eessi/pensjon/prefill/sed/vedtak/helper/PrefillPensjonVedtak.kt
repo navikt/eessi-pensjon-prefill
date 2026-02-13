@@ -228,7 +228,7 @@ object PrefillPensjonVedtak {
 
         val sakType = pendata.sakType
 
-        val resultatGjenlevendetillegg = pendata.vilkarsvurderingListe.firstOrNull()?.harResultatGjenlevendetillegg?: false
+        val resultatGjenlevendetillegg = pendata.vilkarsvurdering.firstOrNull()?.harResultatGjenlevendetillegg?: false
         val vinnendeMetode = hentVinnendeBergeningsMetode(pendata) ?: ""
 
         if ((EessiFellesDto.EessiSakType.ALDER == sakType || EessiFellesDto.EessiSakType.UFOREP == sakType) && !resultatGjenlevendetillegg)

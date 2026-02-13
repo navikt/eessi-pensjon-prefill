@@ -134,7 +134,7 @@ class SedPrefillIntegrationSpringTest {
             ),
             sakType = EessiFellesDto.EessiSakType.BARNEP, // Assuming KSAK has BARNEP as an enum value
             trygdeavtale = null, // No data in XML for Trygdeavtale
-            trygdetidListe = listOf(
+            trygdetid = listOf(
                 P6000MeldingOmVedtakDto.Trygdetid(
                     fom = LocalDate.of(2008, 1, 13), tom = LocalDate.of(2020, 8, 20)
                 )
@@ -144,7 +144,7 @@ class SedPrefillIntegrationSpringTest {
                 hovedytelseTrukket = false,
                 boddArbeidetUtland = false,
                 datoFattetVedtak = LocalDate.of(2020, 8, 21)
-            ), vilkarsvurderingListe = listOf(
+            ), vilkarsvurdering = listOf(
                 P6000MeldingOmVedtakDto.Vilkarsvurdering(
                     fom = LocalDate.of(2020, 8, 1),
                     vilkarsvurderingUforetrygd = null,
@@ -152,7 +152,7 @@ class SedPrefillIntegrationSpringTest {
                     harResultatGjenlevendetillegg = false,
                     avslagHovedytelse = null
                 )
-            ), ytelsePerMaanedListe = listOf(
+            ), ytelsePerMaaned = listOf(
                 P6000MeldingOmVedtakDto.YtelsePerMaaned(
                     fom = LocalDate.of(2020, 8, 1),
                     tom = null,
@@ -359,7 +359,7 @@ class SedPrefillIntegrationSpringTest {
                 hovedytelseTrukket = false,
                 boddArbeidetUtland = true,
                 datoFattetVedtak = LocalDate.parse("2020-12-16")
-            ), vilkarsvurderingListe = listOf(
+            ), vilkarsvurdering = listOf(
                 P6000MeldingOmVedtakDto.Vilkarsvurdering(
                     fom = LocalDate.parse("2020-11-01"),
                     vilkarsvurderingUforetrygd = null,
@@ -368,8 +368,8 @@ class SedPrefillIntegrationSpringTest {
                     avslagHovedytelse = "UNDER_3_AR_TT",
                 )
             ),
-            trygdetidListe = emptyList(),
-            ytelsePerMaanedListe = emptyList()
+            trygdetid = emptyList(),
+            ytelsePerMaaned = emptyList()
         )
         every { pesysService.hentP6000data(any()) } returns mockP6000MeldingOmVedtakDto
 
