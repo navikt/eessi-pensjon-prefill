@@ -17,7 +17,7 @@ object VedtakPensjonDataHelper {
     private fun harAvdodBoddArbeidetUtland(pesysPrefillData: P6000MeldingOmVedtakDto): Boolean {
         val avdod = pesysPrefillData.avdod ?: return false
 
-        return (!avdod.avdod.isNullOrBlank() && avdod.avdodBoddArbeidetUtland == true) ||
+        return (avdod.avdodBoddArbeidetUtland == true) ||
                 (avdod.avdodMorBoddArbeidetUtland == true || avdod.avdodFarBoddArbeidetUtland == true)
     }
 
