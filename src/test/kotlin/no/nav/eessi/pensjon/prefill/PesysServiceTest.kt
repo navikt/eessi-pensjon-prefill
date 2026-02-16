@@ -3,6 +3,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNull
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.test.web.client.MockRestServiceServer
@@ -24,22 +26,35 @@ class PesysServiceTest {
     }
 
     @Nested
-    inner class HentP2000Verdier{
+    inner class HentP2x00FellesVerdier {
 
-        @Test
-        fun `hentP2000data sender alle header-verdier`() {
-            server.expect(requestTo("/sed/p2000"))
+        @ParameterizedTest(name = "sed:{0}}")
+        @CsvSource(
+            value = ["p2000","p2100", "p2200"], nullValues = ["null"]
+        )
+        fun `henter verdier for `(sed: String?) {
+            server.expect(requestTo("/sed/$sed"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(header("vedtakId", "123"))
                 .andExpect(header("fnr", "456"))
                 .andExpect(header("sakId", "789"))
                 .andRespond(withSuccess("", MediaType.APPLICATION_JSON)) // empty body => null DTO
-
-            val result = pesysService.hentP2000data("123", "456", "789")
-
+            val result = when(sed) {
+                "p2000" -> pesysService.hentP2000data("123", "456", "789")
+                "p2100" -> pesysService.hentP2100data("123", "456", "789")
+                "p2200" -> pesysService.hentP2200data("123", "456", "789")
+                else -> {
+                    assert(false) { "Ugyldig sed-verdi i test: $sed" }
+                    null
+                }
+            }
             assertNull(result)
             server.verify()
         }
+    }
+
+    @Nested
+    inner class HentP2000Verdier{
 
         @Test
         fun `hentP2000data sender ikke vedtakId header naar den er null`() {
@@ -58,7 +73,7 @@ class PesysServiceTest {
 
         @Test
         fun `hentP2000data mapper alle verdier fra p2000-alder json til P2xxxMeldingOmPensjonDto`() {
-            val p2000Json = javaClass.getResource("/pesys-endepunkt-2026/p2000-alder.json")!!.readText()
+            val p2000Json = javaClass.getResource("/pesys-endepunkt-2026/p2000-pesys.json")!!.readText()
             server.expect(requestTo("/sed/p2000"))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(headerDoesNotExist("vedtakId"))
