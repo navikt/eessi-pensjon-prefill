@@ -6,7 +6,7 @@
 #
 # ******************************************************************************************************************
 
-name: Bygg, deploy publiser for branch RINA CDM
+name: Bygg, publiser og deploy branch til Q2
 
 on:
   push:
