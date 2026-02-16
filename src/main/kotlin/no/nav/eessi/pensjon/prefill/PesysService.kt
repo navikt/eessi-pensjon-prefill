@@ -26,7 +26,7 @@ class PesysService(
         )
 
     fun hentP2100data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        getWithHeaders("/sed/p21000",
+        getWithHeaders("/sed/p2100",
             "vedtakId" to vedtakId,
             "fnr" to fnr,
             "sakId" to sakId
