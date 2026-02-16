@@ -6,13 +6,13 @@
 #
 # ******************************************************************************************************************
 
-name: Bygg, deploy publiser for branch RINA CDM
+name: Bygg, publiser og deploy til Q2
 
 on:
   push:
     branches:
-      - 'feature/*'
       - '!feature/rina-cdm'
+      - 'feature/*'
 jobs:
   bygg_deploy_dev_publiser_tag:
     name: 'Bygg, publiser, deploy DEV, tag og dispatch deploy til PROD'
