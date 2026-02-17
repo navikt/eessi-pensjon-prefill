@@ -90,11 +90,8 @@ class InnhentingService(
                 validateInputs(penSak to "sakId", fnr to "fnr")
 
                 val p2000data = vedtaksId?.let { pesysService.hentP2000data(vedtaksId, fnr, penSak!!) }
-                if (p2000data?.sak?.sakType != EessiSakType.ALDER) {
-                    throw ResponseStatusExceptionFeilSak(prefillData, p2000data?.sak?.sakType)
-                }
                 PensjonCollection(
-                    p2xxxMeldingOmPensjonDto = p2000data.takeIf { p2000data.sak.sakType == EessiSakType.ALDER } ,
+                    p2xxxMeldingOmPensjonDto = p2000data.takeIf { p2000data?.sak?.sakType == EessiSakType.ALDER } ,
                     vedtakId = vedtaksId,
                     sedType = sedType
                 )
@@ -103,9 +100,6 @@ class InnhentingService(
                 validateInputs(penSak to "sakId", fnr to "fnr")
 
                 val p2100data = vedtaksId?.let { pesysService.hentP2100data(vedtaksId,fnr, penSak!!) }
-                if (p2100data?.sak?.sakType !in eessipensjonSakTyper) {
-                    throw ResponseStatusExceptionFeilSak(prefillData, p2100data?.sak?.sakType)
-                }
                 PensjonCollection(
                     p2xxxMeldingOmPensjonDto = p2100data.takeIf { p2100data?.sak?.sakType in eessipensjonSakTyper } ,
                     vedtakId = vedtaksId,
@@ -116,11 +110,8 @@ class InnhentingService(
                 validateInputs(penSak to "sakId", fnr to "fnr")
 
                 val p2200data = vedtaksId?.let { pesysService.hentP2200data(vedtaksId,fnr, penSak!!) }
-                if (p2200data?.sak?.sakType != EessiSakType.UFOREP) {
-                    throw ResponseStatusExceptionFeilSak(prefillData, p2200data?.sak?.sakType)
-                }
                 PensjonCollection(
-                    p2xxxMeldingOmPensjonDto = p2200data.takeIf { p2200data.sak.sakType == EessiSakType.UFOREP } ,
+                    p2xxxMeldingOmPensjonDto = p2200data.takeIf { p2200data?.sak?.sakType == EessiSakType.UFOREP } ,
                     vedtakId = vedtaksId,
                     sedType = sedType
                 )

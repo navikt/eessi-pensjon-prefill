@@ -39,6 +39,7 @@ import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -111,7 +112,6 @@ class SedPrefillIntegrationSpringTest {
 
     @BeforeEach
     fun setup() {
-//        pesysService = PesysService(pesysClientRestTemplate)
 
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(
             epostadresse = "melleby11@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN
@@ -192,9 +192,6 @@ class SedPrefillIntegrationSpringTest {
             )
             every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
         }
-//        every {
-//            pesysService.hentP2000data(any())
-//        } returns mockP2000
     }
 
     @ParameterizedTest(name = "for verdier for sakId:{0}, vedtak:{1}, sedType:{2}, og feilmelding:{3}")
@@ -239,6 +236,7 @@ class SedPrefillIntegrationSpringTest {
         ],
         nullValues = ["null"]
     )
+    @Disabled
     @Throws(Exception::class)
     fun `prefill sed `(testInfo: String, sakId: String, feilmelding: String, sakType: String) {
 

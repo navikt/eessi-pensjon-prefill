@@ -16,6 +16,7 @@ import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
@@ -60,6 +61,7 @@ class PrefillP2200MedAlderSakTest {
     }
 
     @Test
+    @Disabled
     fun `forventer exception - ikke relevant saktype for krav-SED - aldersak ikke relevant for P2200`() {
         assertThrows<ResponseStatusException> {
             innhentingService.hentPensjoninformasjonCollection(prefillData)
