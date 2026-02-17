@@ -60,6 +60,7 @@ class PrefillP2200UPUtlandInnvTest {
                 pensjon = P2200.pensjon,
                 nav = Nav(krav = P2200.nav?.krav)
         )
+        println("P2200: $P2200")
 
         assertNotNull(P2200ufor.nav?.krav)
         assertEquals("2019-07-15", P2200ufor.nav?.krav?.dato)

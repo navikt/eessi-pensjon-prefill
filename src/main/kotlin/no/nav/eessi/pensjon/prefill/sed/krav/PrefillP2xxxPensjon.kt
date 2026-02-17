@@ -123,6 +123,15 @@ object PrefillP2xxxPensjon {
                     gjenlevende = gjenlevende
                 )
             )  as T
+            MeldingOmPensjonP2200::class -> MeldingOmPensjonP2200(
+                melding = melding,
+                pensjon = P2200Pensjon(
+                    forespurtstartdato = ytelse.startdatoretttilytelse,
+                    etterspurtedokumenter = "P5000 and P6000",
+                    ytelser = listOf(ytelse),
+                    kravDato = krav,
+                )
+            )  as T
             else -> throw IllegalArgumentException("Unsupported type: ${T::class.simpleName}")
         }
     }
