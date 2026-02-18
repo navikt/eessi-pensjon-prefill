@@ -294,7 +294,7 @@ class SedPrefillIntegrationSpringTest {
         }.build().toJsonSkipEmpty()
 
         val response = prefillFraRestOgVerifiserResultet(apijson)
-        JSONAssert.assertEquals(response, validResponse, true)
+        JSONAssert.assertEquals(validResponse, response, true)
 
     }
 
