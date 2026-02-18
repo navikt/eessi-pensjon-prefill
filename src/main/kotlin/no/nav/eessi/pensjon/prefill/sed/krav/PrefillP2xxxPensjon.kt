@@ -16,6 +16,7 @@ import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.utils.simpleFormat
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
 import no.nav.pensjon.v1.sak.V1Sak
 import no.nav.pensjon.v1.vedtak.V1Vedtak
@@ -84,7 +85,7 @@ object PrefillP2xxxPensjon {
 
         logger.info("4.1           Informasjon om ytelser")
 
-        val v1KravHistorikk = finnKravHistorikkForDato(pensak)
+        val v1KravHistorikk = finnKravHistorikkForDato(pensak).also { logger.debug("Valgt Krav: ${it.toJson()}") }
         val melding = opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
         val krav = createKravDato(v1KravHistorikk)
 
