@@ -58,7 +58,7 @@ class PrefillP2000_AP_LOP_REVUTest {
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
         val sed = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection, null)
         assertNotNull(sed.nav?.krav)
-        assertEquals("2018-06-05", sed.nav?.krav?.dato)
+        assertEquals("2016-03-16", sed.nav?.krav?.dato)
 
 
     }
