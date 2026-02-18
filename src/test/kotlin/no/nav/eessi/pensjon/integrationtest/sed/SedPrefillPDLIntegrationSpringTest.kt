@@ -159,7 +159,7 @@ class SedPrefillPDLIntegrationSpringTest {
               }
             },
             "krav" : {
-              "dato" : "2018-06-28"
+              "dato" : "2014-06-04"
             }
           },
           "pensjon" : {
@@ -169,7 +169,7 @@ class SedPrefillPDLIntegrationSpringTest {
               "status" : "01"
             } ],
             "kravDato" : {
-              "dato" : "2018-06-28"
+              "dato" : "2014-06-04"
             },
             "etterspurtedokumenter" : "P5000 and P6000"
           },
@@ -371,12 +371,12 @@ class SedPrefillPDLIntegrationSpringTest {
               }
             },
             "krav" : {
-              "dato" : "2018-06-28"
+              "dato" : "2014-06-04"
             }
           },
           "pensjon" : {
             "kravDato" : {
-              "dato" : "2018-06-28"
+              "dato" : "2014-06-04"
             }
           },
           "sedGVer" : "4",

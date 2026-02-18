@@ -81,7 +81,7 @@ class SedBuilder {
         fun build() = StatsborgerskapItem(land = land)
     }
 
-    class KravBuilder(var dato: String = "2018-06-28") {
+    class KravBuilder(var dato: String = "2014-06-04") {
         fun build() = Krav(dato = dato)
     }
 
@@ -138,7 +138,7 @@ class SedBuilder {
 
     class P2000PensjonBuilder(){
         var ytelser: List<YtelserItem> = YtelserBuilder().build()
-        var kravDato: Krav? = Krav("2018-06-28")
+        var kravDato: Krav? = Krav("2014-06-04")
         var etterspurtedokumenter = "P5000 and P6000"
         var forespurtstartdato: String? = null
         fun build() = P2000Pensjon(ytelser = ytelser, kravDato =kravDato, etterspurtedokumenter = etterspurtedokumenter, forespurtstartdato = forespurtstartdato)
