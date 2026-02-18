@@ -314,7 +314,7 @@ class SedPrefillIntegrationSpringTest {
                 kravDato = Krav("2015-11-25")
                 forespurtstartdato = "2016-03-01"
                 ytelser = SedBuilder.YtelserBuilder(
-                    status = "01",
+                    status = "02",
                     mottasbasertpaa = null,
                     startdatoutbetaling = "2016-03-01",
                     startdatoretttilytelse = "2016-03-01",
