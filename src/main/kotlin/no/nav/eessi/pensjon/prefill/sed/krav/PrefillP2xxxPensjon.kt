@@ -211,7 +211,7 @@ object PrefillP2xxxPensjon {
             //4.1.1
             ytelse = settYtelse(pensak),
             //4.1.3 - fast satt til søkt
-            status = pensak?.status?.let { mapSakstatus(it) },
+            status = if (pensak?.kravHistorikkListe?.kravHistorikkListe?.isNotEmpty() == true) mapKravhistorikkStatus(pensak.kravHistorikkListe!!) else null,
             //4.1.4
             pin = createInstitusjonPin(personNr),
             //4.1.4.1.4
