@@ -144,7 +144,7 @@ class SedBuilder {
         fun build() = P2000Pensjon(ytelser = ytelser, kravDato =kravDato, etterspurtedokumenter = etterspurtedokumenter, forespurtstartdato = forespurtstartdato)
     }
     class YtelserBuilder(
-        var status: String = "01",
+        var status: String? = "02",
         var mottasbasertpaa: String? = "botid",
         var startdatoutbetaling: String? = null,
         var totalbruttobeloeparbeidsbasert: String? = null,

@@ -353,7 +353,8 @@ class SedPrefillIntegrationSpringTest {
             pensjon = SedBuilder.P2000PensjonBuilder().apply {
                 kravDato = Krav("2021-03-01")
                 ytelser = SedBuilder.YtelserBuilder(
-                    belop = null
+                    belop = null,
+                    status = "01"
                 ).build()
             } .build()
             nav {

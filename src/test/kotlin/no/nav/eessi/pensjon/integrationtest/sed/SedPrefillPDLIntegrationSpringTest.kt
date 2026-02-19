@@ -166,7 +166,7 @@ class SedPrefillPDLIntegrationSpringTest {
             "ytelser" : [ {
               "mottasbasertpaa" : "botid",
               "ytelse" : "10",
-              "status" : "01"
+              "status" : "02"
             } ],
             "kravDato" : {
               "dato" : "2014-06-04"
