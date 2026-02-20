@@ -33,6 +33,9 @@ class PrefillP6000Pensjon_GJENLEV_Test {
     private lateinit var etterlatteService: EtterlatteService
 //    private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var personDataCollection: PersonDataCollection
+    private lateinit var prefillGjennyService: PrefillGjennyService
+    var innhentingService: InnhentingService = mockk()
+    var krrService: KrrService = mockk()
 
     @BeforeEach
     fun setup() {
@@ -113,8 +116,15 @@ class PrefillP6000Pensjon_GJENLEV_Test {
             avdod = PersonInfo(avdodPersonFnr, "1234567891234"),
             kravDato = "2018-05-01"
         )
+        val request = apiRequest(SedType.P6000).copy(aktoerId = AKTOERID)
 
-        val p6000 = prefillSEDService.prefillGjenny(prefillData, personDataCollection, null) as P6000
+        every { innhentingService.hentFnrEllerNpidFraAktoerService(eq("12345678501")) } returns personFnr
+        every { innhentingService.getAvdodAktoerIdPDL(eq(request)) } returns AKTOERID
+        every { innhentingService.hentPersonData(any()) } returns personDataCollection
+        every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo( "melleby11@melby.no", true, personident = avdodPersonFnr)
+
+        val p6000 = mapJsonToAny<P6000>(prefillGjennyService.prefillGjennySedtoJson(request))
+
         assertEquals(avdodPersonFnr, p6000.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
         assertEquals("RAGNAROK", p6000.nav?.bruker?.person?.etternavn)
         assertEquals("THOR-DOPAPIR", p6000.nav?.bruker?.person?.fornavn)
@@ -168,15 +178,27 @@ class PrefillP6000Pensjon_GJENLEV_Test {
 //        assertEquals("0607", p6000Pensjon.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
     }
 
-//    @Test
-//    fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
-//        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-IkkeUtland.xml")
-//        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")
-//
-//        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
-//
-//        assertThrows<IkkeGyldigKallException> {
-//            innhentingService.hentPensjoninformasjonCollection(prefillData)
-//        }
-//    }
+    @Test
+    fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
+        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-IkkeUtland.xml")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")
+
+        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+
+        assertThrows<IkkeGyldigKallException> {
+            innhentingService.hentPensjoninformasjonCollection(prefillData)
+        }
+    }
+
+    private fun apiRequest(sedType: SedType): ApiRequest = ApiRequest(
+        subjectArea = "Pensjon",
+        sakId = "321654",
+        institutions = listOf(InstitusjonItem("NO", "Institutt", "InstNavn")),
+        euxCaseId = "123456",
+        sed = sedType,
+        buc = BucType.P_BUC_02,
+        aktoerId = AKTOERID,
+        avdodfnr = avdodPersonFnr,
+        gjenny = true
+    )
 }

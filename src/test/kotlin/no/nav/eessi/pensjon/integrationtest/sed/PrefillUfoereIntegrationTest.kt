@@ -654,10 +654,27 @@ class PrefillUfoereIntegrationTest {
                     }
                   },
                   "pensjon" : {
+                    "ytelser" : [ {
+                      "startdatoutbetaling" : "2019-06-01",
+                      "mottasbasertpaa" : "botid",
+                      "ytelse" : "08",
+                      "startdatoretttilytelse" : "2019-06-01",
+                      "beloep" : [ {
+                        "betalingshyppighetytelse" : "03",
+                        "valuta" : "NOK",
+                        "beloep" : "18384",
+                        "gjeldendesiden" : "2019-06-01"
+                      } ],
+                      "status" : "02"
+                    } ],
                     "kravDato" : {
-                      "dato" : "2020-08-08"
-                    }
-                  }
+                      "dato" : "2019-07-15"
+                    },
+                    "forespurtstartdato" : "2019-06-01",
+                    "etterspurtedokumenter" : "P5000 and P6000"
+                  },
+                  "sedGVer" : "4",
+                  "sedVer" : "2"
                 }
             """.trimIndent()
 

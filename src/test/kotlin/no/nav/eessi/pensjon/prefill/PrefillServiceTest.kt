@@ -5,7 +5,6 @@ import io.mockk.junit5.MockKExtension
 import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.prefill.PersonDataServiceTest.Companion.FNR_VOKSEN
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
@@ -51,7 +50,6 @@ class PrefillServiceTest{
             etterlatteService,
             automatiseringStatistikkService,
             mockk(relaxed = true),
-            MetricsHelper.ForTest()
         )
         every { innhentingService.getAvdodAktoerIdPDL(any())} returns avdodPersonFnr
         every { innhentingService.hentFnrEllerNpidFraAktoerService(any()) } returns personFnr

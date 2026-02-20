@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 
 class PrefillP8000(private val prefillSed: PrefillSed) {
 
-    private enum class PersonenRolle(val value: String) {
+    enum class PersonenRolle(val value: String) {
         SOEKER_ETTERRLATTEPENSJON("01")
     }
 

@@ -27,7 +27,6 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
         val nav = prefillNav.prefill(
             penSaksnummer = prefillData.penSaksnummer,
             bruker = prefillData.bruker,
-            avdod = prefillData.avdod,
             personData = personData,
             bankOgArbeid = prefillData.getBankOgArbeidFromRequest(),
             krav = pensjon?.kravDato ?: prefillData.kravDato?.let { Krav(it, prefillData.kravType) },

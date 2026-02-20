@@ -55,7 +55,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
             }
             else -> {
                 logger.warn("Benytter ordinær preutfylling for Gjenny for ${prefillData.sedType}")
-                prefill(prefillData, personDataCollection, null, etterlatteRespData,)
+                prefill(prefillData, personDataCollection, null, etterlatteRespData)
             }
         }
     }

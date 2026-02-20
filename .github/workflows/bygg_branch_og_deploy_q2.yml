@@ -6,13 +6,21 @@
 #
 # ******************************************************************************************************************
 
+<<<<<<<< HEAD:.github/workflows/bygg_mainline_og_deploy_q2.yml
 name: Bygg, publiser og deploy til Q2
+========
+name: Bygg, publiser og deploy branch til Q2
+>>>>>>>> master:.github/workflows/bygg_branch_og_deploy_q2.yml
 
 on:
   push:
     branches:
       - '!feature/rina-cdm'
       - 'feature/*'
+<<<<<<<< HEAD:.github/workflows/bygg_mainline_og_deploy_q2.yml
+========
+
+>>>>>>>> master:.github/workflows/bygg_branch_og_deploy_q2.yml
 jobs:
   bygg_deploy_dev_publiser_tag:
     name: 'Bygg, publiser, deploy DEV, tag og dispatch deploy til PROD'

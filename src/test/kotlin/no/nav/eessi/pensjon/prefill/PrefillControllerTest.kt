@@ -40,6 +40,7 @@ class PrefillControllerTest {
     var pesysService: PesysService = mockk()
     val automatiseringStatistikkService: AutomatiseringStatistikkService = mockk(relaxed = true)
     val etterlatteService: EtterlatteService = mockk(relaxed = true)
+    val prefillGjennyService: PrefillGjennyService = mockk(relaxed = true)
     private lateinit var prefillNav: PrefillPDLNav
 
     private lateinit var prefillController: PrefillController
@@ -48,11 +49,18 @@ class PrefillControllerTest {
     fun before() {
         prefillNav = BasePrefillNav.createPrefillNav()
 
-        every { mockPrefillSEDService.prefill(any(), any(), any(), any(),) } returns SED(type = P6000)
-        val innhentingService = InnhentingService(personDataService, pesysService = pesysService)
-        val prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, automatiseringStatistikkService =automatiseringStatistikkService, etterlatteService = etterlatteService, prefillPdlNav = prefillNav)
+        every { mockPrefillSEDService.prefill(any(), any(), any(), any()) } returns SED(type = P6000)
+        val innhentingService = InnhentingService(personDataService, pesysService = pesysService))
+        val prefillService = PrefillService(
+            krrService,
+            mockPrefillSEDService,
+            innhentingService,
+            etterlatteService =etterlatteService,
+            automatiseringStatistikkService =automatiseringStatistikkService,
+            prefillPdlNav = prefillNav
+        )
 
-        prefillController = PrefillController(prefillService, auditLogger)
+        prefillController = PrefillController(prefillService, prefillGjennyService,  auditLogger)
     }
 
     @Test

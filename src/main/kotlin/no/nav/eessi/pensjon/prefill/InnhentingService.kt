@@ -47,6 +47,7 @@ class InnhentingService(
         return when (buc) {
             P_BUC_02 -> {
                 val norskIdent = request.riktigAvdod() ?: run {
+                    if(request.gjenny) return null
                     logger.error("Mangler fnr eller npid for avdød")
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler fnr for avdød")
                 }

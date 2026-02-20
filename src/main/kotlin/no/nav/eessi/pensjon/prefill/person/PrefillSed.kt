@@ -8,7 +8,10 @@ import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 
+@Component
 class PrefillSed(private val prefillNav: PrefillPDLNav) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSed::class.java) }
@@ -38,7 +41,6 @@ class PrefillSed(private val prefillNav: PrefillPDLNav) {
         val navSed = prefillNav.prefill(
             penSaksnummer = prefillData.penSaksnummer,
             bruker = prefillData.bruker,
-            avdod = prefillData.avdod,
             personData = personData,
             bankOgArbeid = prefillData.getBankOgArbeidFromRequest(),
             krav = prefillPensjon?.kravDato,

@@ -39,7 +39,6 @@ class PrefillP10000(private val prefillNav: PrefillPDLNav) {
         val navSed = prefillNav.prefill(
             penSaksnummer = penSaksnummer,
             bruker = bruker,
-            avdod = avdod,
             personData = personData,
             bankOgArbeid = bankOgArbeid,
             annenPerson = gjenlevende
