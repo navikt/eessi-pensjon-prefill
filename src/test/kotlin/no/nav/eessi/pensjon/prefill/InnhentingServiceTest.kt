@@ -18,7 +18,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 
-private const val AKTOERID = "467846784671"
+const val AKTOERID = "467846784671"
 private const val FNR = "46784678467"
 
 class InnhentingServiceTest {

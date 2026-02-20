@@ -1,10 +1,15 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
+import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
+import no.nav.eessi.pensjon.eux.model.sed.MeldingOmPensjonP2200
 import no.nav.eessi.pensjon.eux.model.sed.P2200
+import no.nav.eessi.pensjon.eux.model.sed.P2200Pensjon
+import no.nav.eessi.pensjon.eux.model.sed.YtelserItem
+import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.Sak
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.Vedtak
-
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.utils.toJson
@@ -52,7 +57,7 @@ class PrefillP2200(private val prefillNav: PrefillPDLNav) {
 
     fun populerPensjonP2200(
         prefillData: PrefillDataModel,
-        sak: V1Sak?
+        sak: Sak?
     ): P2200Pensjon? {
         val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
 

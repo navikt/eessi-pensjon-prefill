@@ -50,7 +50,7 @@ class PrefillControllerTest {
         prefillNav = BasePrefillNav.createPrefillNav()
 
         every { mockPrefillSEDService.prefill(any(), any(), any(), any()) } returns SED(type = P6000)
-        val innhentingService = InnhentingService(personDataService, pesysService = pesysService))
+        val innhentingService = InnhentingService(personDataService, pesysService = pesysService)
         val prefillService = PrefillService(
             krrService,
             mockPrefillSEDService,
