@@ -16,18 +16,17 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDE
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
-import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
-import org.springframework.http.HttpEntity
 import org.springframework.http.MediaType
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
@@ -38,15 +37,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
 
+
+//Daniel
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class, SedPrefillPDLIntegrationSpringTest.TestConfig::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc
 @DirtiesContext
 @EmbeddedKafka
 class SedPrefillPDLIntegrationSpringTest {
-
-    @MockkBean
-    lateinit var pensjonsinformasjonOidcRestTemplate: RestTemplate
 
     @MockkBean
     lateinit var kodeverkClient: KodeverkClient
@@ -59,6 +57,9 @@ class SedPrefillPDLIntegrationSpringTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
+
+    @Autowired
+    lateinit var pesysService: PesysService
 
     companion object {
         const val FNR_VOKSEN = "11067122781"    // KRAFTIG VEGGPRYD
@@ -73,20 +74,26 @@ class SedPrefillPDLIntegrationSpringTest {
         @Bean
         @Primary
         fun restTemplate(): RestTemplate = mockk()
+
+        @Bean
+        fun pesysClientRestTemplate(): RestTemplate = mockk()
+
+        @Bean
+        fun pesysService() = mockk<PesysService>()
     }
 
     @BeforeEach
     fun setUp() {
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
-
     }
 
 
     @Test
     @Throws(Exception::class)
     fun `prefill sed P2000 alder return valid sedjson`() {
-        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
+        every { pesysService.hentP2000data(any(),any(),any()) } returns XmlToP2xxxMapper.readP2000FromXml("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(
@@ -98,7 +105,7 @@ class SedPrefillPDLIntegrationSpringTest {
             personident = FNR_VOKSEN
         )
 
-        val apijson = dummyApijson(sedType = SedType.P2000, sakid = "21337890", aktoerId = AKTOER_ID)
+        val apijson = dummyApijson(sedType = SedType.P2000, sakid = "21337890", aktoerId = AKTOER_ID, vedtakid = "21337890")
 
         val result = mockMvc.perform(post("/sed/prefill")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -196,9 +203,9 @@ class SedPrefillPDLIntegrationSpringTest {
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN)) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", true, true, false, "22603511", FNR_VOKSEN)
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_2)) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", true, true, false, "22603522", FNR_VOKSEN_2)
 
-        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2100-GL-UTL-INNV.xml")
+        every { pesysService.hentP2100data(any(),any(),any()) } returns XmlToP2xxxMapper.readP2100FromXml("/pensjonsinformasjon/krav/P2100-GL-UTL-INNV.xml")
 
-        val apijson = dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID, sedType = SedType.P2100, buc = P_BUC_02, fnravdod = FNR_VOKSEN_2)
+        val apijson = dummyApijson(sakid = "22874955", aktoerId = AKTOER_ID, sedType = SedType.P2100, buc = P_BUC_02, fnravdod = FNR_VOKSEN_2, vedtakid = "22874955")
 
         val result = mockMvc.perform(post("/sed/prefill")
             .contentType(MediaType.APPLICATION_JSON)
@@ -317,9 +324,10 @@ class SedPrefillPDLIntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", true, true, false, "11111111", FNR_VOKSEN)
 
-        every {pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))  } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
+//        every {pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))  } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
+        every { pesysService.hentP2000data(any(),any(),any()) } returns XmlToP2xxxMapper.readP2000FromXml("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
 
-        val apijson = dummyApijson(sedType = SedType.P2000, sakid = "21337890", aktoerId = AKTOER_ID)
+        val apijson = dummyApijson(sedType = SedType.P2000, sakid = "21337890", aktoerId = AKTOER_ID, vedtakid = "21337890")
 
         val validResponse = """
         {

@@ -6,8 +6,7 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.LagPdlPerson
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
-import no.nav.eessi.pensjon.prefill.models.PensjonCollection
+import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PersonInfo
@@ -18,7 +17,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class SedP3000XXTest {
-    var dataFromPEN: PensjonsinformasjonService = mockk()
+//    var dataFromPEN: PensjonsinformasjonService = mockk()
     private lateinit var prefillSEDService: PrefillSEDService
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
@@ -37,7 +36,7 @@ class SedP3000XXTest {
         val datamodel = getMockDataModel(P3000_AT, personFnr)
         pensjonCollection = PensjonCollection(sedType = P3000_AT)
 
-        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection, null)
+        val sed = prefillSEDService.prefill(datamodel, personDataCollection, pensjonCollection, null,)
         Assertions.assertEquals(P3000_AT, sed.type)
     }
 
@@ -46,7 +45,7 @@ class SedP3000XXTest {
         val datamodel = getMockDataModel(P3000_IT, personFnr)
         pensjonCollection = PensjonCollection(sedType = P3000_IT)
 
-        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection, null)
+        val sed = prefillSEDService.prefill(datamodel, personDataCollection, pensjonCollection, null,)
         Assertions.assertEquals(P3000_IT, sed.type)
     }
 
@@ -55,7 +54,7 @@ class SedP3000XXTest {
         val datamodel = getMockDataModel(P3000_SE, personFnr)
         pensjonCollection = PensjonCollection(sedType = P3000_SE)
 
-        val sed = prefillSEDService.prefill(datamodel, personDataCollection,pensjonCollection, null)
+        val sed = prefillSEDService.prefill(datamodel, personDataCollection, pensjonCollection, null,)
         Assertions.assertEquals(P3000_SE, sed.type)
     }
 

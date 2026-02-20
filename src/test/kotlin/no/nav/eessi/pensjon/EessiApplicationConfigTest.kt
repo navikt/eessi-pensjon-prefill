@@ -5,7 +5,6 @@ import com.ninjasquad.springmockk.MockkBean
 import com.ninjasquad.springmockk.MockkBeans
 import no.nav.eessi.pensjon.config.RestTemplateConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
-import no.nav.eessi.pensjon.statistikk.AutomatiseringStatistikkService
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.junit.jupiter.api.Test

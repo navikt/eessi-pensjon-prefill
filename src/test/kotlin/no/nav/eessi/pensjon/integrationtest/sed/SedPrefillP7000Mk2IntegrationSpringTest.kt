@@ -14,7 +14,6 @@ import no.nav.eessi.pensjon.eux.model.sed.P7000
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.Postnummer
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.AKTORID
@@ -22,7 +21,6 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDE
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Npid
 import no.nav.eessi.pensjon.prefill.KrrService
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.shared.api.ApiRequest
@@ -32,15 +30,13 @@ import no.nav.eessi.pensjon.shared.api.SubjectFnr
 import no.nav.eessi.pensjon.utils.mapAnyToJson
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
-import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
-import no.nav.pensjon.v1.sak.V1Sak
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
@@ -68,8 +64,8 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     @MockkBean
     private lateinit var kodeverkClient: KodeverkClient
 
-    @MockkBean
-    private lateinit var pensjoninformasjonservice: PensjonsinformasjonService
+//    @MockkBean
+//    private lateinit var pensjoninformasjonservice: PensjonsinformasjonService
 
     @MockkBean
     private lateinit var personService: PersonService
@@ -211,12 +207,12 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_3)) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_4)) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
 
-        val sak = V1Sak()
-        sak.sakType = EPSaktype.GJENLEV.toString()
-        sak.sakId = 100
-        sak.kravHistorikkListe = V1KravHistorikkListe()
+//        val sak = V1Sak()
+//        sak.sakType = EPSaktype.GJENLEV.toString()
+//        sak.sakId = 100
+//        sak.kravHistorikkListe = V1KravHistorikkListe()
 
-        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
 
@@ -339,12 +335,12 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
 
-        val sak = V1Sak()
-        sak.sakType = EPSaktype.GJENLEV.toString()
-        sak.sakId = 100
-        sak.kravHistorikkListe = V1KravHistorikkListe()
+//        val sak = V1Sak()
+//        sak.sakType = EPSaktype.GJENLEV.toString()
+//        sak.sakId = 100
+//        sak.kravHistorikkListe = V1KravHistorikkListe()
 
-        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
 
@@ -464,12 +460,12 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
 
-        val sak = V1Sak()
-        sak.sakType = EPSaktype.ALDER.toString()
-        sak.sakId = 100
-        sak.kravHistorikkListe = V1KravHistorikkListe()
-
-        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+//        val sak = V1Sak()
+//        sak.sakType = EPSaktype.ALDER.toString()
+//        sak.sakId = 100
+//        sak.kravHistorikkListe = V1KravHistorikkListe()
+//
+//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         //mock p6000 fra RINA med data som skal benyttes i P7000

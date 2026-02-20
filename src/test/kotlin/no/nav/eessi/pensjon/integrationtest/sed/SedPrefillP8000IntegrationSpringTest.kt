@@ -9,8 +9,6 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.Postnummer
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.KravArsak
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
@@ -18,19 +16,18 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.AKTORID
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.prefill.KrrService
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBeskyttelse
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medUtlandAdresse
+import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
-import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
-import no.nav.pensjon.v1.kravhistorikkliste.V1KravHistorikkListe
-import no.nav.pensjon.v1.sak.V1Sak
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.P8000AnmodningOmTilleggsinformasjon
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
@@ -40,6 +37,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
+
+//Daniel
 
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
@@ -55,7 +54,7 @@ class SedPrefillP8000IntegrationSpringTest {
     private lateinit var kodeverkClient: KodeverkClient
 
     @MockkBean
-    private lateinit var pensjoninformasjonservice: PensjonsinformasjonService
+    private lateinit var pesysService: PesysService
 
     @MockkBean
     private lateinit var personService: PersonService
@@ -93,13 +92,6 @@ class SedPrefillP8000IntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
 
-        val sak = V1Sak().apply {
-            sakType = EPSaktype.GJENLEV.toString()
-            sakId  = 100
-            kravHistorikkListe = V1KravHistorikkListe()
-        }
-
-        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
@@ -213,14 +205,14 @@ class SedPrefillP8000IntegrationSpringTest {
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_4)) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", mobiltelefonnummer = "22222222", aktiv = true, personident = FNR_VOKSEN_4)
 
 
-        val sak = V1Sak().apply {
-            sakType = EPSaktype.ALDER.toString()
-            sakId  = 100
-            kravHistorikkListe = V1KravHistorikkListe()
-            kravHistorikkListe.kravHistorikkListe.add(V1KravHistorikk().apply { kravArsak = KravArsak.GJNL_SKAL_VURD.name })
-        }
-
-        every {pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+//        val sak = V1Sak().apply {
+//            sakType = EPSaktype.ALDER.toString()
+//            sakId  = 100
+//            kravHistorikkListe = V1KravHistorikkListe()
+//            kravHistorikkListe.kravHistorikkListe.add(V1KravHistorikk().apply { kravArsak = KravArsak.GJNL_SKAL_VURD.name })
+//        }
+//
+//        every {pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
@@ -332,17 +324,23 @@ class SedPrefillP8000IntegrationSpringTest {
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_3))  } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_4))  } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "22222222", aktiv = true, personident = FNR_VOKSEN_4)
 
-        val v1Kravhistorikk = V1KravHistorikk()
-        v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
+        val mockP8000 = P8000AnmodningOmTilleggsinformasjon(
+            sakType = EessiFellesDto.EessiSakType.ALDER,
+            harKravhistorikkGjenlevende = true
+        )
+        every { pesysService.hentP8000data(any()) } returns mockP8000
 
-        val sak = V1Sak().apply {
-            sakType = EPSaktype.ALDER.toString()
-            sakId  = 21337890
-            kravHistorikkListe = V1KravHistorikkListe()
-            kravHistorikkListe.kravHistorikkListe.add(V1KravHistorikk().apply { kravArsak = KravArsak.GJNL_SKAL_VURD.name })
-        }
-
-        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
+//        val v1Kravhistorikk = V1KravHistorikk()
+//        v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
+//
+//        val sak = V1Sak().apply {
+//            sakType = EPSaktype.ALDER.toString()
+//            sakId  = 21337890
+//            kravHistorikkListe = V1KravHistorikkListe()
+//            kravHistorikkListe.kravHistorikkListe.add(V1KravHistorikk().apply { kravArsak = KravArsak.GJNL_SKAL_VURD.name })
+//        }
+//
+//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
@@ -422,14 +420,6 @@ class SedPrefillP8000IntegrationSpringTest {
     @Throws(Exception::class)
     fun `prefill sed P8000 - Gitt barnepensjon og henvendelse gjelder søker som er barn med kode 6 SÅ skal det produseres en Gyldig P8000 med referanse der søker er gjenlevende og adresse ikke blir preutfylt `() {
 
-        val sak = V1Sak().apply {
-            sakType = EPSaktype.BARNEP.toString()
-            sakId  = 100
-            kravHistorikkListe = V1KravHistorikkListe()
-            kravHistorikkListe.kravHistorikkListe.add(V1KravHistorikk().apply { kravArsak = KravArsak.GJNL_SKAL_VURD.name })
-        }
-
-        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_BARN)
         every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
@@ -624,7 +614,7 @@ class SedPrefillP8000IntegrationSpringTest {
     fun `prefill sed P8000 - Med Bruk av Syntetisk fnr Gitt en alderspensjon så skal det genereres en P8000 uten referanse til person`() {
         val syntFnr = "54496214261"
 
-        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns V1Sak()
+//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns V1Sak()
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(syntFnr)
         every { personService.hentPerson(NorskIdent(syntFnr)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", syntFnr, AKTOER_ID)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)

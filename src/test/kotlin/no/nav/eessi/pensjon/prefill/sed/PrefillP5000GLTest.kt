@@ -4,9 +4,10 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.P5000
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
-import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
+import no.nav.eessi.pensjon.prefill.PesysService
+import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
@@ -19,11 +20,15 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
+
+
 class PrefillP5000GLTest {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(65)
     private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(75)
+
     private val pesysSaksnummer = "21975717"
+    private val pesysService : PesysService = mockk()
 
     lateinit var prefillData: PrefillDataModel
 
@@ -44,13 +49,11 @@ class PrefillP5000GLTest {
         etterlatteService = EtterlatteService(mockk())
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P5000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(avdodPersonFnr, "112233445566"))
 
-        val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("/pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
-        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonInformasjonService)
-
+        val innhentingService = InnhentingService(mockk(), pesysService = pesysService )
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
-        p5000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null) as P5000
+        p5000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,) as P5000
     }
 
     @Test

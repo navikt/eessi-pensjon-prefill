@@ -6,40 +6,57 @@ import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.BucType.*
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.*
-import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonsinformasjonClient
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.AKTORID
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.shared.api.*
-import no.nav.pensjon.v1.brukerssakerliste.V1BrukersSakerListe
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
-import no.nav.pensjon.v1.sak.V1Sak
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
+import java.time.LocalDate
 
-
-private const val AKTOERID = "467846784671"
+const val AKTOERID = "467846784671"
 private const val FNR = "46784678467"
-
-private const val SAKTYPE_ALDER = "ALDER"
-private const val SAKTYPE_UFORE = "UFOREP"
 
 class InnhentingServiceTest {
 
-    var personDataService: PersonDataService = mockk()
-    var pensjonsinformasjonService: PensjonsinformasjonService = mockk()
+    private var pesysService: PesysService = mockk()
+    private var personDataService: PersonDataService = mockk()
 
     private lateinit var innhentingService: InnhentingService
 
     @BeforeEach
     fun before() {
-        innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
+        innhentingService = InnhentingService(personDataService, pesysService = pesysService)
+    }
+
+    fun setup() {
+        every { pesysService.hentP2100data(any(),any(),any()) } returns mockk() {
+            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                sakType = EessiFellesDto.EessiSakType.GJENLEV,
+                kravHistorikk = listOf(
+                    P2xxxMeldingOmPensjonDto.KravHistorikk(
+                        mottattDato = LocalDate.of(2015, 11, 25),
+                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
+                        virkningstidspunkt = LocalDate.of(2015, 11, 25),
+                    )
+                ),
+                ytelsePerMaaned = emptyList(),
+                forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
+                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
+            )
+            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
+        }
+
     }
 
     @Test
     fun `call getAvdodAktoerId  expect valid aktoerId when avdodfnr exist and sed is P2100`() {
+        innhentingService = InnhentingService(personDataService, pesysService = pesysService)
+
         val apiRequest = ApiRequest(
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
@@ -119,82 +136,84 @@ class InnhentingServiceTest {
 
     class InnhentingSaktyperTest {
         val personDataService: PersonDataService = mockk()
-        val pensjonsinformasjonClient: PensjonsinformasjonClient = mockk(relaxed = true)
+        private val pesysService: PesysService = mockk()
+        val innhentingsService = InnhentingService(personDataService, pesysService = pesysService)
 
-        val pensjonsinformasjonService = PensjonsinformasjonService(pensjonsinformasjonClient)
-        val innhentingsservice = InnhentingService(personDataService, pensjonsinformasjonService = pensjonsinformasjonService)
+        @BeforeEach
+        fun setup() {
+            every { pesysService.hentP2100data(any(),any(),any()) } returns mockk() {
+                every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                    sakType = EessiFellesDto.EessiSakType.ALDER,
+                    kravHistorikk = listOf(
+                        P2xxxMeldingOmPensjonDto.KravHistorikk(
+                            mottattDato = LocalDate.of(2015, 11, 25),
+                            kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
+                            virkningstidspunkt = LocalDate.of(2015, 11, 25),
+                        )
+                    ),
+                    ytelsePerMaaned = emptyList(),
+                    forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
+                    status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
+                )
+                every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
+            }
+        }
 
         @Test
         fun `Gitt en P2100 med saktype ALDER saa skal hentPensjoninformasjonCollection sitt resultat paa saktype gi ut ALDER`() {
-            val prefillData = prefillDataModel(sedType = P2100)
-            val peninfo = pensjonsinformasjon(SAKTYPE_ALDER)
+            val prefillData = prefillDataModel(sedType = P2100, vedtakId = "123456" )
 
-            every { pensjonsinformasjonClient.hentAltPaaFNR(FNR) } returns peninfo
-
-            val resultat = innhentingsservice.hentPensjoninformasjonCollection(prefillData)
-            assertEquals(SAKTYPE_ALDER, resultat.sak?.sakType)
-            assertEquals(SAKTYPE_ALDER, resultat.sak?.sakType)
+            val resultat = innhentingsService.hentPensjoninformasjonCollection(prefillData)
+            assertEquals(EessiFellesDto.EessiSakType.ALDER, resultat.p2xxxMeldingOmPensjonDto?.sak?.sakType)
         }
 
         @Test
         fun `Gitt en P15000 med saktype UFORE saa skal hentPensjoninformasjonCollection sitt resultat paa saktype returnere UFOREP`() {
-            val prefillData = prefillDataModel(sedType = P15000)
-            val peninfo = pensjonsinformasjon(SAKTYPE_UFORE)
+            every { pesysService.hentP15000data(any(),any()) } returns mockk() {
+                every { sakType } returns EessiFellesDto.EessiSakType.UFOREP.name
 
-            every { pensjonsinformasjonClient.hentAltPaaFNR(FNR) } returns peninfo
+            }
+            val prefillData = prefillDataModel(sedType = P15000, vedtakId = "2321654")
 
-            val resultat = innhentingsservice.hentPensjoninformasjonCollection(prefillData)
-            assertEquals(SAKTYPE_UFORE, resultat.sak?.sakType)
+            val resultat = innhentingsService.hentPensjoninformasjonCollection(prefillData)
+            assertEquals(EessiFellesDto.EessiSakType.UFOREP.name, resultat.p15000Data?.sakType)
 
         }
 
         @Test
         fun `Gitt en P8000 med saktype ALDER saa skal hentPensjoninformasjonCollection sitt resultat paa saktype returnere ALDER`() {
-            val prefillData = prefillDataModel(sedType = P8000)
-            val peninfo = pensjonsinformasjon(SAKTYPE_ALDER)
+            val prefillData = prefillDataModel(sedType = P8000, vedtakId = "2321654")
 
-            every { pensjonsinformasjonClient.hentAltPaaFNR(FNR) } returns peninfo
-
-            val resultat = innhentingsservice.hentPensjoninformasjonCollection(prefillData)
-            assertEquals(null, resultat.sak?.sakType)
+            val resultat = innhentingsService.hentPensjoninformasjonCollection(prefillData)
+            assertEquals(null, resultat.p8000Data?.sakType)
 
         }
 
         @Test
         fun `Gitt en P8000 med på en P_BUC_05 med saktype ALDER saa skal hentPensjoninformasjonCollection sitt resultat paa saktype returnere ALDER`() {
-            val prefillData = prefillDataModel(sedType = P8000, bucType = P_BUC_05)
-            val peninfo = pensjonsinformasjon(SAKTYPE_ALDER)
+            val prefillData = prefillDataModel(sedType = P8000, bucType = P_BUC_05, vedtakId = "2321654")
+            every { pesysService.hentP8000data(any()) } returns mockk() {
+                every { sakType } returns EessiFellesDto.EessiSakType.ALDER
+            }
 
-            every { pensjonsinformasjonClient.hentAltPaaFNR(FNR) } returns peninfo
+            val resultat = innhentingsService.hentPensjoninformasjonCollection(prefillData)
+            assertEquals(EessiFellesDto.EessiSakType.ALDER, resultat.p8000Data?.sakType)
 
-            val resultat = innhentingsservice.hentPensjoninformasjonCollection(prefillData)
-            assertEquals(SAKTYPE_ALDER, resultat.sak?.sakType)
-
-        }
-
-        private fun pensjonsinformasjon(saktype: String) : Pensjonsinformasjon {
-            val pensjonInformasjon = Pensjonsinformasjon()
-            val mocksak = V1Sak()
-            mocksak.sakId = 1010
-            mocksak.status = "INNV"
-            mocksak.sakType = saktype
-            pensjonInformasjon.brukersSakerListe = V1BrukersSakerListe()
-            pensjonInformasjon.brukersSakerListe.brukersSakerListe.add(mocksak)
-            return pensjonInformasjon
         }
 
         private fun prefillDataModel(
             fnr: String = FNR,
             aktorId: String = AKTOERID,
             sedType: SedType,
-            bucType: BucType = BucType.P_BUC_10
+            bucType: BucType = BucType.P_BUC_10,
+            vedtakId: String? = null
         ) = PrefillDataModel(
             penSaksnummer = "1010",
             bruker = PersonInfo(fnr, aktorId),
             avdod = null,
             sedType = sedType,
             buc = bucType,
-            vedtakId = null,
+            vedtakId = vedtakId,
             kravDato = null,
             kravId = null,
             kravType = null,
@@ -204,5 +223,4 @@ class InnhentingServiceTest {
             melding = null,
         )
     }
-
 }

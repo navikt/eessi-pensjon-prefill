@@ -35,7 +35,6 @@ class PrefillP10000Test {
             penSaksnummer = pesysSaksnummer,
             avdod = PersonInfo("12345678910", "123456789")
         )
-
     }
 
     @Test

@@ -1,0 +1,115 @@
+{
+  "vedtak" : {
+    "boddArbeidetUtland" : true
+  },
+  "sak" : {
+    "sakType" : "ALDER",
+    "forsteVirkningstidspunkt" : "2025-01-01",
+    "kravHistorikk" : [ {
+      "kravId" : 49256020,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-10-14",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 49225724,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-10-13",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 49195767,
+      "kravType" : "F_BH_MED_UTL",
+      "mottattDato" : "2025-06-07",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "NY_SOKNAD",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 49255969,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-10-14",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 49375817,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-10-20",
+      "virkningstidspunkt" : "2025-11-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "EESSI_AVBRUTT"
+    }, {
+      "kravId" : 49225491,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-10-13",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 49255976,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-10-14",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 49245569,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-10-14",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 49225488,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-10-13",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 49265921,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-10-15",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 49587267,
+      "kravType" : "REVURD",
+      "mottattDato" : "2026-02-11",
+      "virkningstidspunkt" : "2026-03-01",
+      "kravAarsak" : "ANNEN_ARSAK",
+      "kravStatus" : "TIL_BEHANDLING"
+    } ],
+    "ytelsePerMaaned" : [ {
+      "fom" : "2025-01-01",
+      "belop" : 5057,
+      "ytelseskomponent" : [ {
+        "ytelsesKomponentType" : "IP",
+        "belopTilUtbetaling" : 1986
+      }, {
+        "ytelsesKomponentType" : "GP",
+        "belopTilUtbetaling" : 1004
+      }, {
+        "ytelsesKomponentType" : "TP",
+        "belopTilUtbetaling" : 2067
+      } ]
+    }, {
+      "fom" : "2025-05-01",
+      "belop" : 5286,
+      "ytelseskomponent" : [ {
+        "ytelsesKomponentType" : "IP",
+        "belopTilUtbetaling" : 2076
+      }, {
+        "ytelsesKomponentType" : "GP",
+        "belopTilUtbetaling" : 1050
+      }, {
+        "ytelsesKomponentType" : "TP",
+        "belopTilUtbetaling" : 2160
+      } ]
+    } ],
+    "status" : "TIL_BEHANDLING"
+  }
+}

@@ -1,22 +1,24 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
+import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medFodsel
-import no.nav.eessi.pensjon.prefill.models.PensjonCollection
+import no.nav.eessi.pensjon.prefill.PesysService
+import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother.initialPrefillDataModel
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
-import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
-import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
+import no.nav.eessi.pensjon.prefill.sed.krav.PensjonsInformasjonHelper.readJsonResponse
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -29,32 +31,44 @@ class PrefillP2200UforpensjonTest {
     private val barn1Fnr = FodselsnummerGenerator.generateFnrForTest(12)
     private val barn2Fnr = FodselsnummerGenerator.generateFnrForTest(17)
 
+    private val pesysService: PesysService = mockk()
     lateinit var prefillData: PrefillDataModel
-    lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var pensjonCollection: PensjonCollection
 
     @BeforeEach
     fun setup() {
-        dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2200-UP-INNV.xml")
+        every { pesysService.hentP2200data(any(),any(),any()) } returns mockk(){
+            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                sakType = EessiSakType.UFOREP,
+                kravHistorikk = listOf(
+                    P2xxxMeldingOmPensjonDto.KravHistorikk(
+                        mottattDato = LocalDate.of(2015, 11, 25),
+                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
+                        virkningstidspunkt = LocalDate.of(2015, 11, 25),
+                    )
+                ),
+                ytelsePerMaaned = emptyList(),
+                forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
+                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
+            )
+            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
+        }
 
         prefillData = initialPrefillDataModel(SedType.P2200, personFnr, penSaksnummer = "22874955").apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
         }
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
 
-        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        val innhentingService = InnhentingService(mockk(), pesysService = pesysService)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
     }
 
     @Test
     fun `Testing av komplett utfylling kravsøknad uførepensjon P2200`() {
-        val pendata: Pensjonsinformasjon = dataFromPEN.hentPensjonInformasjon(prefillData.bruker.norskIdent, prefillData.bruker.aktorId)
         val persondataCollection = PersonPDLMock.createEnkeWithBarn(personFnr, barn1Fnr, barn2Fnr)
 
-        assertNotNull(pendata.brukersSakerListe)
-
-        val P2200 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
+        val P2200 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
         val p2200Actual = P2200.toJsonSkipEmpty()
         assertNotNull(p2200Actual)
         assertEquals(SedType.P2200, P2200.type)
@@ -74,8 +88,6 @@ class PrefillP2200UforpensjonTest {
 
     @Test
     fun `Komplett utfylling P2200 med barn over 18 aar`() {
-        val pendata: Pensjonsinformasjon = dataFromPEN.hentPensjonInformasjon(prefillData.bruker.norskIdent, prefillData.bruker.aktorId)
-
         val personDataCollection = PersonDataCollection(
             forsikretPerson = PersonPDLMock.createWith(),
             gjenlevendeEllerAvdod = PersonPDLMock.createWith(),
@@ -84,14 +96,10 @@ class PrefillP2200UforpensjonTest {
             )
         )
 
-        assertNotNull(pendata.brukersSakerListe)
-
-        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
+        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
         assertEquals(SedType.P2200, p2200.type)
 
         val barn1 = p2200.nav?.barn?.first()
-
-        println("*********$p2200 *********")
         assertEquals("2004-01-01", barn1?.person?.foedselsdato)
 
     }

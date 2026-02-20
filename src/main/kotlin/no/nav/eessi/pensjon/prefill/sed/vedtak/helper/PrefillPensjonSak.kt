@@ -2,7 +2,8 @@ package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.eux.model.sed.KravtypeItem
 import no.nav.eessi.pensjon.eux.model.sed.Sak
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -11,7 +12,7 @@ object PrefillPensjonSak {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonSak::class.java) }
 
     //6.1..
-    fun createSak(pendata: Pensjonsinformasjon): Sak {
+    fun createSak(pendata: P6000MeldingOmVedtakDto): Sak {
         logger.debug("PrefillPensjonReduksjon")
 
         logger.debug("6         Sak")
@@ -41,13 +42,10 @@ object PrefillPensjonSak {
         HVIS sakstype er alderspensjon eller gjenlevendepensjon,
         SÅ skal det ikke velges noen.
     */
-    private fun createArtikkel54(pendata: Pensjonsinformasjon): String? {
+    private fun createArtikkel54(pendata: P6000MeldingOmVedtakDto): String? {
         logger.debug("6.1       createArtikkel54")
-        val ksakUfor = KSAK.valueOf(pendata.sakAlder.sakType)
-
-        if (KSAK.UFOREP == ksakUfor) {
+        return if (EessiFellesDto.EessiSakType.UFOREP == pendata.sakType) {
             return "0"
-        }
-        return null
+        } else null
     }
 }
