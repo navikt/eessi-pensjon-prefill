@@ -87,7 +87,7 @@ class PrefillP2000_AP_LOP_UTLANDTest {
         )
 
         assertNotNull(P2000pensjon.nav?.krav)
-        assertEquals("2014-01-13", P2000pensjon.nav?.krav?.dato)
+        assertEquals("2014-01-07", P2000pensjon.nav?.krav?.dato)
     }
 
     @Test

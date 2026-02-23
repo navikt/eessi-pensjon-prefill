@@ -76,14 +76,14 @@ class PrefillP2000APUtlandInnvTest {
                     YtelsePerMaaned(
                         fom = LocalDate.of(2015, 11, 25),
                         belop = 123,
-                        
-                        
+
+
                         ytelseskomponent = ytelesTyper?.map { type ->
                             Ytelseskomponent(
                                 YtelseskomponentType.valueOf(type).name,
                                 444
                             )
-                        } 
+                        }
                     )
                 ),
                 forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
