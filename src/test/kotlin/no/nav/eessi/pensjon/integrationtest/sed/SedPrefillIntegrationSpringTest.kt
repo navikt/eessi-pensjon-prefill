@@ -294,7 +294,7 @@ class SedPrefillIntegrationSpringTest {
         }.build().toJsonSkipEmpty()
 
         val response = prefillFraRestOgVerifiserResultet(apijson)
-        JSONAssert.assertEquals(response, validResponse, true)
+        JSONAssert.assertEquals(validResponse, response, true)
 
     }
 
@@ -314,7 +314,7 @@ class SedPrefillIntegrationSpringTest {
                 kravDato = Krav("2015-11-25")
                 forespurtstartdato = "2016-03-01"
                 ytelser = SedBuilder.YtelserBuilder(
-                    status = "01",
+                    status = "02",
                     mottasbasertpaa = null,
                     startdatoutbetaling = "2016-03-01",
                     startdatoretttilytelse = "2016-03-01",
@@ -353,7 +353,8 @@ class SedPrefillIntegrationSpringTest {
             pensjon = SedBuilder.P2000PensjonBuilder().apply {
                 kravDato = Krav("2021-03-01")
                 ytelser = SedBuilder.YtelserBuilder(
-                    belop = null
+                    belop = null,
+                    status = "01"
                 ).build()
             } .build()
             nav {

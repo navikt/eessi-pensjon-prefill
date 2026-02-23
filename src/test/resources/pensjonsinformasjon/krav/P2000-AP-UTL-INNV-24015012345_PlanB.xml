@@ -41,7 +41,7 @@
                     <ns24:kravType>EKSPORT</ns24:kravType>
                     <ns24:mottattDato>2017-11-28T00:00:00+01:00</ns24:mottattDato>
                     <ns24:virkningstidspunkt>2017-11-01T00:00:00+01:00</ns24:virkningstidspunkt>
-                    <ns24:status>INNV</ns24:status>
+                    <ns24:status>TIL_BEHANDLING</ns24:status>
                 </ns25:kravHistorikkListe>
             </ns26:kravHistorikkListe>
             <ns26:ytelsePerMaanedListe>
@@ -355,7 +355,7 @@
                 </ns7:ytelsePerMaanedListe>
             </ns26:ytelsePerMaanedListe>
             <ns26:brukersBarnListe></ns26:brukersBarnListe>
-            <ns26:status>INNV</ns26:status>
+            <ns26:status>TIL_BEHANDLING</ns26:status>
         </ns27:brukersSakerListe>
     </ns28:brukersSakerListe>
 </ns28:pensjonsinformasjon>
