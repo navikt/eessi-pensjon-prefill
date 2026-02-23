@@ -103,7 +103,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
                 val ytelser = pensjonsInformasjon.pensjon.ytelser?.first()
                 val belop = ytelser?.beloep?.firstOrNull()
 
-                val pensjon  = P2000Pensjon(
+                P2000Pensjon(
                     kravDato = pensjonsInformasjon.pensjon.kravDato,
                     ytelser = listOf(
                         YtelserItem(
@@ -132,9 +132,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
                     forespurtstartdato = pensjonsInformasjon.pensjon.forespurtstartdato.also { logger.debug("forespurtstartdato: $it") },
                     etterspurtedokumenter = pensjonsInformasjon.pensjon.etterspurtedokumenter.also { logger.debug("etterspurtedokumenter: $it") },
                 )
-                return pensjon
-            }
-            else pensjonsInformasjon.pensjon
+            } else pensjonsInformasjon.pensjon
 
         } catch (ex: Exception) {
             logger.error("Feilet ved preutfylling av pensjon, ${ex.message} ")

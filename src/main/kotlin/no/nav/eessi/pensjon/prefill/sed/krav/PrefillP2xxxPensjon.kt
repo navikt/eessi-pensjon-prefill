@@ -2,12 +2,6 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.*
-import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikk
-import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.finnKravHistorikkForDato
-import no.nav.eessi.pensjon.pensjonsinformasjon.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.EPSaktype
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype
-import no.nav.eessi.pensjon.pensjonsinformasjon.models.PenKravtype.*
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
@@ -16,20 +10,29 @@ import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.U
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.*
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.Sak
 import no.nav.eessi.pensjon.prefill.sed.krav.KravHistorikkHelper.hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang
-import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.KSAK
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createYtelseskomponentGrunnpensjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksbelop.createYtelseskomponentTilleggspensjon
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.utils.simpleFormat
-import no.nav.pensjon.v1.kravhistorikk.V1KravHistorikk
-import no.nav.pensjon.v1.sak.V1Sak
-import no.nav.pensjon.v1.vedtak.V1Vedtak
-import no.nav.pensjon.v1.ytelsepermaaned.V1YtelsePerMaaned
+import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
+import kotlin.collections.List
+import kotlin.collections.filter
+import kotlin.collections.forEach
+import kotlin.collections.isNotEmpty
+import kotlin.collections.isNullOrEmpty
+import kotlin.collections.listOf
+import kotlin.collections.none
+import kotlin.collections.sortedBy
+import kotlin.sequences.filter
+import kotlin.sequences.sortedBy
+import kotlin.text.compareTo
+import kotlin.text.filter
+import kotlin.text.isNotEmpty
 
 const val kravdatoMeldingOmP2100TilSaksbehandler = "Kravdato fra det opprinnelige vedtak med gjenlevenderett er angitt i SED P2100"
 
@@ -89,7 +92,7 @@ object PrefillP2xxxPensjon {
 
         logger.info("4.1           Informasjon om ytelser")
 
-        val v1KravHistorikk = finnKravHistorikkForDato(pensak).also { logger.debug("Valgt Krav: ${it.toJson()}") }
+        val v1KravHistorikk = KravHistorikkHelper.finnKravHistorikkForDato(pensak).also { logger.debug("Valgt Krav: ${it.toJson()}") }
         val melding = opprettMeldingBasertPaaSaktype(v1KravHistorikk, kravId, pensak?.sakType)
         val krav = createKravDato(v1KravHistorikk)
 
@@ -215,7 +218,7 @@ object PrefillP2xxxPensjon {
             //4.1.1
             ytelse = settYtelse(pensak),
             //4.1.3 - fast satt til søkt
-            status = if (pensak?.kravHistorikkListe?.kravHistorikkListe?.isNotEmpty() == true) mapKravhistorikkStatus(pensak.kravHistorikkListe!!) else null,
+            status = if (pensak?.kravHistorikk?.isNotEmpty() == true) mapKravhistorikkStatus(pensak.kravHistorikk) else null,
             //4.1.4
             pin = createInstitusjonPin(personNr),
             //4.1.4.1.4
@@ -246,7 +249,7 @@ object PrefillP2xxxPensjon {
                 ytelse = settYtelse(pensak),
 
                 //4.1.3 - fast satt til søkt
-                status = mapKravhistorikkStatus(pensak.kravHistorikkListe),
+                status = mapKravhistorikkStatus(pensak.kravHistorikk),
                 //4.1.4
                 pin = createInstitusjonPin(personNr),
                 //4.1.4.1.4
@@ -272,15 +275,15 @@ object PrefillP2xxxPensjon {
         )
     }
 
-    private fun mapKravhistorikkStatus(pensak: V1KravHistorikkListe): String {
-        return if (pensak.kravHistorikkListe.filter { it.status == "INNV" }.isNotEmpty()) "02"
-        else if (pensak.kravHistorikkListe.filter { it.status == "AVSL" }.isNotEmpty()) "03"
+    private fun mapKravhistorikkStatus(kravHistorikk: List<KravHistorikk>): String {
+        return if (kravHistorikk.any { it.kravStatus == EessiFellesDto.EessiSakStatus.INNV }) "02"
+        else if (kravHistorikk.any { it.kravStatus == EessiFellesDto.EessiSakStatus.AVSL }) "03"
         else "01"
     }
 
-    fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: V1KravHistorikk, pensak: V1Sak): V1YtelsePerMaaned {
-        val ytelser = pensak.ytelsePerMaanedListe.ytelsePerMaanedListe
-        val ytelserSortertPaaFom = ytelser.sortedBy { it.fom.toGregorianCalendar() }
+    fun hentYtelsePerMaanedDenSisteFraKrav(kravHistorikk: KravHistorikk, pensak: Sak): YtelsePerMaaned {
+        val ytelser = pensak.ytelsePerMaaned
+        val ytelserSortertPaaFom = ytelser.sortedBy { it.fom }
 
         logger.debug("-----------------------------------------------------")
         ytelserSortertPaaFom.forEach {

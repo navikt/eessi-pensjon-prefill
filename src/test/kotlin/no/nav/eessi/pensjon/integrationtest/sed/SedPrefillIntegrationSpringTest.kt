@@ -31,6 +31,7 @@ import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.Ytelseskomponent
+import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.ApiSubject
 import no.nav.eessi.pensjon.shared.api.SubjectFnr
@@ -49,6 +50,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.context.annotation.Bean
+import org.springframework.http.HttpEntity
 import org.springframework.http.MediaType
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
@@ -72,9 +74,6 @@ import java.time.LocalDate
 @DirtiesContext
 @EmbeddedKafka
 class SedPrefillIntegrationSpringTest {
-
-//    @MockkBean
-//    private lateinit var pesysClientRestTemplate: RestTemplate
 
     @MockkBean
     private lateinit var kodeverkClient: KodeverkClient
@@ -525,7 +524,7 @@ class SedPrefillIntegrationSpringTest {
         }.build().toJsonSkipEmpty()
 
         val response = prefillFraRestOgVerifiserResultet(apijson)
-        JSONAssert.assertEquals(response, validResponse, true)
+        JSONAssert.assertEquals(validResponse,response, true)
     }
 
     fun readP2000FromXml(path: String): P2xxxMeldingOmPensjonDto {
@@ -598,7 +597,7 @@ class SedPrefillIntegrationSpringTest {
     fun `prefill sed P2000 alder med overgang fra ufore med sakstatus Ukjent return valid sedjson`() {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
-
+        val kravdato = "2020-08-08"
         val mockP2000 = mockk<P2xxxMeldingOmPensjonDto> {
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiFellesDto.EessiSakType.ALDER,
@@ -610,7 +609,7 @@ class SedPrefillIntegrationSpringTest {
                         kravStatus = EessiFellesDto.EessiSakStatus.AVSL,
                     ),
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
-                        mottattDato = LocalDate.parse("2020-08-08"),
+                        mottattDato = LocalDate.parse(kravdato),
                         kravType = EessiFellesDto.EessiKravGjelder.SLUTT_BH_UTL,
                         virkningstidspunkt = LocalDate.parse("2016-03-01"),
                         kravStatus = EessiFellesDto.EessiSakStatus.INNV,
@@ -653,7 +652,7 @@ class SedPrefillIntegrationSpringTest {
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
             sed = P2000
             pensjon = SedBuilder.P2000PensjonBuilder().apply {
-                kravDato = Krav("2015-11-25")
+                kravDato = Krav(kravdato)
                 forespurtstartdato = "2016-03-01"
                 ytelser = SedBuilder.YtelserBuilder(
                     status = "02",
@@ -675,7 +674,7 @@ class SedPrefillIntegrationSpringTest {
                         pinList[1].identifikator = "123123123"
                     }
                 }
-                krav = SedBuilder.KravBuilder("2015-11-25")
+                krav = SedBuilder.KravBuilder(kravdato)
             }
         }.build().toJsonSkipEmpty()
         JSONAssert.assertEquals(validResponse, response, true)
@@ -792,15 +791,17 @@ class SedPrefillIntegrationSpringTest {
             true, "Lever", "Gjenlev", FNR_VOKSEN_3
         )
 
+        val kravdato = "2020-08-08"
+
         val mockP2000 = mockk<P2xxxMeldingOmPensjonDto> {
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiFellesDto.EessiSakType.ALDER,
                 kravHistorikk = listOf(
                     P2xxxMeldingOmPensjonDto.KravHistorikk(
-                        mottattDato = LocalDate.parse("2018-05-31"),
+                        mottattDato = LocalDate.parse(kravdato),
                         kravType = EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL,
                         virkningstidspunkt = LocalDate.parse("2018-05-31"),
-                        kravStatus = EessiFellesDto.EessiSakStatus.AVSL,
+                        kravStatus = EessiFellesDto.EessiSakStatus.INNV    ,
                     )
                 ),
                 ytelsePerMaaned = listOf(
@@ -833,7 +834,7 @@ class SedPrefillIntegrationSpringTest {
         val validResponse = SedBuilder.ValidResponseBuilder().apply {
             sed = P2000
             pensjon = SedBuilder.P2000PensjonBuilder().apply {
-                kravDato = Krav("2018-05-31")
+                kravDato = Krav(kravdato)
                 forespurtstartdato = "2018-08-01"
                 ytelser = SedBuilder.YtelserBuilder(
                     status = "02",
@@ -855,7 +856,7 @@ class SedPrefillIntegrationSpringTest {
                         pinList[1].identifikator = "123123123"
                     }
                 }
-                krav = SedBuilder.KravBuilder("2018-05-31")
+                krav = SedBuilder.KravBuilder(kravdato)
             }
         }.build().toJsonSkipEmpty()
         JSONAssert.assertEquals(validResponse, response, true)
