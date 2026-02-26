@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.sed.krav.PensjonsInformasjonHelper.readJsonResponse
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
@@ -15,6 +16,7 @@ import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
+
 
 class PrefillX010Test {
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)
@@ -42,7 +44,7 @@ class PrefillX010Test {
 
     @Test
     fun `Prefill X010 med data fra X009 med flere detaljer også mangelfull`() {
-        val x009 = SED.fromJsonToConcrete(PrefillTestHelper.readJsonResponse("/json/nav/X009-NAV.json")) as X009
+        val x009 = SED.fromJsonToConcrete(readJsonResponse("/json/nav/X009-NAV.json")) as X009
 
         val x010sed = prefill.prefill(
             prefillData.penSaksnummer,
@@ -59,7 +61,7 @@ class PrefillX010Test {
 
     @Test
     fun `Prefill X010 med data fra X009 hvor det er mangelfull detaljer`() {
-        val x009 = SED.fromJsonToConcrete(PrefillTestHelper.readJsonResponse("/json/nav/X009-TOM-NAV.json")) as X009
+        val x009 = SED.fromJsonToConcrete(readJsonResponse("/json/nav/X009-TOM-NAV.json")) as X009
 
         val x010sed = prefill.prefill(
             prefillData.penSaksnummer,

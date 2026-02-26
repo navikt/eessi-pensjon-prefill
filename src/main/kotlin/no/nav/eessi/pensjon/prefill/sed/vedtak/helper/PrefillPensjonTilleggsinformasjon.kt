@@ -3,10 +3,10 @@ package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 import no.nav.eessi.pensjon.eux.model.sed.AndreinstitusjonerItem
 import no.nav.eessi.pensjon.eux.model.sed.Opphoer
 import no.nav.eessi.pensjon.eux.model.sed.Tilleggsinformasjon
+import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.VedtakPensjonDataHelper.hentYtelseBelop
 import no.nav.eessi.pensjon.utils.simpleFormat
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -15,7 +15,7 @@ object PrefillPensjonTilleggsinformasjon {
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillPensjonTilleggsinformasjon::class.java) }
 
     //6.2
-    fun createTilleggsinformasjon(pendata: Pensjonsinformasjon, andreinstitusjonerItem: AndreinstitusjonerItem?): Tilleggsinformasjon {
+    fun createTilleggsinformasjon(pendata: P6000MeldingOmVedtakDto, andreinstitusjonerItem: AndreinstitusjonerItem?): Tilleggsinformasjon {
 
         logger.debug("PrefillPensjonTilleggsinformasjon")
         logger.debug("6.2           Tilleggsinformasjon")
@@ -33,7 +33,7 @@ object PrefillPensjonTilleggsinformasjon {
         )
     }
 
-    private fun createOpphoer(pendata: Pensjonsinformasjon): Opphoer? {
+    private fun createOpphoer(pendata: P6000MeldingOmVedtakDto): Opphoer? {
         logger.debug("6.2       Opphører..")
 
         val dato = createOpphorerDato(pendata)
@@ -49,10 +49,10 @@ object PrefillPensjonTilleggsinformasjon {
         return opphorer.takeUnless { dato == null && annulleringdato == null }
     }
 
-    private fun createTilleggsInfoDato(pendata: Pensjonsinformasjon): String {
+    private fun createTilleggsInfoDato(pendata: P6000MeldingOmVedtakDto): String {
         //6.4 //
         logger.debug("6.4       Tilleggsinformasjon dato (dato vedtak)")
-        return pendata.vedtak.datoFattetVedtak.simpleFormat()
+        return pendata.vedtak.datoFattetVedtak!!.simpleFormat()
 
     }
 
@@ -73,7 +73,7 @@ object PrefillPensjonTilleggsinformasjon {
      * OG vedtak er attestert
      * SÅ skal Antatt virkningsdato vises her.  Datoen skal vises i formatet DD-MM-YYYY
      */
-    private fun createOpphorerDato(pendata: Pensjonsinformasjon): String? {
+    private fun createOpphorerDato(pendata: P6000MeldingOmVedtakDto): String? {
         logger.debug("6.2       OpphorerDato")
 
         val resultatbegrunnelse = hentVilkarsResultatHovedytelse(pendata)
@@ -97,16 +97,16 @@ object PrefillPensjonTilleggsinformasjon {
      * SÅ skal Antatt virkningsdato vises her.
      * Datoen skal vises i formatet DD-MM-YYYY
      */
-    private fun createAnnulleringDato(pendata: Pensjonsinformasjon): String? {
+    private fun createAnnulleringDato(pendata: P6000MeldingOmVedtakDto): String? {
         logger.debug("6.x       AnnulleringDato")
-        val v1Vedtak = pendata.vedtak
+        val vedtak = pendata.vedtak
 
-        if (v1Vedtak.isHovedytelseTrukket && v1Vedtak.kravGjelder == "F_BH_BO_UTL") {
-            return v1Vedtak.virkningstidspunkt.simpleFormat()
+        if (vedtak.hovedytelseTrukket && vedtak.kravGjelder == "F_BH_BO_UTL") {
+            return vedtak.virkningstidspunkt.simpleFormat()
         }
 
-        if ("ENDR_UTTAKSGRAD" == v1Vedtak.kravGjelder && "0" == hentYtelseBelop(pendata))
-            return v1Vedtak.virkningstidspunkt.simpleFormat()
+        if ("ENDR_UTTAKSGRAD" == vedtak.kravGjelder && "0" == hentYtelseBelop(pendata))
+            return vedtak.virkningstidspunkt.simpleFormat()
 
         return null
     }

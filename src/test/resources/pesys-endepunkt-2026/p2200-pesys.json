@@ -1,0 +1,75 @@
+{
+  "vedtak" : {
+    "boddArbeidetUtland" : true
+  },
+  "sak" : {
+    "sakType" : "UFOREP",
+    "forsteVirkningstidspunkt" : "2025-01-01",
+    "kravHistorikk" : [ {
+      "kravId" : 43602867,
+      "kravType" : "F_BH_MED_UTL",
+      "mottattDato" : "2024-12-01",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "NY_SOKNAD",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 48405617,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-09-16",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 48615438,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-09-18",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 48695674,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-09-19",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 48765907,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-09-22",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 48885912,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-09-26",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "INNV"
+    }, {
+      "kravId" : 48826368,
+      "kravType" : "REVURD",
+      "mottattDato" : "2025-09-24",
+      "virkningstidspunkt" : "2025-01-01",
+      "kravAarsak" : "ENDRET_OPPTJENING",
+      "kravStatus" : "INNV"
+    } ],
+    "ytelsePerMaaned" : [ {
+      "fom" : "2025-01-01",
+      "belop" : 19646,
+      "ytelseskomponent" : [ {
+        "ytelsesKomponentType" : "UT_ORDINER",
+        "belopTilUtbetaling" : 19646
+      } ]
+    }, {
+      "fom" : "2025-05-01",
+      "belop" : 20617,
+      "ytelseskomponent" : [ {
+        "ytelsesKomponentType" : "UT_ORDINER",
+        "belopTilUtbetaling" : 20617
+      } ]
+    } ],
+    "status" : "INNV"
+  }
+}

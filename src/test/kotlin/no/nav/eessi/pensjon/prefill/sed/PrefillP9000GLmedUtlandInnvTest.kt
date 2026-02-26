@@ -5,7 +5,8 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.models.PensjonCollection
+import no.nav.eessi.pensjon.prefill.PesysService
+import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
@@ -24,6 +25,8 @@ class PrefillP9000GLmedUtlandInnvTest {
     private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(75)
 
     private val pesysSaksnummer = "22875355"
+    private val pesysService : PesysService = mockk()
+
     lateinit var prefillNav: PrefillPDLNav
     lateinit var prefillData: PrefillDataModel
     lateinit var prefillSEDService: PrefillSEDService
@@ -36,17 +39,14 @@ class PrefillP9000GLmedUtlandInnvTest {
         personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P9000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(avdodPersonFnr, "112233445566"))
 
-        val pensjonInformasjonService = PrefillTestHelper.lesPensjonsdataFraFil("/pensjonsinformasjon/krav/KravAlderEllerUfore_AP_UTLAND.xml")
-        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = pensjonInformasjonService)
-
+        val innhentingService = InnhentingService(mockk(), pesysService = pesysService)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
-
     }
 
     @Test
     fun `forventet korrekt utfylt P9000 med mockdata fra testfiler`() {
-        val p9000 = prefillSEDService.prefill(prefillData, personDataCollection,pensjonCollection, null)
+        val p9000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
 
         assertEquals("BAMSE LUR", p9000.nav?.bruker?.person?.fornavn)
         assertEquals("MOMBALO", p9000.nav?.bruker?.person?.etternavn)
@@ -70,5 +70,6 @@ class PrefillP9000GLmedUtlandInnvTest {
         assertNotNull(p9000.pensjon)
         assertNotNull(p9000.pensjon?.gjenlevende)
     }
+
 }
 

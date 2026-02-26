@@ -49,7 +49,7 @@ class PrefillP5000P6000GjennyUtenAvdodTest {
     lateinit var personDataService : PersonDataService
     lateinit var prefillGjennyService: PrefillGjennyService
     lateinit var prefillSEDService: PrefillSEDService
-    private lateinit var dataFromPEN: PensjonsinformasjonService
+//    private lateinit var dataFromPEN: PensjonsinformasjonService
 
     var eessiInformasjon = mockk<EessiInformasjon>(relaxed = true)
     var krrService = mockk<KrrService>(relaxed = true)
@@ -61,7 +61,7 @@ class PrefillP5000P6000GjennyUtenAvdodTest {
         prefillNav = BasePrefillNav.createPrefillNav()
         personDataService = PersonDataService(personservice)
         etterlatteService = EtterlatteService(mockk())
-        innhentingService = InnhentingService(personDataService, pensjonsinformasjonService = mockk())
+        innhentingService = InnhentingService(personDataService, pesysService = mockk())
         prefillSEDService = PrefillSEDService(eessiInformasjon, mockk())
         prefillGjennyService = PrefillGjennyService(krrService, innhentingService, etterlatteService, automatiseringStatistikkService, prefillNav, eessiInformasjon, prefillSEDService)
 
@@ -137,7 +137,7 @@ class PrefillP5000P6000GjennyUtenAvdodTest {
 
     @Test
     fun `En p6000 uten vedtak skal gi en delvis utfylt sed`(){
-        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
+//        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-GP-401.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))
         prefillSEDService = PrefillSEDService(EessiInformasjonMother.standardEessiInfo(), prefillNav)
 

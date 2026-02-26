@@ -4,15 +4,15 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
 import no.nav.eessi.pensjon.eux.model.sed.KravType
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.P15000overfoeringAvPensjonssakerTilEessiDto
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
-
 
 internal class PrefillP15000Test {
 
@@ -27,14 +27,13 @@ internal class PrefillP15000Test {
 
         val exception = assertThrows<ResponseStatusException> {
             prfillP15000.prefill(
-                mockedPrefill, mockk(), mockk {
-                    every { sakType} returns null
-                }, mockk<Pensjonsinformasjon>{
-                    every { avdod } returns mockk()
+                mockedPrefill, mockk(), mockk(){
+                    every { avdod } returns "11111136958"
+                    every { sakType } returns ""
                 }
             )
         }
-        assertEquals(exception.reason,"Ved opprettelse av krav SED må saksbehandling være fullført i Pesys ( vilkårsprøving o.l ) og jordklode i brukerkontekst kan ikke benyttes")
+        assertEquals("Ved opprettelse av krav SED må saksbehandling være fullført i Pesys ( vilkårsprøving o.l ) og jordklode i brukerkontekst kan ikke benyttes",exception.reason)
     }
 
     @Test

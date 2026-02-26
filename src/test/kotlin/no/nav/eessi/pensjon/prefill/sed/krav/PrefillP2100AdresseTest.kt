@@ -1,16 +1,19 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
+import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.models.PensjonCollection
+import no.nav.eessi.pensjon.prefill.PesysService
+import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
-import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
@@ -18,21 +21,38 @@ import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class PrefillP2100AdresseTest {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(65)
     private val avdodPersonFnr = FodselsnummerGenerator.generateFnrForTest(75)
     private val pesysSaksnummer = "22875355"
+    private val pesysService: PesysService = mockk()
 
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
     private lateinit var pensjonCollection: PensjonCollection
-    private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var persondataCollection: PersonDataCollection
 
     @BeforeEach
     fun setup() {
+        every { pesysService.hentP2100data(any(),any(),any()) } returns mockk(){
+            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                sakType = EessiSakType.GJENLEV,
+                kravHistorikk = listOf(
+                    P2xxxMeldingOmPensjonDto.KravHistorikk(
+                        mottattDato = LocalDate.of(2025, 1, 1),
+                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
+                        virkningstidspunkt = LocalDate.of(2015, 11, 25),
+                    )
+                ),
+                ytelsePerMaaned = emptyList(),
+                forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
+                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
+            )
+            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
+        }
         persondataCollection = PersonPDLMock.createAvdodFamilieMedDødsboadresse(personFnr, avdodPersonFnr)
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
                 sedType = SedType.P2100,
@@ -41,8 +61,7 @@ class PrefillP2100AdresseTest {
                 avdod = PersonInfo(avdodPersonFnr, "112233445566")
         )
 
-        dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/P2100-GL-UTL-INNV.xml")
-        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        val innhentingService = InnhentingService(mockk(), pesysService = pesysService)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
@@ -52,7 +71,7 @@ class PrefillP2100AdresseTest {
     @Test
     fun `Hvis en P2100 preutfylles saa skal adressen til avdode fylles ut i adressefelt kapittel 2`() {
 
-        val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
+        val p2100 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
 
         val expectedAvdodAdresse = """
             {

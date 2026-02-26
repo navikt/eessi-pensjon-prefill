@@ -4,11 +4,11 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.Sak
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.utils.toJson
-import no.nav.pensjon.v1.sak.V1Sak
-import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -24,13 +24,11 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
     fun prefillSed(
         prefillData: PrefillDataModel,
         personData: PersonDataCollection,
-        sak: V1Sak?,
-        vedtak: V1Vedtak? = null
+        sak: P2xxxMeldingOmPensjonDto?
     ): SED {
-        postPrefill(prefillData, sak, vedtak)
+        postPrefill(prefillData, sak)
 
-        val pensjon = populerPensjon(prefillData, sak)
-
+        val pensjon = populerPensjon(prefillData, sak?.sak)
         val nav = prefillPDLNav(prefillData, personData, pensjon?.kravDato)
 
         logger.info("kravdato : ${pensjon?.kravDato}")
@@ -56,12 +54,12 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
         )
     }
 
-    private fun postPrefill(prefillData: PrefillDataModel, sak: V1Sak?, vedtak: V1Vedtak?) {
+    private fun postPrefill(prefillData: PrefillDataModel, sak: P2xxxMeldingOmPensjonDto?) {
         val SedType = SedType.P2000
-        PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak, SedType, vedtak)
+        PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak?.sak, SedType, sak?.vedtak)
         logger.debug(
             "----------------------------------------------------------"
-                    + "\nSaktype                 : ${sak?.sakType} "
+                    + "\nSaktype                 : ${sak?.sak?.sakType} "
                     + "\nSøker etter SakId       : ${prefillData.penSaksnummer} "
                     + "\nSøker etter aktoerid    : ${prefillData.bruker.aktorId} "
                     + "\n------------------| Preutfylling [$SedType] START |------------------ "
@@ -83,11 +81,12 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
 
     fun populerPensjon(
         prefillData: PrefillDataModel,
-        sak: V1Sak?
+        sak: Sak?
     ): P2000Pensjon? {
         val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
 
         logger.debug("""Prefilldata: ${prefillData.toJson()}""")
+        logger.debug("""Prefilldato: ${prefillData.kravDato?.toJson()}""")
 
         //valider pensjoninformasjon,
         return try {
@@ -142,6 +141,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
         }
     }
 
+    //Regel: MottattBasertPaa skal ikke brukes dersom vi har totalBruttoArbBasert
     private fun settMottattBasertPaa(totalBruttoArbBasert: String?): String? {
         return if (totalBruttoArbBasert.isNullOrEmpty() || totalBruttoArbBasert == "0") {
             BasertPaa.botid.name

@@ -1,14 +1,18 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.eux.model.sed.BasertPaa
+import no.nav.eessi.pensjon.eux.model.sed.MeldingOmPensjonP2200
+import no.nav.eessi.pensjon.eux.model.sed.P2200
+import no.nav.eessi.pensjon.eux.model.sed.P2200Pensjon
+import no.nav.eessi.pensjon.eux.model.sed.YtelserItem
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.Sak
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.Vedtak
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.utils.toJson
-import no.nav.pensjon.v1.sak.V1Sak
-import no.nav.pensjon.v1.vedtak.V1Vedtak
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -20,12 +24,7 @@ class PrefillP2200(private val prefillNav: PrefillPDLNav) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2200::class.java) }
 
-    fun prefill(
-        prefillData: PrefillDataModel,
-        personData: PersonDataCollection,
-        sak: V1Sak?,
-        vedtak: V1Vedtak? = null
-    ) : P2200 {
+    fun prefill(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: Sak?, vedtak: Vedtak? = null) : P2200 {
         logger.debug("----------------------------------------------------------"
                 + "\nSaktype                 : ${sak?.toJson()} "
                 + "\nSøker etter SakId       : ${prefillData.penSaksnummer} "
@@ -58,7 +57,7 @@ class PrefillP2200(private val prefillNav: PrefillPDLNav) {
 
     fun populerPensjonP2200(
         prefillData: PrefillDataModel,
-        sak: V1Sak?
+        sak: Sak?
     ): P2200Pensjon? {
         val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
 

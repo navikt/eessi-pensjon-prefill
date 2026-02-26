@@ -4,7 +4,7 @@ import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.P7000
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.models.PensjonCollection
+import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
@@ -43,7 +43,7 @@ class PrefillP7000_AP_21975717Test {
 
     @Test
     fun `forventet korrekt utfylt P7000 Melding om vedtakssammendrag med MockData fra testfiler`() {
-        val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection, null) as P7000
+        val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection, null,) as P7000
 
         assertEquals("BALDER", p7000.nav?.ektefelle?.person?.etternavn)
         assertEquals("M", p7000.pensjon?.bruker?.person?.kjoenn)
@@ -56,7 +56,7 @@ class PrefillP7000_AP_21975717Test {
         val json = String(Files.readAllBytes(Paths.get(filepath)))
         assertTrue(validateJson(json))
 
-        val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection, null)
+        val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection, null,)
         val sed = p7000.toJsonSkipEmpty()
 
         assertTrue(validateJson(sed))

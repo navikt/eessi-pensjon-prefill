@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
+import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
@@ -8,12 +9,15 @@ import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
-import no.nav.eessi.pensjon.prefill.models.PensjonCollection
+import no.nav.eessi.pensjon.prefill.PesysService
+import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother.initialPrefillDataModel
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
-import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.lesPensjonsdataFraFil
-import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper.readJsonResponse
+import no.nav.eessi.pensjon.prefill.sed.krav.PensjonsInformasjonHelper.readJsonResponse
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -25,6 +29,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class PrefillP2000_AP_LOP_UTLANDTest {
 
@@ -32,6 +37,7 @@ class PrefillP2000_AP_LOP_UTLANDTest {
     private val ekteFnr = FodselsnummerGenerator.generateFnrForTest(70)
 
     private val pesysSaksnummer = "21644722"
+    private val pesysService: PesysService = mockk()
 
     lateinit var prefillSEDService: PrefillSEDService
     lateinit var pensjonCollection: PensjonCollection
@@ -42,14 +48,28 @@ class PrefillP2000_AP_LOP_UTLANDTest {
     fun setup() {
         persondataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
 
-        val dataFromPEN = lesPensjonsdataFraFil("/pensjonsinformasjon/krav/AP-LOP-21644722.xml")
+        every { pesysService.hentP2000data(any(),any(),any()) } returns mockk(){
+            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                sakType = EessiSakType.ALDER,
+                kravHistorikk = listOf(
+                    P2xxxMeldingOmPensjonDto.KravHistorikk(
+                        mottattDato = LocalDate.of(2014, 1, 13),
+                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
+                    )
+                ),
+                ytelsePerMaaned = emptyList(),
+                forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
+                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
+            )
+            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
+        }
 
         prefillData = initialPrefillDataModel(P2000, personFnr, penSaksnummer = pesysSaksnummer).apply {
             partSedAsJson["PersonInfo"] = readJsonResponse("/json/nav/other/person_informasjon_selvb.json")
             partSedAsJson["P4000"] = readJsonResponse("/json/nav/other/p4000_trygdetid_part.json")
 
         }
-        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
+        val innhentingService = InnhentingService(mockk(), pesysService = pesysService)
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
@@ -58,7 +78,7 @@ class PrefillP2000_AP_LOP_UTLANDTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon med kap4 og 9`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection,pensjonCollection, null)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
 
         val P2000pensjon = SED(
                 type = P2000,
@@ -67,12 +87,12 @@ class PrefillP2000_AP_LOP_UTLANDTest {
         )
 
         assertNotNull(P2000pensjon.nav?.krav)
-        assertEquals("2014-01-07", P2000pensjon.nav?.krav?.dato)
+        assertEquals("2014-01-13", P2000pensjon.nav?.krav?.dato)
     }
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
 
         assertEquals(null, p2000.nav?.barn)
 
@@ -108,7 +128,7 @@ class PrefillP2000_AP_LOP_UTLANDTest {
 
     @Test
     fun `testing av komplett P2000 med utskrift og testing av innsending`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
 
         val json = mapAnyToJson(createMockApiRequest(p2000.toJson()))
         assertNotNull(json)

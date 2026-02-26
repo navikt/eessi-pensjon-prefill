@@ -4,10 +4,10 @@ import no.nav.eessi.pensjon.eux.model.sed.P6000
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
+import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.vedtak.PrefillP6000Pensjon.prefillP6000Pensjon
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
-import no.nav.pensjon.v1.pensjonsinformasjon.Pensjonsinformasjon
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory
 class PrefillP6000(
     private val prefillNav: PrefillPDLNav,
     private val eessiInfo: EessiInformasjon,
-    private val pensjoninformasjon: Pensjonsinformasjon?,
+    private val pesysPrefillData: P6000MeldingOmVedtakDto?,
 ) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP6000::class.java) }
@@ -36,9 +36,9 @@ class PrefillP6000(
         logger.debug("Henter opp Persondata/Gjenlevende fra TPS")
         val gjenlevende = prefillData.avdod?.let { prefillNav.createGjenlevende(personData.forsikretPerson, prefillData.bruker) }
 
-        val p6000Pensjon = if(pensjoninformasjon != null) {
+        val p6000Pensjon = if(pesysPrefillData != null) {
             logger.debug("Prefiller P6000 med Pensjonsdata fra PESYS")
-            prefillP6000Pensjon(pensjoninformasjon, gjenlevende, andreInstitusjondetaljer)
+            prefillP6000Pensjon(pesysPrefillData, gjenlevende, andreInstitusjondetaljer)
         } else {
             logger.debug("Prefiller med Pensjonsdata fra Gjenny, med vedtak: $etterlatteRespData")
             PrefillP6000GjennyPensjon().prefillP6000GjennyPensjon(

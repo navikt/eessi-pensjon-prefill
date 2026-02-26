@@ -1,59 +1,53 @@
 package no.nav.eessi.pensjon.prefill.sed
 
 
-import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonRequestBuilder
-import no.nav.eessi.pensjon.pensjonsinformasjon.clients.PensjonsinformasjonClient
-import no.nav.eessi.pensjon.prefill.PensjonsinformasjonService
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.InstitusjonItem
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
+
 
 object PrefillTestHelper {
 
-    fun lesPensjonsdataVedtakFraFil(responseXMLfilename: String): PensjonsinformasjonService {
-        val pensjonsinformasjonRestTemplate = mockk<RestTemplate>()
-        every {
-            pensjonsinformasjonRestTemplate.exchange(
-                any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)
-            )
-        } returns readXMLVedtakresponse(responseXMLfilename)
+//    fun lesPensjonsdataVedtakFraFil(responseXMLfilename: String): PensjonsinformasjonService {
+//        val pensjonsinformasjonRestTemplate = mockk<RestTemplate>()
+//        every {
+//            pensjonsinformasjonRestTemplate.exchange(
+//                any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)
+//            )
+//        } returns readXMLVedtakresponse(responseXMLfilename)
 
-        val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate, PensjonRequestBuilder())
-        return PensjonsinformasjonService(pensjonsinformasjonClient)
+//        val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate, PensjonRequestBuilder())
+//        return PensjonsinformasjonService(pensjonsinformasjonClient)
     }
 
-    fun lesPensjonsdataFraFil(responseXMLfilename: String): PensjonsinformasjonService {
-        val pensjonsinformasjonRestTemplate = mockk<RestTemplate>()
-        every {
-            pensjonsinformasjonRestTemplate.exchange(
-                any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)
-            )
-        } returns readXMLresponse(responseXMLfilename)
+//    fun lesPensjonsdataFraFil(responseXMLfilename: String): PensjonsinformasjonService {
+//        val pensjonsinformasjonRestTemplate = mockk<RestTemplate>()
+//        every {
+//            pensjonsinformasjonRestTemplate.exchange(
+//                any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)
+//            )
+//        } returns readXMLresponse(responseXMLfilename)
+//
+//        val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate, PensjonRequestBuilder())
+//        return PensjonsinformasjonService(pensjonsinformasjonClient)
+//    }
 
-        val pensjonsinformasjonClient = PensjonsinformasjonClient(pensjonsinformasjonRestTemplate, PensjonRequestBuilder())
-        return PensjonsinformasjonService(pensjonsinformasjonClient)
-    }
-
-    fun readJsonResponse(file: String): String {
-        return javaClass.getResource(file).readText()
-    }
-
-    fun readXMLresponse(file: String): ResponseEntity<String> {
-        val resource = javaClass.getResource(file).readText()
-        return ResponseEntity(resource, HttpStatus.OK)
-    }
-
-    fun readXMLVedtakresponse(file: String): ResponseEntity<String> {
-        val resource = javaClass.getResource(file).readText()
-        return ResponseEntity(resource, HttpStatus.OK)
-    }
+//    fun readJsonResponse(file: String): String {
+//        return javaClass.getResource(file).readText()
+//    }
+//
+//    fun readXMLresponse(file: String): ResponseEntity<String> {
+//        val resource = javaClass.getResource(file).readText()
+//        return ResponseEntity(resource, HttpStatus.OK)
+//    }
+//
+//    fun readXMLVedtakresponse(file: String): ResponseEntity<String> {
+//        val resource = javaClass.getResource(file).readText()
+//        return ResponseEntity(resource, HttpStatus.OK)
+//    }
 
 
     fun createMockApiRequest(sed: SedType, buc: BucType, payload: String, sakNr: String): ApiRequest {
@@ -71,4 +65,4 @@ object PrefillTestHelper {
         )
     }
 
-}
+//}

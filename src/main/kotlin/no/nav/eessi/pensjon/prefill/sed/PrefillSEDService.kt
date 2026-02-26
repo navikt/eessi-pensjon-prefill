@@ -5,8 +5,9 @@ import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
-import no.nav.eessi.pensjon.prefill.models.PensjonCollection
+import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2000
@@ -26,6 +27,39 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillSEDService::class.java) }
 
+    fun prefillGjenny(
+        prefillData: PrefillDataModel,
+        personDataCollection: PersonDataCollection,
+        etterlatteRespData: EtterlatteVedtakResponseData?
+    ): SED {
+        return when (prefillData.sedType) {
+            P6000 -> {
+                PrefillP6000(
+                    prefillPDLnav,
+                    eessiInformasjon,
+                    null
+                ).prefill(
+                    prefillData,
+                    personDataCollection,
+                    etterlatteRespData
+                )
+            }
+            P2100 -> {
+                val sedpair = PrefillP2100(prefillPDLnav).prefillSed(
+                    prefillData,
+                    personDataCollection,
+                    null
+                )
+                prefillData.melding = sedpair.first
+                sedpair.second
+            }
+            else -> {
+                logger.warn("Benytter ordinær preutfylling for Gjenny for ${prefillData.sedType}")
+                prefill(prefillData, personDataCollection, null, etterlatteRespData)
+            }
+        }
+    }
+
     fun prefill(
         prefillData: PrefillDataModel,
         personDataCollection: PersonDataCollection,
@@ -41,22 +75,21 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 PrefillP2000(prefillPDLnav).prefillSed(
                     prefillData,
                     personDataCollection,
-                    pensjonCollection?.sak,
-                    pensjonCollection?.vedtak
+                    P2xxxMeldingOmPensjonDto(pensjonCollection?.hentVedtak() , pensjonCollection?.hentSak())
                 )
             }
 
             P2200 -> PrefillP2200(prefillPDLnav).prefill(
                 prefillData,
                 personDataCollection,
-                pensjonCollection?.sak,
-                pensjonCollection?.vedtak
+                pensjonCollection?.hentSak(),
+                pensjonCollection?.hentVedtak()
             )
             P2100 -> {
                 val sedpair = PrefillP2100(prefillPDLnav).prefillSed(
                     prefillData,
                     personDataCollection,
-                    pensjonCollection?.sak
+                    pensjonCollection?.hentSak()
                 )
                 prefillData.melding = sedpair.first
                 sedpair.second
@@ -66,7 +99,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
             P6000 -> PrefillP6000(
                 prefillPDLnav,
                 eessiInformasjon,
-                pensjonCollection?.pensjoninformasjon ?: throw ResponseStatusException(
+                pensjonCollection?.p6000Data ?: throw ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Ingen vedtak"
                 )
@@ -92,7 +125,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                     PrefillP8000(PrefillSed(prefillPDLnav)).prefill(
                         prefillData,
                         personDataCollection,
-                        pensjonCollection?.sak
+                        pensjonCollection?.p8000Data
                     )
                 } else {
                     PrefillP8000(PrefillSed(prefillPDLnav)).prefill(prefillData, personDataCollection, null)
@@ -102,8 +135,7 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
             P15000 -> PrefillP15000(PrefillSed(prefillPDLnav)).prefill(
                 prefillData,
                 personDataCollection,
-                pensjonCollection?.sak,
-                pensjonCollection?.pensjoninformasjon
+                pensjonCollection?.p15000Data
             )
 
             P10000 -> PrefillP10000(prefillPDLnav).prefill(

@@ -46,7 +46,9 @@ dependencies {
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation('org.glassfish.jaxb:jaxb-runtime:2.3.9')
 
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.3")
     implementation("com.fasterxml.jackson.core:jackson-core:${jacksonModuleKotlinVersion}")
+//    implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonModuleKotlinVersion}")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:${jacksonModuleKotlinVersion}")
 
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
@@ -84,10 +86,9 @@ dependencies {
         exclude module: 'ep-metrics'
         exclude module: 'ep-logging'
     }
-    
-    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:4.0.30")
+//    implementation("no.nav.eessi.pensjon:ep-pensjonsinformasjon:4.0.10")
 
-    implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:2643.2f3e8e9")
+//    implementation("no.nav.tjenestespesifikasjoner:pensjonsinformasjon-v1-tjenestespesifikasjon:2643.2f3e8e9")
 
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("no.nav.security:token-validation-spring-test:${tokenSupportVersion}")
