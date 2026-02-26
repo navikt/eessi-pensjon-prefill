@@ -378,19 +378,19 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
      * Prefiller sivilstand-status og -dato fra PDL
      */
     private fun createSivilstand(pdlperson: PdlPerson): List<SivilstandItem> {
-        logger.debug("2.2.2.1        Sivilstand")
         val sivilstand = pdlperson.sivilstand
-            .filterNot { it.gyldigFraOgMed == null }
+            .filter { it.gyldigFraOgMed != null }
             .map {
-                logger.info("Sivilstand: ${it.type} dato: ${it.gyldigFraOgMed}")
-                when(it.type){
-                    UGIFT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.enslig)
-                    GIFT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.gift)
-                    SKILT -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.skilt)
-                    REGISTRERT_PARTNER -> SivilstandItem(it.gyldigFraOgMed.toString(), SivilstandRina.registrert_partnerskap)
+                logger.info("Sivilstand: {} dato: {}", it.type, it.gyldigFraOgMed)
+                val dato = it.gyldigFraOgMed.toString()
+                when (it.type) {
+                    UGIFT -> SivilstandItem(dato, SivilstandRina.enslig)
+                    GIFT -> SivilstandItem(dato, SivilstandRina.gift)
+                    SKILT -> SivilstandItem(dato, SivilstandRina.skilt)
+                    REGISTRERT_PARTNER -> SivilstandItem(dato, SivilstandRina.registrert_partnerskap)
                     else -> SivilstandItem(null, null)
                 }
             }
-        return sivilstand.distinct()
+        return sivilstand.distinct().also { logger.info("2.2.2.1        Sivilstand") }
     }
 }
