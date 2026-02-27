@@ -39,7 +39,7 @@ class PrefillService(
 
     init {
         PrefillSed = metricsHelper.init("PrefillSed",
-            ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST, HttpStatus.FORBIDDEN))
+            ignoreHttpCodes = listOf(HttpStatus.FORBIDDEN))
     }
 
     fun prefillSedtoJson(request: ApiRequest): String {
