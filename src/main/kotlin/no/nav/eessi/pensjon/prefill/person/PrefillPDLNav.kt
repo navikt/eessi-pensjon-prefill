@@ -384,13 +384,16 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 logger.info("Sivilstand: {} dato: {}", it.type, it.gyldigFraOgMed)
                 val dato = it.gyldigFraOgMed.toString()
                 when (it.type) {
-                    UGIFT -> SivilstandItem(dato, SivilstandRina.enslig)
                     GIFT -> SivilstandItem(dato, SivilstandRina.gift)
                     SKILT -> SivilstandItem(dato, SivilstandRina.skilt)
+                    UGIFT -> SivilstandItem(dato, SivilstandRina.enslig)
+                    ENKE_ELLER_ENKEMANN -> SivilstandItem(dato, SivilstandRina.enke_enkemann)
+                    SEPARERT, SEPARERT_PARTNER-> SivilstandItem(dato, SivilstandRina.separert)
                     REGISTRERT_PARTNER -> SivilstandItem(dato, SivilstandRina.registrert_partnerskap)
-                    else -> SivilstandItem(null, null)
+
+                    else -> null
                 }
             }
-        return sivilstand.distinct().also { logger.info("2.2.2.1        Sivilstand") }
+        return sivilstand.filterNotNull().distinct().also { logger.info("2.2.2.1        Sivilstand") }
     }
 }
