@@ -394,6 +394,10 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                     else -> null
                 }
             }
-        return sivilstand.filterNotNull().distinct().also { logger.info("2.2.2.1        Sivilstand") }
+        return sivilstand
+            .filterNotNull()
+            .distinct()
+            .sortedByDescending { it.fradato }
+            .also { logger.info("2.2.2.1        Sivilstand: $it") }
     }
 }
