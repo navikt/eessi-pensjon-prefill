@@ -173,13 +173,17 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
     }
 
 
-    private fun finnReduksjonsGrunn(reduksjonItem: ReduksjonItem?): String {
-        if (reduksjonItem?.aarsak != null) {
-            return "03"
-        } else if (reduksjonItem != null) {
-            return reduksjonItem.type.toString()
+    private fun finnReduksjonsGrunn(reduksjonItem: ReduksjonItem?): String? {
+        if (reduksjonItem?.aarsak != null) return "03"
+
+        val type = reduksjonItem?.type?.takeIf { it.isNotEmpty() } ?: return null
+
+        if (type == "null" || type == "") {
+            logger.error("Reduksjonstype er 'null' eller har ingen verdi i P6000, setter reduksjonsgrunn til null i P7000")
+            return null
         }
-        return ""
+
+        return type
     }
 
     fun preutfyllAdressatForRevurdering(pensjon: P6000Pensjon?): List<AdressatForRevurderingItem>? {
