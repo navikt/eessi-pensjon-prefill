@@ -61,10 +61,9 @@ object KravHistorikkHelper {
         sortList?.forEach {
             logger.debug("leter etter Krav status med ${EessiFellesDto.EessiSakStatus.TIL_BEHANDLING}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
             if (EessiFellesDto.EessiSakStatus.INNV == it.kravStatus) {
-                logger.debug("Fant Kravhistorikk med ${it.kravStatus}")
-                return it
+                return it.also { logger.info("Fant Kravhistorikk med ${it.kravStatus}")}
             } else if (EessiFellesDto.EessiSakStatus.TIL_BEHANDLING == it.kravStatus && ytelserPrMnd?.belop != null) {
-                return it
+                return it.also { logger.info("Fant Kravhistorikk med ${it.kravStatus}")}
             }
         }
         logger.error("Fant ikke noe Kravhistorikk..${EessiFellesDto.EessiSakStatus.TIL_BEHANDLING}. Mangler vilkårsprlving/vedtak. følger ikke normal behandling")
@@ -102,7 +101,7 @@ object KravHistorikkHelper {
             if (kravKunUtland != null) return  kravKunUtland
 
             logger.info("Sakstatus: ${pensak?.status},sakstype: ${pensak?.sakType}")
-            val ytelsePrMnd = pensak?.ytelsePerMaaned?.filter { it.belop != null }?.firstOrNull()
+            val ytelsePrMnd = pensak?.ytelsePerMaaned?.firstOrNull { it.belop != null }
             val innvilgetKrav = hentKravHistorikkMedKravStatusInnvilget(pensak?.kravHistorikk, ytelsePrMnd)
             val avslaattKrav = hentKravHistorikkMedKravStatusAvslag(pensak?.kravHistorikk)
             return innvilgetKrav ?: avslaattKrav ?: hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak?.kravHistorikk)
