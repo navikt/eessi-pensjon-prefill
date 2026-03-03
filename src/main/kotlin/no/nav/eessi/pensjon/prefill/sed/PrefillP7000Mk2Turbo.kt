@@ -174,9 +174,10 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
 
     private fun finnReduksjonsGrunn(reduksjonItem: ReduksjonItem?): String? {
-        reduksjonItem?.aarsak?.let { return "03" }
+        if(reduksjonItem?.aarsak != null)  return "03"
 
-        val type = reduksjonItem?.type?.takeIf { it.isNotEmpty() } ?: return null
+        val type = reduksjonItem?.type
+        if(type?.isEmpty() == true) return null
 
         if (type == "null") {
             logger.error("Reduksjonstype er 'null' eller har ingen verdi i P6000, setter reduksjonsgrunn til null i P7000")
