@@ -71,7 +71,7 @@ class PesysService(
 
         val entity = HttpEntity<Void>(httpHeaders)
         return pesysClientRestTemplate.exchange(path, HttpMethod.GET, entity, T::class.java).body
-            .also { logger.debug("Svar fra Pesys nytt endepunkt: ${it?.toJson()}, url: $path , headers: $headers") }
+            .also { logger.debug("Svar fra Pesys nytt endepunkt: ${it?.toJson()}, url: $path , headers: ${headers.toJson()}") }
     }
 }
 
