@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto.KravHistorikk
 import org.slf4j.Logger
@@ -56,30 +57,34 @@ object KravHistorikkHelper {
         return null
     }
 
-    fun hentKravHistorikkMedKravStatusInnvilget(kravHistorikkListe: List<KravHistorikk>?, ytelserPrMnd: P2xxxMeldingOmPensjonDto.YtelsePerMaaned?): KravHistorikk? {
-        val sortList = sortertKravHistorikk(kravHistorikkListe)
+    fun hentKravHistorikkMedKravStatusInnvilget(sak: P2xxxMeldingOmPensjonDto.Sak?): KravHistorikk? {
+        val sortList = sortertKravHistorikk(sak?.kravHistorikk)
         sortList?.forEach {
-            logger.debug("leter etter Krav status med ${EessiFellesDto.EessiSakStatus.TIL_BEHANDLING}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
-            if (EessiFellesDto.EessiSakStatus.INNV == it.kravStatus) {
-                return it.also { logger.info("Fant Kravhistorikk med ${it.kravStatus}")}
-            } else if (EessiFellesDto.EessiSakStatus.TIL_BEHANDLING == it.kravStatus && ytelserPrMnd?.belop != null) {
-                return it.also { logger.info("Fant Kravhistorikk med ${it.kravStatus}")}
-            }
-        }
-        logger.error("Fant ikke noe Kravhistorikk..${EessiFellesDto.EessiSakStatus.TIL_BEHANDLING}. Mangler vilkårsprlving/vedtak. følger ikke normal behandling")
-        return null
-    }
-
-    fun hentKravHistorikkMedKravStatusAvslag(kravHistorikkListe: List<KravHistorikk>?): KravHistorikk? {
-        val sortList = sortertKravHistorikk(kravHistorikkListe)
-        sortList?.forEach {
-            logger.debug("leter etter Krav status med ${EessiFellesDto.EessiSakStatus.AVSL}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
-            if (EessiFellesDto.EessiSakStatus.AVSL == it.kravStatus) {
+            logger.debug("leter etter Krav status med ${EessiSakStatus.INNV}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
+            if (EessiSakStatus.INNV == it.kravStatus) {
                 logger.debug("Fant Kravhistorikk med ${it.kravStatus}")
+                return it
+            } else if (EessiSakStatus.TIL_BEHANDLING == it.kravStatus && sak?.ytelsePerMaaned?.firstOrNull()?.belop != null) {
+            logger.debug("Fant Krav med status ${EessiSakStatus.TIL_BEHANDLING}, med kravtype: ${it.kravType} og virkningstidspunkt dato: ${it.virkningstidspunkt}")
                 return it
             }
         }
-        logger.error("Fant ikke noe Kravhistorikk..${EessiFellesDto.EessiSakStatus.AVSL}. Mangler vilkårsprøving. følger ikke normal behandling")
+        logger.error("Fant ikke noe Kravhistorikk..${EessiSakStatus.TIL_BEHANDLING}. Mangler vilkårsprlving/vedtak. følger ikke normal behandling")
+        return null
+    }
+
+    fun hentKravHistorikkMedKravStatusAvslag(sak: P2xxxMeldingOmPensjonDto.Sak?): KravHistorikk? {
+        val sortList = sortertKravHistorikk(sak?.kravHistorikk)
+        sortList?.forEach {
+            logger.debug("leter etter Krav status med ${EessiSakStatus.AVSL}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
+            if (EessiSakStatus.AVSL == it.kravStatus) {
+                logger.debug("Fant Kravhistorikk med ${it.kravStatus}")
+                return it
+            } else if (sak?.status == EessiSakStatus.AVSL) {
+                return it
+            }
+        }
+        logger.error("Fant ikke noe Kravhistorikk..${EessiSakStatus.AVSL}. Mangler vilkårsprøving. følger ikke normal behandling")
         return null
     }
 
@@ -101,9 +106,8 @@ object KravHistorikkHelper {
             if (kravKunUtland != null) return  kravKunUtland
 
             logger.info("Sakstatus: ${pensak?.status},sakstype: ${pensak?.sakType}")
-            val ytelsePrMnd = pensak?.ytelsePerMaaned?.firstOrNull { it.belop != null }
-            val innvilgetKrav = hentKravHistorikkMedKravStatusInnvilget(pensak?.kravHistorikk, ytelsePrMnd)
-            val avslaattKrav = hentKravHistorikkMedKravStatusAvslag(pensak?.kravHistorikk)
+            val innvilgetKrav = hentKravHistorikkMedKravStatusInnvilget(pensak)
+            val avslaattKrav = hentKravHistorikkMedKravStatusAvslag(pensak)
             return innvilgetKrav ?: avslaattKrav ?: hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(pensak?.kravHistorikk)
 
         } catch (ex: Exception) {
