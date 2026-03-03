@@ -5,9 +5,9 @@ import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
-import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.utils.toJson
@@ -124,7 +124,7 @@ class InnhentingService(
                     p6000Data = vedtaksId?.let { pesysService.hentP6000data(it) },
                     vedtakId = vedtaksId,
                     sedType = sedType
-                ).also { logger.debug("Svar fra Pesys nytt endepunkt: ${it.toJson()}")}
+                )
             }
             P8000 -> {
                 if (prefillData.buc == P_BUC_05) {
