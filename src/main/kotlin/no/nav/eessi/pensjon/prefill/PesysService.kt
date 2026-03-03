@@ -4,6 +4,7 @@ import no.nav.eessi.pensjon.prefill.models.pensjon.P15000overfoeringAvPensjonssa
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P8000AnmodningOmTilleggsinformasjon
+import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
@@ -66,10 +67,11 @@ class PesysService(
                 .forEach { (k, v) -> set(k, v) }
         }
 
-        logger.debug("Henter pesys informasjon fra: $path (headers=${httpHeaders})")
+        logger.info("Henter pesys informasjon fra: $path")
 
         val entity = HttpEntity<Void>(httpHeaders)
         return pesysClientRestTemplate.exchange(path, HttpMethod.GET, entity, T::class.java).body
+            .also { logger.debug("Svar fra Pesys nytt endepunkt: ${it?.toJson()}, url: $path , headers: $headers") }
     }
 }
 
