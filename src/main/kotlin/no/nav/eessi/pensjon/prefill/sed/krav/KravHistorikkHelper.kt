@@ -60,12 +60,12 @@ object KravHistorikkHelper {
     fun hentKravHistorikkMedKravStatusInnvilget(sak: P2xxxMeldingOmPensjonDto.Sak?): KravHistorikk? {
         val sortList = sortertKravHistorikk(sak?.kravHistorikk)
         sortList?.forEach {
-            logger.debug("leter etter Krav status med ${EessiSakStatus.INNV}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
+            logger.info("leter etter Krav status med ${EessiSakStatus.INNV}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
             if (EessiSakStatus.INNV == it.kravStatus) {
-                logger.debug("Fant Kravhistorikk med ${it.kravStatus}")
+                logger.info("Fant Kravhistorikk med ${it.kravStatus}")
                 return it
             } else if (EessiSakStatus.TIL_BEHANDLING == it.kravStatus && sak?.ytelsePerMaaned?.firstOrNull()?.belop != null) {
-            logger.debug("Fant Krav med status ${EessiSakStatus.TIL_BEHANDLING}, med kravtype: ${it.kravType} og virkningstidspunkt dato: ${it.virkningstidspunkt}")
+            logger.info("Fant Krav med status ${EessiSakStatus.TIL_BEHANDLING}, med kravtype: ${it.kravType} og virkningstidspunkt dato: ${it.virkningstidspunkt}")
                 return it
             }
         }
@@ -76,9 +76,9 @@ object KravHistorikkHelper {
     fun hentKravHistorikkMedKravStatusAvslag(sak: P2xxxMeldingOmPensjonDto.Sak?): KravHistorikk? {
         val sortList = sortertKravHistorikk(sak?.kravHistorikk)
         sortList?.forEach {
-            logger.debug("leter etter Krav status med ${EessiSakStatus.AVSL}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
+            logger.info("leter etter Krav status med ${EessiSakStatus.AVSL}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
             if (EessiSakStatus.AVSL == it.kravStatus) {
-                logger.debug("Fant Kravhistorikk med ${it.kravStatus}")
+                logger.info("Fant Kravhistorikk med ${it.kravStatus}")
                 return it
             } else if (sak?.status == EessiSakStatus.AVSL) {
                 return it
@@ -91,9 +91,9 @@ object KravHistorikkHelper {
     fun hentKravHistorikkMedValgtKravType(kravHistorikkListe: List<KravHistorikk>?, penKravtype: EessiFellesDto.EessiKravGjelder): KravHistorikk? {
         val sortList = sortertKravHistorikk(kravHistorikkListe)
         if (sortList == null || sortList.size > 1) return null
-        logger.debug("leter etter kravtype: $penKravtype")
+        logger.info("leter etter kravtype: $penKravtype")
         return sortList.firstOrNull { kravhist -> kravhist.kravType == penKravtype}
-            .also { logger.debug("fant ${it?.kravType} med kravÅrsak: ${it?.kravAarsak} med virkningstidspunkt dato : ${it?.virkningstidspunkt}") }
+            .also { logger.info("fant ${it?.kravType} med kravÅrsak: ${it?.kravAarsak} med virkningstidspunkt dato : ${it?.virkningstidspunkt}") }
 
     }
 
