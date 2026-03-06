@@ -4,6 +4,7 @@ import no.nav.eessi.pensjon.prefill.models.pensjon.P15000overfoeringAvPensjonssa
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P8000AnmodningOmTilleggsinformasjon
+import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -51,7 +52,7 @@ class PesysService(
         return p2xxxFraListe(response)
     }
 
-    private fun p2xxxFraListe(response: Any?): P2xxxMeldingOmPensjonDto? {
+     fun p2xxxFraListe(response: Any?): P2xxxMeldingOmPensjonDto? {
         logger.debug("p2xxxFraListe: $response")
 
         val resp = when (response) {
@@ -62,7 +63,8 @@ class PesysService(
                     else -> null
                 }
             }
-
+            is P2xxxMeldingOmPensjonDto -> listOf(response)
+            is String -> listOf(mapJsonToAny<P2xxxMeldingOmPensjonDto>(response))
             else -> emptyList()
         }.also { logger.info("HentSakListe: $it") }
         return resp.firstOrNull()
@@ -138,4 +140,3 @@ class PesysService(
             .also { logger.debug("Svar fra Pesys nytt endepunkt: ${it?.toJson()}, url: $path , headers: ${headers.toJson()}") }
     }
 }
-
