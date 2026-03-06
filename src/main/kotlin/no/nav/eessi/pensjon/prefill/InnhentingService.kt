@@ -129,7 +129,7 @@ class InnhentingService(
             P8000 -> {
                 if (prefillData.buc == P_BUC_05) {
                         try {
-                            val p8000 = vedtaksId?.let { pesysService.hentP8000data(it) }
+                            val p8000 = penSak?.let { pesysService.hentP8000data(it) }
                             if (p8000?.sakType !in pensakTyper ) {
                                 throw ResponseStatusExceptionFeilSak(prefillData, p8000?.sakType)
                             }
