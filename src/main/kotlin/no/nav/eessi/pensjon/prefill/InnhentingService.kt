@@ -121,7 +121,7 @@ class InnhentingService(
                 if (penSak.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId")
                 validerVedtak(prefillData)
                 return PensjonCollection(
-                    p6000Data = vedtaksId?.let { pesysService.hentP6000data(it) },
+                    p6000Data = pesysService.hentP6000data(vedtaksId),
                     vedtakId = vedtaksId,
                     sedType = sedType
                 )

@@ -12,6 +12,8 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import tools.jackson.databind.ObjectMapper
+
 @Service
 class PesysService(
     private val pesysClientRestTemplate: RestTemplate
@@ -19,42 +21,102 @@ class PesysService(
 
     private val logger: Logger = LoggerFactory.getLogger(PesysService::class.java)
 
-    fun hentP2000data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        getWithHeaders("/sed/p2000",
+    fun hentP2000data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
+        val response = getWithHeaders<Any>(
+            "/sed/p2000",
             "vedtakId" to vedtakId,
             "fnr" to fnr,
             "sakId" to sakId
         )
+        return p2xxxFraListe(response)
+    }
 
-    fun hentP2100data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        getWithHeaders("/sed/p2100",
+    fun hentP2100data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
+        val response = getWithHeaders<Any>(
+            "/sed/p2100",
             "vedtakId" to vedtakId,
             "fnr" to fnr,
             "sakId" to sakId
         )
+        return p2xxxFraListe(response)
+    }
 
-    fun hentP2200data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        getWithHeaders("/sed/p2200",
+    fun hentP2200data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
+        val response = getWithHeaders<Any>(
+            "/sed/p2200",
             "vedtakId" to vedtakId,
             "fnr" to fnr,
             "sakId" to sakId
         )
+        return p2xxxFraListe(response)
+    }
 
-    fun hentP6000data(vedtakId: String?): P6000MeldingOmVedtakDto? =
-        getWithHeaders("/sed/p6000",
-            "vedtakId" to vedtakId
+    private fun p2xxxFraListe(response: Any?): P2xxxMeldingOmPensjonDto? {
+        val resp = when (response) {
+            is List<*> -> response.mapNotNull {
+                when (it) {
+                    is P2xxxMeldingOmPensjonDto -> it
+                    is Map<*, *> -> ObjectMapper().convertValue(it, P2xxxMeldingOmPensjonDto::class.java)
+                    else -> null
+                }
+            }
+
+            else -> emptyList()
+        }.also { logger.info("HentSakListe: $it") }
+        return resp.firstOrNull()
+    }
+
+    fun hentP6000data(vedtakId: String?): P6000MeldingOmVedtakDto? {
+        val response = getWithHeaders<Any>(
+            "/sed/p6000",
+            "vedtakId" to vedtakId,
         )
+
+        val resp = when (response) {
+            is List<*> -> response.mapNotNull {
+                when (it) {
+                    is P6000MeldingOmVedtakDto -> it
+                    is Map<*, *> -> ObjectMapper().convertValue(it, P6000MeldingOmVedtakDto::class.java)
+                    else -> null
+                }
+            }
+
+            else -> emptyList()
+        }.also { logger.info("HentSakListe: $it") }
+        return resp.firstOrNull()
+    }
+
 
     fun hentP8000data(sakId: String): P8000AnmodningOmTilleggsinformasjon? =
-        getWithHeaders("/sed/p8000",
+        getWithHeaders(
+            "/sed/p8000",
             "sakId" to sakId
         )
 
-    fun hentP15000data(vedtakId: String?, sakId: String): P15000overfoeringAvPensjonssakerTilEessiDto? =
-        getWithHeaders("/sed/p15000",
+    fun hentP15000data(vedtakId: String?, sakId: String): P15000overfoeringAvPensjonssakerTilEessiDto? {
+        val response = getWithHeaders<Any>(
+            "/sed/p15000",
             "vedtakId" to vedtakId,
             "sakId" to sakId
         )
+
+        val resp = when (response) {
+            is List<*> -> response.mapNotNull {
+                when (it) {
+                    is P15000overfoeringAvPensjonssakerTilEessiDto -> it
+                    is Map<*, *> -> ObjectMapper().convertValue(
+                        it,
+                        P15000overfoeringAvPensjonssakerTilEessiDto::class.java
+                    )
+
+                    else -> null
+                }
+            }
+
+            else -> emptyList()
+        }.also { logger.info("HentSakListe: $it") }
+        return resp.firstOrNull()
+    }
 
 
     private inline fun <reified T : Any> getWithHeaders(

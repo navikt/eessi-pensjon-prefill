@@ -1,4 +1,4 @@
-{
+[{
   "vedtak" : {
     "boddArbeidetUtland" : true
   },
@@ -112,4 +112,4 @@
     } ],
     "status" : "TIL_BEHANDLING"
   }
-}
+}]
