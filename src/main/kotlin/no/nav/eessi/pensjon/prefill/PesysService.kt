@@ -52,6 +52,8 @@ class PesysService(
     }
 
     private fun p2xxxFraListe(response: Any?): P2xxxMeldingOmPensjonDto? {
+        logger.debug("p2xxxFraListe: $response")
+
         val resp = when (response) {
             is List<*> -> response.mapNotNull {
                 when (it) {
