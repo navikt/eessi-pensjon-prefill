@@ -1,4 +1,12 @@
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import no.nav.eessi.pensjon.prefill.PesysService
+import no.nav.eessi.pensjon.prefill.models.pensjon.P15000overfoeringAvPensjonssakerTilEessiDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.P8000AnmodningOmTilleggsinformasjon
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -30,7 +38,7 @@ class PesysServiceTest {
 
         @ParameterizedTest(name = "sed:{0}}")
         @CsvSource(
-            value = ["p2000","p2100", "p2200"], nullValues = ["null"]
+            value = ["p2000", "p2100", "p2200"], nullValues = ["null"]
         )
         fun `henter verdier for `(sed: String?) {
             server.expect(requestTo("/sed/$sed"))
@@ -39,7 +47,7 @@ class PesysServiceTest {
                 .andExpect(header("fnr", "456"))
                 .andExpect(header("sakId", "789"))
                 .andRespond(withSuccess("", MediaType.APPLICATION_JSON)) // empty body => null DTO
-            val result = when(sed) {
+            val result = when (sed) {
                 "p2000" -> pesysService.hentP2000data("123", "456", "789")
                 "p2100" -> pesysService.hentP2100data("123", "456", "789")
                 "p2200" -> pesysService.hentP2200data("123", "456", "789")
@@ -54,7 +62,7 @@ class PesysServiceTest {
     }
 
     @Nested
-    inner class HentP2000Verdier{
+    inner class HentP2000Verdier {
 
         @Test
         fun `hentP2000data sender ikke vedtakId header naar den er null`() {
@@ -103,14 +111,40 @@ class PesysServiceTest {
             server.verify()
         }
     }
+
     @Nested
-    inner class HentP2100Verdier{
+    inner class HentP2100Verdier {
 
     }
 
     @Nested
-    inner class HentP2200Verdier{
+    inner class HentP2200Verdier {
 
     }
 
+    @Test
+    fun `hentP2000data `() {
+        assertNotNull(pesysService.p2xxxFraListe(alderJson().trimIndent()))
+        assertNotNull(pesysService.p2xxxFraListe("""[${alderJson()}]""".trimIndent()))
+    }
+
+    fun alderJson() = """
+         {
+              "vedtak" : null,
+              "sak" : {
+                "sakType" : "ALDER",
+                "forsteVirkningstidspunkt" : null,
+                "kravHistorikk" : [ {
+                  "kravId" : 49609017,
+                  "kravType" : "F_BH_MED_UTL",
+                  "mottattDato" : "2025-10-01",
+                  "virkningstidspunkt" : "2025-11-01",
+                  "kravAarsak" : "NY_SOKNAD",
+                  "kravStatus" : "TIL_BEHANDLING"
+                } ],
+                "ytelsePerMaaned" : [ ],
+                "status" : "TIL_BEHANDLING"
+              }
+            }
+    """.trimIndent()
 }

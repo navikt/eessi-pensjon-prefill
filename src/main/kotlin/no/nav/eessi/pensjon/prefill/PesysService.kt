@@ -53,21 +53,34 @@ class PesysService(
     }
 
      fun p2xxxFraListe(response: Any?): P2xxxMeldingOmPensjonDto? {
-        logger.debug("p2xxxFraListe: $response")
+        logger.debug("p2xxxFraListe: {}", response)
 
         val resp = when (response) {
-            is List<*> -> response.mapNotNull {
-                when (it) {
-                    is P2xxxMeldingOmPensjonDto -> it
-                    is Map<*, *> -> ObjectMapper().convertValue(it, P2xxxMeldingOmPensjonDto::class.java)
-                    else -> null
-                }
-            }
-            is P2xxxMeldingOmPensjonDto -> listOf(response)
-            is String -> listOf(mapJsonToAny<P2xxxMeldingOmPensjonDto>(response))
-            else -> emptyList()
+            is List<*> -> response.flatMap { mapToP2xxxList(it) }
+            else -> mapToP2xxxList(response)
         }.also { logger.info("HentSakListe: $it") }
+
         return resp.firstOrNull()
+    }
+
+    private fun mapToP2xxxList(value: Any?): List<P2xxxMeldingOmPensjonDto> {
+        return when (value) {
+            null -> emptyList()
+            is P2xxxMeldingOmPensjonDto -> listOf(value)
+            is Map<*, *> -> listOf(ObjectMapper().convertValue(value, P2xxxMeldingOmPensjonDto::class.java))
+            else -> parseP2xxxJson(value.toString())
+        }
+    }
+
+    private fun parseP2xxxJson(rawJson: String): List<P2xxxMeldingOmPensjonDto> {
+        val json = rawJson.trim()
+        if (json.isEmpty()) return emptyList()
+
+        return if (json.startsWith("[")) {
+            mapJsonToAny<List<P2xxxMeldingOmPensjonDto>>(json)
+        } else {
+            listOf(mapJsonToAny<P2xxxMeldingOmPensjonDto>(json))
+        }
     }
 
     fun hentP6000data(vedtakId: String?): P6000MeldingOmVedtakDto? {
@@ -108,11 +121,7 @@ class PesysService(
             is List<*> -> response.mapNotNull {
                 when (it) {
                     is P15000overfoeringAvPensjonssakerTilEessiDto -> it
-                    is Map<*, *> -> ObjectMapper().convertValue(
-                        it,
-                        P15000overfoeringAvPensjonssakerTilEessiDto::class.java
-                    )
-
+                    is Map<*, *> -> ObjectMapper().convertValue(it, P15000overfoeringAvPensjonssakerTilEessiDto::class.java)
                     else -> null
                 }
             }
