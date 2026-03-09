@@ -7,6 +7,10 @@ import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.ALDER
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.BARNEP
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.GJENLEV
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.UFOREP
 import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -76,10 +80,7 @@ class InnhentingService(
     fun hentIdent(norskIdent: Ident): String? = personDataService.hentIdent(IdentGruppe.AKTORID, norskIdent)?.id
 
     fun hentPensjoninformasjonCollection(prefillData: PrefillDataModel): PensjonCollection {
-        val eessipensjonSakTyper = listOf(
-            EessiSakType.ALDER,
-            EessiSakType.BARNEP, EessiSakType.GJENLEV, EessiSakType.UFOREP
-        )
+        val eessipensjonSakTyper = listOf(ALDER, BARNEP, GJENLEV, UFOREP)
         val pensakTyper = listOf(EessiSakType.GENRL, EessiSakType.OMSORG) + eessipensjonSakTyper
 
         val penSak = prefillData.penSaksnummer
@@ -92,7 +93,7 @@ class InnhentingService(
 
                 val p2000data = penSak?.let { pesysService.hentP2000data(vedtaksId, fnr, penSak) }
                 PensjonCollection(
-                    p2xxxMeldingOmPensjonDto = p2000data.takeIf { p2000data?.sak?.sakType == EessiSakType.ALDER } ,
+                    p2xxxMeldingOmPensjonDto = p2000data.takeIf { p2000data?.sak?.sakType == ALDER } ,
                     vedtakId = vedtaksId,
                     sedType = sedType
                 )
@@ -112,7 +113,7 @@ class InnhentingService(
 
                 val p2200data = penSak?.let { pesysService.hentP2200data(vedtaksId,fnr, penSak) }
                 PensjonCollection(
-                    p2xxxMeldingOmPensjonDto = p2200data.takeIf { p2200data?.sak?.sakType == EessiSakType.UFOREP } ,
+                    p2xxxMeldingOmPensjonDto = p2200data.takeIf { p2200data?.sak?.sakType == UFOREP } ,
                     vedtakId = vedtaksId,
                     sedType = sedType
                 )
@@ -120,8 +121,8 @@ class InnhentingService(
             P6000 -> {
                 if (penSak.isNullOrBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler sakId")
                 validerVedtak(prefillData)
-                return PensjonCollection(
-                    p6000Data = pesysService.hentP6000data(vedtaksId),
+                PensjonCollection(
+                    p6000Data = pesysService.hentP6000data(penSak),
                     vedtakId = vedtaksId,
                     sedType = sedType
                 )

@@ -1,5 +1,8 @@
 package no.nav.eessi.pensjon.prefill
 
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.INNV
 import no.nav.eessi.pensjon.prefill.models.pensjon.P15000overfoeringAvPensjonssakerTilEessiDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
@@ -83,10 +86,10 @@ class PesysService(
         }
     }
 
-    fun hentP6000data(vedtakId: String?): P6000MeldingOmVedtakDto? {
+    fun hentP6000data(sakId: String?): P6000MeldingOmVedtakDto? {
         val response = getWithHeaders<Any>(
             "/sed/p6000",
-            "vedtakId" to vedtakId,
+            "sakId" to sakId,
         )
 
         val resp = when (response) {
