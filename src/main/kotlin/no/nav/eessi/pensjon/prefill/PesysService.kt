@@ -1,12 +1,17 @@
 package no.nav.eessi.pensjon.prefill
 
+import no.nav.eessi.pensjon.eux.model.buc.SakStatus
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.AVSL
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.INNV
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.LOPENDE
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.TIL_BEHANDLING
 import no.nav.eessi.pensjon.prefill.models.pensjon.P15000overfoeringAvPensjonssakerTilEessiDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P8000AnmodningOmTilleggsinformasjon
+import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2xxxPensjon.logger
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.Logger
@@ -63,8 +68,20 @@ class PesysService(
             else -> mapToP2xxxList(response)
         }.also { logger.info("HentSakListe: $it") }
 
-        return resp.firstOrNull()
+        return returnerSakMedRiktigStatus(resp)
     }
+
+    fun returnerSakMedRiktigStatus(response: List<P2xxxMeldingOmPensjonDto>): P2xxxMeldingOmPensjonDto? {
+        logger.info("Saker for bruker: ${response.map { it.sak?.status?.name + ":" + it.sak?.sakType }}")
+        val resultat =
+            response.firstOrNull { it.sak?.status == LOPENDE } ?:
+            response.firstOrNull { it.sak?.status == INNV } ?:
+            response.firstOrNull { it.sak?.status == TIL_BEHANDLING } ?:
+            response.firstOrNull { it.sak?.status == AVSL } ?:
+            response.firstOrNull()
+        return resultat
+    }
+
 
     private fun mapToP2xxxList(value: Any?): List<P2xxxMeldingOmPensjonDto> {
         return when (value) {

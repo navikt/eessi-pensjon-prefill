@@ -9,7 +9,9 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.ALDER
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.BARNEP
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.GENRL
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.GJENLEV
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.OMSORG
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.UFOREP
 import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.shared.api.ApiRequest
@@ -81,7 +83,7 @@ class InnhentingService(
 
     fun hentPensjoninformasjonCollection(prefillData: PrefillDataModel): PensjonCollection {
         val eessipensjonSakTyper = listOf(ALDER, BARNEP, GJENLEV, UFOREP)
-        val pensakTyper = listOf(EessiSakType.GENRL, EessiSakType.OMSORG) + eessipensjonSakTyper
+        val pensakTyper = listOf(GENRL, OMSORG) + eessipensjonSakTyper
 
         val penSak = prefillData.penSaksnummer
         val fnr = prefillData.bruker.norskIdent

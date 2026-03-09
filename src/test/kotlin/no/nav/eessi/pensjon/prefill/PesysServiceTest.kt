@@ -95,13 +95,13 @@ class PesysServiceTest {
             // sak
             assert(result?.sak?.sakType?.name == "ALDER")
             assert(result?.sak?.forsteVirkningstidspunkt.toString() == "2025-01-01")
-            assert(result?.sak?.status?.name == "TIL_BEHANDLING")
+            assert(result?.sak?.status?.name == "LOPENDE")
             // kravHistorikk
             val kravHistorikk = result?.sak?.kravHistorikk
-            assert(kravHistorikk?.size == 11)
+            assert(kravHistorikk?.size == 3)
             assert(kravHistorikk?.first()?.kravId == "49256020")
-            assert(kravHistorikk?.get(4)?.kravStatus?.name == "EESSI_AVBRUTT")
-            assert(kravHistorikk?.get(10)?.kravAarsak?.name == "ANNEN_ARSAK")
+            assert(kravHistorikk?.get(2)?.kravStatus?.name == "TIL_BEHANDLING")
+            assert(kravHistorikk?.get(2)?.kravAarsak?.name == "ANNEN_ARSAK")
             // ytelsePerMaaned
             val ytelsePerMaaned = result?.sak?.ytelsePerMaaned
             assert(ytelsePerMaaned?.size == 2)
