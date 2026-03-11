@@ -118,8 +118,20 @@ class PesysServiceTest {
     }
 
     @Nested
-    inner class HentP2200Verdier {
+    inner class Hent6000Verdier {
+        @Test
+        fun `hentP6000 med flere vedtak`() {
+            server.expect(requestTo("/sed/p6000"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header("sakId", "789"))
+                .andRespond(withSuccess(p6000FlereVedtakJson(), MediaType.APPLICATION_JSON))
 
+            val result = pesysService.hentP6000data("789")
+
+            assertNotNull(result)
+            assertEquals("2025-10-10", result?.vedtak?.datoFattetVedtak.toString())
+            server.verify()
+        }
     }
 
     @Test
@@ -146,5 +158,195 @@ class PesysServiceTest {
                 "status" : "TIL_BEHANDLING"
               }
             }
+    """.trimIndent()
+
+
+    fun p6000FlereVedtakJson() = """
+        [ {
+          "avdod" : {
+            "avdodPid" : null,
+            "avdodBoddArbeidetUtland" : false,
+            "farBoddArbeidetUtland" : false,
+            "morBoddArbeidetUtland" : false
+          },
+          "sakType" : "ALDER",
+          "trygdeavtale" : {
+            "erArt10BruktGP" : false,
+            "erArt10BruktTP" : false
+          },
+          "trygdetid" : [ {
+            "fom" : "1987-03-15",
+            "tom" : "2020-11-15"
+          } ],
+          "vedtak" : {
+            "virkningstidspunkt" : "2025-01-01",
+            "kravGjelder" : "REVURD",
+            "hovedytelseTrukket" : false,
+            "boddArbeidetUtland" : true,
+            "datoFattetVedtak" : null
+          },
+          "vilkarsvurdering" : [ {
+            "fom" : "2025-01-01",
+            "vilkarsvurderingUforetrygd" : null,
+            "resultatHovedytelse" : "INNV",
+            "harResultatGjenlevendetillegg" : false,
+            "avslagHovedytelse" : null
+          } ],
+          "ytelsePerMaaned" : [ {
+            "fom" : "2025-01-01",
+            "tom" : "2025-04-30",
+            "mottarMinstePensjonsniva" : false,
+            "belop" : 5057,
+            "ytelseskomponenter" : [ {
+              "ytelsesKomponentType" : "IP",
+              "belopTilUtbetaling" : 1986
+            }, {
+              "ytelsesKomponentType" : "GP",
+              "belopTilUtbetaling" : 1004
+            }, {
+              "ytelsesKomponentType" : "TP",
+              "belopTilUtbetaling" : 2067
+            } ]
+          }, {
+            "fom" : "2025-05-01",
+            "tom" : null,
+            "mottarMinstePensjonsniva" : false,
+            "belop" : 5286,
+            "ytelseskomponenter" : [ {
+              "ytelsesKomponentType" : "TP",
+              "belopTilUtbetaling" : 2160
+            }, {
+              "ytelsesKomponentType" : "IP",
+              "belopTilUtbetaling" : 2076
+            }, {
+              "ytelsesKomponentType" : "GP",
+              "belopTilUtbetaling" : 1050
+            } ]
+          } ]
+        }, {
+          "avdod" : {
+            "avdodPid" : null,
+            "avdodBoddArbeidetUtland" : false,
+            "farBoddArbeidetUtland" : false,
+            "morBoddArbeidetUtland" : false
+          },
+          "sakType" : "ALDER",
+          "trygdeavtale" : {
+            "erArt10BruktGP" : false,
+            "erArt10BruktTP" : false
+          },
+          "trygdetid" : [ {
+            "fom" : "1987-03-15",
+            "tom" : "2020-11-15"
+          } ],
+          "vedtak" : {
+            "virkningstidspunkt" : "2025-01-01",
+            "kravGjelder" : "F_BH_MED_UTL",
+            "hovedytelseTrukket" : false,
+            "boddArbeidetUtland" : true,
+            "datoFattetVedtak" : "2025-02-10"
+          },
+          "vilkarsvurdering" : [ {
+            "fom" : "2025-01-01",
+            "vilkarsvurderingUforetrygd" : null,
+            "resultatHovedytelse" : "INNV",
+            "harResultatGjenlevendetillegg" : false,
+            "avslagHovedytelse" : null
+          } ],
+          "ytelsePerMaaned" : [ {
+            "fom" : "2025-01-01",
+            "tom" : "2025-04-30",
+            "mottarMinstePensjonsniva" : false,
+            "belop" : 5057,
+            "ytelseskomponenter" : [ {
+              "ytelsesKomponentType" : "IP",
+              "belopTilUtbetaling" : 1986
+            }, {
+              "ytelsesKomponentType" : "GP",
+              "belopTilUtbetaling" : 1004
+            }, {
+              "ytelsesKomponentType" : "TP",
+              "belopTilUtbetaling" : 2067
+            } ]
+          }, {
+            "fom" : "2025-05-01",
+            "tom" : null,
+            "mottarMinstePensjonsniva" : false,
+            "belop" : 5286,
+            "ytelseskomponenter" : [ {
+              "ytelsesKomponentType" : "IP",
+              "belopTilUtbetaling" : 2076
+            }, {
+              "ytelsesKomponentType" : "GP",
+              "belopTilUtbetaling" : 1050
+            }, {
+              "ytelsesKomponentType" : "TP",
+              "belopTilUtbetaling" : 2160
+            } ]
+          } ]
+        } ,        
+        {
+          "avdod" : {
+            "avdodPid" : null,
+            "avdodBoddArbeidetUtland" : false,
+            "farBoddArbeidetUtland" : false,
+            "morBoddArbeidetUtland" : false
+          },
+          "sakType" : "ALDER",
+          "trygdeavtale" : {
+            "erArt10BruktGP" : false,
+            "erArt10BruktTP" : false
+          },
+          "trygdetid" : [ {
+            "fom" : "1987-03-15",
+            "tom" : "2020-11-15"
+          } ],
+          "vedtak" : {
+            "virkningstidspunkt" : "2025-01-01",
+            "kravGjelder" : "F_BH_MED_UTL",
+            "hovedytelseTrukket" : false,
+            "boddArbeidetUtland" : true,
+            "datoFattetVedtak" : "2025-10-10"
+          },
+          "vilkarsvurdering" : [ {
+            "fom" : "2025-01-01",
+            "vilkarsvurderingUforetrygd" : null,
+            "resultatHovedytelse" : "INNV",
+            "harResultatGjenlevendetillegg" : false,
+            "avslagHovedytelse" : null
+          } ],
+          "ytelsePerMaaned" : [ {
+            "fom" : "2025-01-01",
+            "tom" : "2025-04-30",
+            "mottarMinstePensjonsniva" : false,
+            "belop" : 5057,
+            "ytelseskomponenter" : [ {
+              "ytelsesKomponentType" : "IP",
+              "belopTilUtbetaling" : 1986
+            }, {
+              "ytelsesKomponentType" : "GP",
+              "belopTilUtbetaling" : 1004
+            }, {
+              "ytelsesKomponentType" : "TP",
+              "belopTilUtbetaling" : 2067
+            } ]
+          }, {
+            "fom" : "2025-05-01",
+            "tom" : null,
+            "mottarMinstePensjonsniva" : false,
+            "belop" : 5286,
+            "ytelseskomponenter" : [ {
+              "ytelsesKomponentType" : "IP",
+              "belopTilUtbetaling" : 2076
+            }, {
+              "ytelsesKomponentType" : "GP",
+              "belopTilUtbetaling" : 1050
+            }, {
+              "ytelsesKomponentType" : "TP",
+              "belopTilUtbetaling" : 2160
+            } ]
+          } ]
+        } ]
+        
     """.trimIndent()
 }

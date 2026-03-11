@@ -120,7 +120,7 @@ class PesysService(
 
             else -> emptyList()
         }.also { logger.info("HentSakListe: $it") }
-        return resp.firstOrNull()
+        return resp.sortedByDescending { it.vedtak.datoFattetVedtak }.firstOrNull()
     }
 
 
