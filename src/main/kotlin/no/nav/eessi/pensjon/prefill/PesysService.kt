@@ -130,10 +130,9 @@ class PesysService(
             "sakId" to sakId
         )
 
-    fun hentP15000data(vedtakId: String?, sakId: String): P15000overfoeringAvPensjonssakerTilEessiDto? {
+    fun hentP15000data(sakId: String): P15000overfoeringAvPensjonssakerTilEessiDto? {
         val response = getWithHeaders<Any>(
             "/sed/p15000",
-            "vedtakId" to vedtakId,
             "sakId" to sakId
         )
 

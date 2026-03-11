@@ -150,7 +150,7 @@ class InnhentingService(
             }
             P15000 -> {
                 PensjonCollection(
-                    p15000Data = penSak?.let { pesysService.hentP15000data(it,penSak) },
+                    p15000Data = penSak?.let { pesysService.hentP15000data(it) },
                     sedType = sedType
                 )
             }
