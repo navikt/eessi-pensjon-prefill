@@ -1,17 +1,10 @@
 package no.nav.eessi.pensjon.prefill
 
-import no.nav.eessi.pensjon.eux.model.buc.SakStatus
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.AVSL
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.INNV
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.LOPENDE
-import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.TIL_BEHANDLING
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.*
 import no.nav.eessi.pensjon.prefill.models.pensjon.P15000overfoeringAvPensjonssakerTilEessiDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P8000AnmodningOmTilleggsinformasjon
-import no.nav.eessi.pensjon.prefill.sed.krav.PrefillP2xxxPensjon.logger
 import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.Logger
@@ -147,9 +140,15 @@ class PesysService(
 
             else -> emptyList()
         }.also { logger.info("HentSakListe: $it") }
-        return resp.firstOrNull()
+        return resp.sortedByAvdodFamilie().firstOrNull()
     }
 
+    fun List<P15000overfoeringAvPensjonssakerTilEessiDto>.sortedByAvdodFamilie(): List<P15000overfoeringAvPensjonssakerTilEessiDto> =
+        sortedWith(
+            compareBy<P15000overfoeringAvPensjonssakerTilEessiDto> { it.avdod }
+                .thenBy { it.avdodMor }
+                .thenBy { it.avdodFar }
+        )
 
     private inline fun <reified T : Any> getWithHeaders(
         path: String,
