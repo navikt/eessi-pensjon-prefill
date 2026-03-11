@@ -54,8 +54,6 @@ private const val AKTOER_ID_2 = "0009876543210"
 private const val AKTOER_ID_AVDOD_MOR = "12312312441"
 private const val AKTOER_ID_AVDOD_FAR = "3323332333233323"
 
-//Daniel
-
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc
@@ -103,7 +101,7 @@ class PrefillP15000IntegrationTest {
 
         val avdod = avdod(NPID, EessiSakType.BARNEP)
 
-        every { pesysService.hentP15000data(eq("123123123"),any()) } returns avdod
+        every { pesysService.hentP15000data(eq("123123123")) } returns avdod
 
         val apijson =  dummyApijson(sakid = SAK_ID, vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = NPID)
 
@@ -127,7 +125,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentIdent(IdentGruppe.AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
 
         val avdod = avdod(FNR_VOKSEN_4, EessiSakType.GJENLEV)
-        every { pesysService.hentP15000data(eq("123123123"), any()) } returns avdod
+        every { pesysService.hentP15000data(eq("123123123")) } returns avdod
         val apijson =  dummyApijson(sakid = SAK_ID, vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_4)
 
         val result = mockMvc.perform(post("/sed/prefill")
@@ -152,7 +150,7 @@ class PrefillP15000IntegrationTest {
             epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4, reservert = true
         )
         every { personService.hentIdent(IdentGruppe.AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
-        every { pesysService.hentP15000data(eq("123123123"), any()) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true)
+        every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true)
 
         val apijson =  dummyApijson(sakid = SAK_ID, vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_4)
 
@@ -178,7 +176,7 @@ class PrefillP15000IntegrationTest {
 //        every { pensjoninformasjonservice.hentMedVedtak(any())} returns Pensjonsinformasjon()
 
 //        v1Sak(ALDER.toString())
-        every { pesysService.hentP15000data(eq("123123123"), any()) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
+        every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
             every { sakType } returns EessiSakType.ALDER.name
         }
         val apijson =  dummyApijson(sakid = SAK_ID, vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.ALDER, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_4)
@@ -241,7 +239,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
         val avdod = avdod(FNR_VOKSEN, EessiSakType.UFOREP)
-        every { pesysService.hentP15000data(eq("123123123"), any()) } returns avdod
+        every { pesysService.hentP15000data(eq("123123123")) } returns avdod
 
         val apijson = dummyApijson(sakid = "22874955", vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.ALDER, kravdato = "2020-01-01")
 
@@ -259,7 +257,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
-        every { pesysService.hentP15000data(eq("123123123"), any()) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
+        every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
             every { sakType } returns EessiSakType.ALDER.name
         }
 
@@ -278,7 +276,7 @@ class PrefillP15000IntegrationTest {
 
         every { personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
-        every { pesysService.hentP15000data(eq("123123123"), any()) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
+        every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
             every { sakType } returns EessiSakType.ALDER.name
         }
         val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.ALDER, kravdato = "2020-01-01")
@@ -299,7 +297,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
         val avdod = avdod(FNR_VOKSEN_4, EessiSakType.ALDER)
-        every { pesysService.hentP15000data(eq("123123123"), any()) } returns avdod
+        every { pesysService.hentP15000data(eq("123123123")) } returns avdod
 
         val apijson = dummyApijson(sakid = "21337890", vedtakid = "123123123" , aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.ALDER, kravdato = "01-01- 2020")
         val expectedError = "Ugyldig datoformat"
@@ -317,7 +315,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentIdent(IdentGruppe.FOLKEREGISTERIDENT, AktoerId(AKTOER_ID )) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", fnr = FNR_VOKSEN, aktoerid = AKTOER_ID)
 
-        every { pesysService.hentP15000data(eq("123123123"), any()) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
+        every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
             every { sakType } returns EessiSakType.UFOREP.name
         }
         val apijson = dummyApijson(
@@ -341,7 +339,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_2, AKTOER_ID_2, true)
 
 
-        every { pesysService.hentP15000data(eq("123123123"), any()) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
+        every { pesysService.hentP15000data(eq("123123123")) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
             every { sakType } returns EessiSakType.GJENLEV.name
         }
 
@@ -393,7 +391,7 @@ class PrefillP15000IntegrationTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_2)) } returns avdodperson
 
         val avdod = avdod(FNR_VOKSEN_2, EessiSakType.GJENLEV)
-        every { pesysService.hentP15000data(eq("123123123"), any()) } returns avdod
+        every { pesysService.hentP15000data(eq("123123123")) } returns avdod
         every { kodeverkClient.finnLandkode("SWE") } returns "SE"
 
         val apijson = dummyApijson(sakid = SAK_ID, vedtakid = "123123123", aktoerId = AKTOER_ID, sedType = P15000, buc = P_BUC_10, kravtype = KravType.GJENLEV, kravdato = "2020-01-01", fnravdod = FNR_VOKSEN_2)
