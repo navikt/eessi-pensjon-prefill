@@ -232,7 +232,7 @@ object PrefillP2xxxPensjon {
      */
     private fun settYtelse(pensak: Sak?): String {
         logger.debug("4.1.1    Ytelser")
-        return mapSaktype(pensak?.sakType).also { logger.debug("Saktype fra Pesys: $it") }
+        return mapSaktype(pensak?.sakType).also { logger.info("Saktype fra Pesys: $it") }
     }
 
     /**
@@ -274,7 +274,6 @@ object PrefillP2xxxPensjon {
                 totalbruttobeloeparbeidsbasert = saktype.let { EessiFellesDto.EessiSakType.valueOf(it.name) }.let { createYtelseskomponentTilleggspensjon( ytelsePrmnd, it) },
         )
     }
-
     private fun mapKravhistorikkStatus(kravHistorikk: List<KravHistorikk>): String {
         return if (kravHistorikk.any { it.kravStatus == EessiFellesDto.EessiSakStatus.INNV }) "02"
         else if (kravHistorikk.any { it.kravStatus == EessiFellesDto.EessiSakStatus.AVSL }) "03"
