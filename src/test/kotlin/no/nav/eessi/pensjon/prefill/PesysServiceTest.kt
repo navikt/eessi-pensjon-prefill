@@ -1,12 +1,8 @@
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
 import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.pensjon.P15000overfoeringAvPensjonssakerTilEessiDto
-import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
-import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
-import no.nav.eessi.pensjon.prefill.models.pensjon.P8000AnmodningOmTilleggsinformasjon
-import org.junit.jupiter.api.Assertions.*
+import no.nav.eessi.pensjon.utils.toJson
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -138,24 +134,11 @@ class PesysServiceTest {
     inner class Hent15000Verdier {
         @Test
         fun `hentP15000 med flere vedtak skal hente ihht prioritert sortering`() {
-            val avdodListeJson = """
-            [ {
-                "sakType" : null,
-                "avdod" : null,
-                "avdodMor" : null,
-                "avdodFar" : null
-              },{
-                "sakType" : null,
-                "avdod" : null,
-                "avdodMor" : "111111111",
-                "avdodFar" : null
-              },{
-                "sakType" : null,
-                "avdod" : null,
-                "avdodMor" : "2131232321",
-                "avdodFar" : "3432434234"
-              }              ]
-            """.trimIndent()
+            val avdodListeJson = listOf(
+                P15000overfoeringAvPensjonssakerTilEessiDto(sakType = null, avdod = null, avdodMor = null, avdodFar = null),
+                P15000overfoeringAvPensjonssakerTilEessiDto(sakType = null, avdod = null, avdodMor = "2131232321", avdodFar = null),
+                P15000overfoeringAvPensjonssakerTilEessiDto(sakType = null, avdod = null, avdodMor = "2131232321", avdodFar = "3432434234")
+            ).toJson()
 
             server.expect(requestTo("/sed/p15000"))
                 .andExpect(method(HttpMethod.GET))
