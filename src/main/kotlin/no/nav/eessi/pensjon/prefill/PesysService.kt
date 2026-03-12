@@ -145,9 +145,9 @@ class PesysService(
 
     fun List<P15000overfoeringAvPensjonssakerTilEessiDto>.sortedByAvdodFamilie(): List<P15000overfoeringAvPensjonssakerTilEessiDto> =
         sortedWith(
-            compareBy<P15000overfoeringAvPensjonssakerTilEessiDto> { it.avdod }
-                .thenBy { it.avdodMor }
-                .thenBy { it.avdodFar }
+            compareByDescending<P15000overfoeringAvPensjonssakerTilEessiDto> { it.avdod != null  }
+                .thenByDescending { it.avdodMor != null  }
+                .thenByDescending { it.avdodFar != null  }
         )
 
     private inline fun <reified T : Any> getWithHeaders(

@@ -134,6 +134,41 @@ class PesysServiceTest {
         }
     }
 
+    @Nested
+    inner class Hent15000Verdier {
+        @Test
+        fun `hentP15000 med flere vedtak skal hente ihht prioritert sortering`() {
+            val avdodListeJson = """
+            [ {
+                "sakType" : null,
+                "avdod" : null,
+                "avdodMor" : null,
+                "avdodFar" : null
+              },{
+                "sakType" : null,
+                "avdod" : null,
+                "avdodMor" : "111111111",
+                "avdodFar" : null
+              },{
+                "sakType" : null,
+                "avdod" : null,
+                "avdodMor" : "2131232321",
+                "avdodFar" : "3432434234"
+              }              ]
+            """.trimIndent()
+
+            server.expect(requestTo("/sed/p15000"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header("sakId", "789"))
+                .andRespond(withSuccess(avdodListeJson, MediaType.APPLICATION_JSON))
+
+            val result = pesysService.hentP15000data("789")
+
+            assert(result == P15000overfoeringAvPensjonssakerTilEessiDto(sakType=null, avdod=null, avdodMor="2131232321", avdodFar="3432434234"))
+            server.verify()
+        }
+    }
+
     @Test
     fun `hentP2000data `() {
         assertNotNull(pesysService.p2xxxFraListe(alderJson().trimIndent()))
