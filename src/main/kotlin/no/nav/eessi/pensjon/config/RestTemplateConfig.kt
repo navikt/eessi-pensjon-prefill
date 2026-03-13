@@ -33,8 +33,8 @@ class RestTemplateConfig(
 ) {
     private val logger = LoggerFactory.getLogger(RestTemplateConfig::class.java)
 
-    @Value("\${PENSJONSINFORMASJON_URL}")
-    lateinit var pensjonUrl: String
+//    @Value("\${PENSJONSINFORMASJON_URL}")
+//    lateinit var pensjonUrl: String
 
     @Value("\${PESYS_URL}")
     lateinit var pesysUrl: String
