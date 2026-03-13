@@ -1,4 +1,8 @@
 import no.nav.eessi.pensjon.prefill.PesysService
+import no.nav.eessi.pensjon.prefill.models.pensjon.P15000overfoeringAvPensjonssakerTilEessiDto
+import no.nav.eessi.pensjon.utils.toJson
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -30,7 +34,7 @@ class PesysServiceTest {
 
         @ParameterizedTest(name = "sed:{0}}")
         @CsvSource(
-            value = ["p2000","p2100", "p2200"], nullValues = ["null"]
+            value = ["p2000", "p2100", "p2200"], nullValues = ["null"]
         )
         fun `henter verdier for `(sed: String?) {
             server.expect(requestTo("/sed/$sed"))
@@ -39,7 +43,7 @@ class PesysServiceTest {
                 .andExpect(header("fnr", "456"))
                 .andExpect(header("sakId", "789"))
                 .andRespond(withSuccess("", MediaType.APPLICATION_JSON)) // empty body => null DTO
-            val result = when(sed) {
+            val result = when (sed) {
                 "p2000" -> pesysService.hentP2000data("123", "456", "789")
                 "p2100" -> pesysService.hentP2100data("123", "456", "789")
                 "p2200" -> pesysService.hentP2200data("123", "456", "789")
@@ -54,7 +58,7 @@ class PesysServiceTest {
     }
 
     @Nested
-    inner class HentP2000Verdier{
+    inner class HentP2000Verdier {
 
         @Test
         fun `hentP2000data sender ikke vedtakId header naar den er null`() {
@@ -87,13 +91,13 @@ class PesysServiceTest {
             // sak
             assert(result?.sak?.sakType?.name == "ALDER")
             assert(result?.sak?.forsteVirkningstidspunkt.toString() == "2025-01-01")
-            assert(result?.sak?.status?.name == "TIL_BEHANDLING")
+            assert(result?.sak?.status?.name == "LOPENDE")
             // kravHistorikk
             val kravHistorikk = result?.sak?.kravHistorikk
-            assert(kravHistorikk?.size == 11)
+            assert(kravHistorikk?.size == 3)
             assert(kravHistorikk?.first()?.kravId == "49256020")
-            assert(kravHistorikk?.get(4)?.kravStatus?.name == "EESSI_AVBRUTT")
-            assert(kravHistorikk?.get(10)?.kravAarsak?.name == "ANNEN_ARSAK")
+            assert(kravHistorikk?.get(2)?.kravStatus?.name == "TIL_BEHANDLING")
+            assert(kravHistorikk?.get(2)?.kravAarsak?.name == "ANNEN_ARSAK")
             // ytelsePerMaaned
             val ytelsePerMaaned = result?.sak?.ytelsePerMaaned
             assert(ytelsePerMaaned?.size == 2)
@@ -103,14 +107,264 @@ class PesysServiceTest {
             server.verify()
         }
     }
+
     @Nested
-    inner class HentP2100Verdier{
+    inner class HentP2100Verdier {
 
     }
 
     @Nested
-    inner class HentP2200Verdier{
+    inner class Hent6000Verdier {
+        @Test
+        fun `hentP6000 med flere vedtak`() {
+            server.expect(requestTo("/sed/p6000"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header("sakId", "789"))
+                .andRespond(withSuccess(p6000FlereVedtakJson(), MediaType.APPLICATION_JSON))
 
+            val result = pesysService.hentP6000data("789")
+
+            assertNotNull(result)
+            assertEquals("2025-10-10", result?.vedtak?.datoFattetVedtak.toString())
+            server.verify()
+        }
     }
 
+    @Nested
+    inner class Hent15000Verdier {
+        @Test
+        fun `hentP15000 med flere vedtak skal hente ihht prioritert sortering`() {
+            val avdodListeJson = listOf(
+                P15000overfoeringAvPensjonssakerTilEessiDto(sakType = null, avdod = null, avdodMor = null, avdodFar = null),
+                P15000overfoeringAvPensjonssakerTilEessiDto(sakType = null, avdod = null, avdodMor = "2131232321", avdodFar = null),
+                P15000overfoeringAvPensjonssakerTilEessiDto(sakType = null, avdod = null, avdodMor = "2131232321", avdodFar = "3432434234")
+            ).toJson()
+
+            server.expect(requestTo("/sed/p15000"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header("sakId", "789"))
+                .andRespond(withSuccess(avdodListeJson, MediaType.APPLICATION_JSON))
+
+            val result = pesysService.hentP15000data("789")
+
+            assert(result == P15000overfoeringAvPensjonssakerTilEessiDto(sakType=null, avdod=null, avdodMor="2131232321", avdodFar="3432434234"))
+            server.verify()
+        }
+    }
+
+    @Test
+    fun `hentP2000data `() {
+        assertNotNull(pesysService.p2xxxFraListe(alderJson().trimIndent()))
+        assertNotNull(pesysService.p2xxxFraListe("""[${alderJson()}]""".trimIndent()))
+    }
+
+    fun alderJson() = """
+         {
+              "vedtak" : null,
+              "sak" : {
+                "sakType" : "ALDER",
+                "forsteVirkningstidspunkt" : null,
+                "kravHistorikk" : [ {
+                  "kravId" : 49609017,
+                  "kravType" : "F_BH_MED_UTL",
+                  "mottattDato" : "2025-10-01",
+                  "virkningstidspunkt" : "2025-11-01",
+                  "kravAarsak" : "NY_SOKNAD",
+                  "kravStatus" : "TIL_BEHANDLING"
+                } ],
+                "ytelsePerMaaned" : [ ],
+                "status" : "TIL_BEHANDLING"
+              }
+            }
+    """.trimIndent()
+
+
+    fun p6000FlereVedtakJson() = """
+        [ {
+          "avdod" : {
+            "avdodPid" : null,
+            "avdodBoddArbeidetUtland" : false,
+            "farBoddArbeidetUtland" : false,
+            "morBoddArbeidetUtland" : false
+          },
+          "sakType" : "ALDER",
+          "trygdeavtale" : {
+            "erArt10BruktGP" : false,
+            "erArt10BruktTP" : false
+          },
+          "trygdetid" : [ {
+            "fom" : "1987-03-15",
+            "tom" : "2020-11-15"
+          } ],
+          "vedtak" : {
+            "virkningstidspunkt" : "2025-01-01",
+            "kravGjelder" : "REVURD",
+            "hovedytelseTrukket" : false,
+            "boddArbeidetUtland" : true,
+            "datoFattetVedtak" : null
+          },
+          "vilkarsvurdering" : [ {
+            "fom" : "2025-01-01",
+            "vilkarsvurderingUforetrygd" : null,
+            "resultatHovedytelse" : "INNV",
+            "harResultatGjenlevendetillegg" : false,
+            "avslagHovedytelse" : null
+          } ],
+          "ytelsePerMaaned" : [ {
+            "fom" : "2025-01-01",
+            "tom" : "2025-04-30",
+            "mottarMinstePensjonsniva" : false,
+            "belop" : 5057,
+            "ytelseskomponenter" : [ {
+              "ytelsesKomponentType" : "IP",
+              "belopTilUtbetaling" : 1986
+            }, {
+              "ytelsesKomponentType" : "GP",
+              "belopTilUtbetaling" : 1004
+            }, {
+              "ytelsesKomponentType" : "TP",
+              "belopTilUtbetaling" : 2067
+            } ]
+          }, {
+            "fom" : "2025-05-01",
+            "tom" : null,
+            "mottarMinstePensjonsniva" : false,
+            "belop" : 5286,
+            "ytelseskomponenter" : [ {
+              "ytelsesKomponentType" : "TP",
+              "belopTilUtbetaling" : 2160
+            }, {
+              "ytelsesKomponentType" : "IP",
+              "belopTilUtbetaling" : 2076
+            }, {
+              "ytelsesKomponentType" : "GP",
+              "belopTilUtbetaling" : 1050
+            } ]
+          } ]
+        }, {
+          "avdod" : {
+            "avdodPid" : null,
+            "avdodBoddArbeidetUtland" : false,
+            "farBoddArbeidetUtland" : false,
+            "morBoddArbeidetUtland" : false
+          },
+          "sakType" : "ALDER",
+          "trygdeavtale" : {
+            "erArt10BruktGP" : false,
+            "erArt10BruktTP" : false
+          },
+          "trygdetid" : [ {
+            "fom" : "1987-03-15",
+            "tom" : "2020-11-15"
+          } ],
+          "vedtak" : {
+            "virkningstidspunkt" : "2025-01-01",
+            "kravGjelder" : "F_BH_MED_UTL",
+            "hovedytelseTrukket" : false,
+            "boddArbeidetUtland" : true,
+            "datoFattetVedtak" : "2025-02-10"
+          },
+          "vilkarsvurdering" : [ {
+            "fom" : "2025-01-01",
+            "vilkarsvurderingUforetrygd" : null,
+            "resultatHovedytelse" : "INNV",
+            "harResultatGjenlevendetillegg" : false,
+            "avslagHovedytelse" : null
+          } ],
+          "ytelsePerMaaned" : [ {
+            "fom" : "2025-01-01",
+            "tom" : "2025-04-30",
+            "mottarMinstePensjonsniva" : false,
+            "belop" : 5057,
+            "ytelseskomponenter" : [ {
+              "ytelsesKomponentType" : "IP",
+              "belopTilUtbetaling" : 1986
+            }, {
+              "ytelsesKomponentType" : "GP",
+              "belopTilUtbetaling" : 1004
+            }, {
+              "ytelsesKomponentType" : "TP",
+              "belopTilUtbetaling" : 2067
+            } ]
+          }, {
+            "fom" : "2025-05-01",
+            "tom" : null,
+            "mottarMinstePensjonsniva" : false,
+            "belop" : 5286,
+            "ytelseskomponenter" : [ {
+              "ytelsesKomponentType" : "IP",
+              "belopTilUtbetaling" : 2076
+            }, {
+              "ytelsesKomponentType" : "GP",
+              "belopTilUtbetaling" : 1050
+            }, {
+              "ytelsesKomponentType" : "TP",
+              "belopTilUtbetaling" : 2160
+            } ]
+          } ]
+        } ,        
+        {
+          "avdod" : {
+            "avdodPid" : null,
+            "avdodBoddArbeidetUtland" : false,
+            "farBoddArbeidetUtland" : false,
+            "morBoddArbeidetUtland" : false
+          },
+          "sakType" : "ALDER",
+          "trygdeavtale" : {
+            "erArt10BruktGP" : false,
+            "erArt10BruktTP" : false
+          },
+          "trygdetid" : [ {
+            "fom" : "1987-03-15",
+            "tom" : "2020-11-15"
+          } ],
+          "vedtak" : {
+            "virkningstidspunkt" : "2025-01-01",
+            "kravGjelder" : "F_BH_MED_UTL",
+            "hovedytelseTrukket" : false,
+            "boddArbeidetUtland" : true,
+            "datoFattetVedtak" : "2025-10-10"
+          },
+          "vilkarsvurdering" : [ {
+            "fom" : "2025-01-01",
+            "vilkarsvurderingUforetrygd" : null,
+            "resultatHovedytelse" : "INNV",
+            "harResultatGjenlevendetillegg" : false,
+            "avslagHovedytelse" : null
+          } ],
+          "ytelsePerMaaned" : [ {
+            "fom" : "2025-01-01",
+            "tom" : "2025-04-30",
+            "mottarMinstePensjonsniva" : false,
+            "belop" : 5057,
+            "ytelseskomponenter" : [ {
+              "ytelsesKomponentType" : "IP",
+              "belopTilUtbetaling" : 1986
+            }, {
+              "ytelsesKomponentType" : "GP",
+              "belopTilUtbetaling" : 1004
+            }, {
+              "ytelsesKomponentType" : "TP",
+              "belopTilUtbetaling" : 2067
+            } ]
+          }, {
+            "fom" : "2025-05-01",
+            "tom" : null,
+            "mottarMinstePensjonsniva" : false,
+            "belop" : 5286,
+            "ytelseskomponenter" : [ {
+              "ytelsesKomponentType" : "IP",
+              "belopTilUtbetaling" : 2076
+            }, {
+              "ytelsesKomponentType" : "GP",
+              "belopTilUtbetaling" : 1050
+            }, {
+              "ytelsesKomponentType" : "TP",
+              "belopTilUtbetaling" : 2160
+            } ]
+          } ]
+        } ]
+        
+    """.trimIndent()
 }

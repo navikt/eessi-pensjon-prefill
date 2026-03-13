@@ -1,9 +1,11 @@
 package no.nav.eessi.pensjon.prefill
 
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.*
 import no.nav.eessi.pensjon.prefill.models.pensjon.P15000overfoeringAvPensjonssakerTilEessiDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P8000AnmodningOmTilleggsinformasjon
+import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -12,6 +14,8 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import tools.jackson.databind.ObjectMapper
+
 @Service
 class PesysService(
     private val pesysClientRestTemplate: RestTemplate
@@ -19,43 +23,133 @@ class PesysService(
 
     private val logger: Logger = LoggerFactory.getLogger(PesysService::class.java)
 
-    fun hentP2000data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        getWithHeaders("/sed/p2000",
+    fun hentP2000data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
+        val response = getWithHeaders<Any>(
+            "/sed/p2000",
             "vedtakId" to vedtakId,
             "fnr" to fnr,
             "sakId" to sakId
         )
+        return p2xxxFraListe(response)
+    }
 
-    fun hentP2100data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        getWithHeaders("/sed/p2100",
+    fun hentP2100data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
+        val response = getWithHeaders<Any>(
+            "/sed/p2100",
             "vedtakId" to vedtakId,
             "fnr" to fnr,
             "sakId" to sakId
         )
+        return p2xxxFraListe(response)
+    }
 
-    fun hentP2200data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? =
-        getWithHeaders("/sed/p2200",
+    fun hentP2200data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
+        val response = getWithHeaders<Any>(
+            "/sed/p2200",
             "vedtakId" to vedtakId,
             "fnr" to fnr,
             "sakId" to sakId
         )
+        return p2xxxFraListe(response)
+    }
 
-    fun hentP6000data(vedtakId: String?): P6000MeldingOmVedtakDto? =
-        getWithHeaders("/sed/p6000",
-            "vedtakId" to vedtakId
+     fun p2xxxFraListe(response: Any?): P2xxxMeldingOmPensjonDto? {
+        logger.debug("p2xxxFraListe: {}", response)
+
+        val resp = when (response) {
+            is List<*> -> response.flatMap { mapToP2xxxList(it) }
+            else -> mapToP2xxxList(response)
+        }.also { logger.info("HentSakListe: $it") }
+
+        return returnerSakMedRiktigStatus(resp)
+    }
+
+    fun returnerSakMedRiktigStatus(response: List<P2xxxMeldingOmPensjonDto>): P2xxxMeldingOmPensjonDto? {
+        logger.info("Saker for bruker: ${response.map { it.sak?.status?.name + ":" + it.sak?.sakType }}")
+        val resultat =
+            response.firstOrNull { it.sak?.status == LOPENDE } ?:
+            response.firstOrNull { it.sak?.status == INNV } ?:
+            response.firstOrNull { it.sak?.status == TIL_BEHANDLING } ?:
+            response.firstOrNull { it.sak?.status == AVSL } ?:
+            response.firstOrNull()
+        return resultat
+    }
+
+
+    private fun mapToP2xxxList(value: Any?): List<P2xxxMeldingOmPensjonDto> {
+        return when (value) {
+            null -> emptyList()
+            is P2xxxMeldingOmPensjonDto -> listOf(value)
+            is Map<*, *> -> listOf(ObjectMapper().convertValue(value, P2xxxMeldingOmPensjonDto::class.java))
+            else -> parseP2xxxJson(value.toString())
+        }
+    }
+
+    private fun parseP2xxxJson(rawJson: String): List<P2xxxMeldingOmPensjonDto> {
+        val json = rawJson.trim()
+        if (json.isEmpty()) return emptyList()
+
+        return if (json.startsWith("[")) {
+            mapJsonToAny<List<P2xxxMeldingOmPensjonDto>>(json)
+        } else {
+            listOf(mapJsonToAny<P2xxxMeldingOmPensjonDto>(json))
+        }
+    }
+
+    fun hentP6000data(sakId: String?): P6000MeldingOmVedtakDto? {
+        val response = getWithHeaders<Any>(
+            "/sed/p6000",
+            "sakId" to sakId,
         )
+
+        val resp = when (response) {
+            is List<*> -> response.mapNotNull {
+                when (it) {
+                    is P6000MeldingOmVedtakDto -> it
+                    is Map<*, *> -> ObjectMapper().convertValue(it, P6000MeldingOmVedtakDto::class.java)
+                    else -> null
+                }
+            }
+
+            else -> emptyList()
+        }.also { logger.info("HentSakListe: $it") }
+        return resp.sortedByDescending { it.vedtak.datoFattetVedtak }.firstOrNull()
+    }
+
 
     fun hentP8000data(sakId: String): P8000AnmodningOmTilleggsinformasjon? =
-        getWithHeaders("/sed/p8000",
+        getWithHeaders(
+            "/sed/p8000",
             "sakId" to sakId
         )
 
-    fun hentP15000data(vedtakId: String?, sakId: String): P15000overfoeringAvPensjonssakerTilEessiDto? =
-        getWithHeaders("/sed/p15000",
-            "vedtakId" to vedtakId,
+    fun hentP15000data(sakId: String): P15000overfoeringAvPensjonssakerTilEessiDto? {
+        val response = getWithHeaders<Any>(
+            "/sed/p15000",
             "sakId" to sakId
         )
 
+        val resp = when (response) {
+            is List<*> -> response.mapNotNull {
+                when (it) {
+                    is P15000overfoeringAvPensjonssakerTilEessiDto -> it
+                    is Map<*, *> -> ObjectMapper().convertValue(it, P15000overfoeringAvPensjonssakerTilEessiDto::class.java)
+                    else -> null
+                }
+            }
+
+            else -> emptyList()
+        }.also { logger.info("HentSakListe: $it") }
+        return resp.sortedByAvdodFamilie().firstOrNull()
+    }
+
+    fun List<P15000overfoeringAvPensjonssakerTilEessiDto>.sortedByAvdodFamilie(): List<P15000overfoeringAvPensjonssakerTilEessiDto> =
+        sortedWith(
+            compareByDescending<P15000overfoeringAvPensjonssakerTilEessiDto> { it.sakType != null  }
+                .thenByDescending { it.avdod != null  }
+                .thenByDescending { it.avdodMor != null  }
+                .thenByDescending { it.avdodFar != null  }
+        )
 
     private inline fun <reified T : Any> getWithHeaders(
         path: String,
@@ -74,4 +168,3 @@ class PesysService(
             .also { logger.debug("Svar fra Pesys nytt endepunkt: ${it?.toJson()}, url: $path , headers: ${headers.toJson()}") }
     }
 }
-
