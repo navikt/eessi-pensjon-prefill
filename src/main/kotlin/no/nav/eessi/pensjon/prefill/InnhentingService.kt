@@ -180,30 +180,4 @@ class InnhentingService(
         else return vedtakId
     }
 
-//    fun hentrelevantPensjonSak(penData: P2xxxMeldingOmPensjonDto, sakTypeIsed: EessiSakType) {
-//
-//        if (penData?.sak?. .isNullOrBlank()) throw ManglendeSakIdException("Mangler sakId")
-//        if (fnr.isBlank()) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler norskident")
-//
-//    }
-
-//    fun hentRelevantPensjonSak(prefillData: PrefillDataModel, akseptabelSakstypeForSed: (String) -> Boolean): P2xxxMeldingOmPensjonDto.Sak? {
-//        logger.debug("sakNr er: ${prefillData.penSaksnummer} aktoerId er: ${prefillData.bruker.aktorId} prøver å hente Sak")
-//        return pensjonsinformasjonService.hentRelevantPensjonSak(prefillData, akseptabelSakstypeForSed)
-//    }
-
-//    private fun hentRelevantVedtak(prefillData: PrefillDataModel): Vedtak? {
-//        prefillData.vedtakId.let {
-//            logger.debug("vedtakId er: $it, prøver å hente vedtaket")
-//            return pensjonsinformasjonService.hentRelevantVedtakHvisFunnet(it ?: "")
-//        }
-//    }
-
-//    private fun hentRelevantPensjonsinformasjon(prefillData: PrefillDataModel): Pensjonsinformasjon? {
-//        return prefillData.vedtakId?.let {
-//            logger.debug("vedtakid er: $it, prøver å hente pensjonsinformasjon for vedtaket")
-//            pensjonsinformasjonService.hentMedVedtak(it)
-//        }
-//    }
-
 }
