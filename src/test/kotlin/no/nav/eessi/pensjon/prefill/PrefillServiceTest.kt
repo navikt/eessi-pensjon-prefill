@@ -47,9 +47,7 @@ class PrefillServiceTest{
             krrService,
             prefillSedService,
             innhentingService,
-            etterlatteService,
             automatiseringStatistikkService,
-            mockk(relaxed = true),
         )
         every { innhentingService.getAvdodAktoerIdPDL(any())} returns avdodPersonFnr
         every { innhentingService.hentFnrEllerNpidFraAktoerService(any()) } returns personFnr

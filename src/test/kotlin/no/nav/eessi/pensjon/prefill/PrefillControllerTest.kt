@@ -55,9 +55,7 @@ class PrefillControllerTest {
             krrService,
             mockPrefillSEDService,
             innhentingService,
-            etterlatteService =etterlatteService,
-            automatiseringStatistikkService =automatiseringStatistikkService,
-            prefillPdlNav = prefillNav
+            automatiseringStatistikkService
         )
 
         prefillController = PrefillController(prefillService, prefillGjennyService,  auditLogger)

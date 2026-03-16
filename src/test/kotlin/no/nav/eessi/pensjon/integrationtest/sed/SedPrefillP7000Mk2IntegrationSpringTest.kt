@@ -206,13 +206,6 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_3)) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_4)) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
-
-//        val sak = V1Sak()
-//        sak.sakType = EPSaktype.GJENLEV.toString()
-//        sak.sakId = 100
-//        sak.kravHistorikkListe = V1KravHistorikkListe()
-
-//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
 
