@@ -22,6 +22,7 @@ class PesysService(
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(PesysService::class.java)
+    private val secureLog = LoggerFactory.getLogger("secureLog")
 
     fun hentP2000data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
         val response = getWithHeaders<Any>(
@@ -100,7 +101,7 @@ class PesysService(
         val response = getWithHeaders<Any>(
             "/sed/p6000",
             "sakId" to sakId,
-        )
+        ).also { secureLog.info("HentSakListe: $it") }
 
         val resp = when (response) {
             is List<*> -> response.mapNotNull {
@@ -112,7 +113,7 @@ class PesysService(
             }
 
             else -> emptyList()
-        }.also { logger.info("HentSakListe: $it") }
+        }.also { logger.info("Hentet ${it.size} saker") }
         return resp.sortedByDescending { it.vedtak.datoFattetVedtak }.firstOrNull()
     }
 
