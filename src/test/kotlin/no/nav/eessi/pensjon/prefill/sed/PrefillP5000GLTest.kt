@@ -49,7 +49,7 @@ class PrefillP5000GLTest {
         etterlatteService = EtterlatteService(mockk())
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P5000, personFnr, penSaksnummer = pesysSaksnummer, avdod = PersonInfo(avdodPersonFnr, "112233445566"))
 
-        val innhentingService = InnhentingService(mockk(), pesysService = pesysService )
+        val innhentingService = InnhentingService(mockk(), pesysService = pesysService)
         val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
