@@ -33,7 +33,7 @@ data class P6000MeldingOmVedtakDto(
     data class Vilkarsvurdering(
         val fom: LocalDate, // P6000
         val vilkarsvurderingUforetrygd: VilkarsvurderingUforetrygd?, // P6000
-        val resultatHovedytelse: String, // P6000
+        val resultatHovedytelse: String?, // P6000
         val harResultatGjenlevendetillegg: Boolean, // P6000
         val avslagHovedytelse: String?, // P6000
     )
