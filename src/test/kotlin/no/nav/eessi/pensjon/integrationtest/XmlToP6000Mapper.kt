@@ -103,10 +103,12 @@ object XmlToP6000Mapper {
         // YtelsePerMaanedListe
         val ytelsePerMaanedListeNode = root.findFieldByLocalName("ytelsePerMaanedListe") ?: root.path("ytelsePerMaanedListe")
         val ytelsePerMaanedList = ytelsePerMaanedListeNode
-            .findFieldByLocalName("ytelsePerMaanedListe")?.let { it } ?: ytelsePerMaanedListeNode
-        val ytelsePerMaanedListe = ytelsePerMaanedList.map { yNode ->
+            .findFieldByLocalName("ytelsePerMaanedList")?.let { it } ?: ytelsePerMaanedListeNode
+        val ytelsePerMaanedListe = ytelsePerMaanedList
+            .map { yNode ->
+            println("YtelsePerMaanedListe: $yNode")
             P6000MeldingOmVedtakDto.YtelsePerMaaned(
-                fom = yNode.localDateOrNull("fom") ?: LocalDate.MIN,
+                fom = yNode.localDateOrNull("fom") ?: LocalDate.now(),
                 tom = yNode.localDateOrNull("tom"),
                 mottarMinstePensjonsniva = yNode.findFieldByLocalName("mottarMinstePensjonsniva")?.asBoolean() ?: false,
                 vinnendeBeregningsmetode = yNode.findFieldByLocalName("vinnendeBeregningsmetode")?.asText() ?: "",

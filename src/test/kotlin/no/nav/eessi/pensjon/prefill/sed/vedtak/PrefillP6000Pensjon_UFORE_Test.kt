@@ -32,7 +32,6 @@ class PrefillP6000Pensjon_UFORE_Test {
     private lateinit var prefillNav: PrefillPDLNav
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
-//    private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var personDataCollection: PersonDataCollection
     private val pesysService: PesysService = mockk()
 
@@ -41,12 +40,10 @@ class PrefillP6000Pensjon_UFORE_Test {
         prefillNav = BasePrefillNav.createPrefillNav()
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
         personDataCollection = PersonPDLMock.createEnkelFamilie(personFnr, ekteFnr)
-
     }
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Uførepensjon`() {
-//        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-UT-201.xml")
         every { pesysService.hentP6000data(any()) } returns XmlToP6000Mapper.readP6000FromXml("/pensjonsinformasjon/vedtak/P6000-UT-201.xml")
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
@@ -71,7 +68,7 @@ class PrefillP6000Pensjon_UFORE_Test {
         assertEquals("1", vedtak?.grunnlag?.framtidigtrygdetid)
 
         val beregning = vedtak?.beregning?.get(0)
-        assertEquals("2017-05-01", beregning?.periode?s.fom)
+        assertEquals("2017-05-01", beregning?.periode?.fom)
         assertEquals(null, beregning?.periode?.tom)
         assertEquals("NOK", beregning?.valuta)
         assertEquals("maaned_12_per_aar", beregning?.utbetalingshyppighet)
@@ -93,15 +90,17 @@ class PrefillP6000Pensjon_UFORE_Test {
 
     }
 
-//    @Test
-//    fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
+    @Test
+    fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
 //        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-UT-201.xml")
-//        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")
-//
-//        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
-//
-//        assertThrows<ResponseStatusException> {
-//            innhentingService.hentPensjoninformasjonCollection(prefillData)
-//        }
-//    }
+        every { pesysService.hentP6000data(any()) } returns XmlToP6000Mapper.readP6000FromXml("/pensjonsinformasjon/vedtak/P6000-UT-201.xml")
+
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")
+
+        val innhentingService = InnhentingService(mockk(), pesysService)
+
+        assertThrows<ResponseStatusException> {
+            innhentingService.hentPensjoninformasjonCollection(prefillData)
+        }
+    }
 }
