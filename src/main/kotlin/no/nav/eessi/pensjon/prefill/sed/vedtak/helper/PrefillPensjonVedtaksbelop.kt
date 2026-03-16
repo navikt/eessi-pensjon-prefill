@@ -137,11 +137,7 @@ object PrefillPensjonVedtaksbelop {
                         //4.1.7.3.4. Gross amount of supplementary pension
                         ytelseskomponentTilleggspensjon = createYtelseskomponentTilleggspensjon(ytelsePrMnd, sakType),
                 ),
-                beloepNetto = BeloepBrutto(
-                    beloep = createBelop(ytelsePrMnd, sakType),
-                    ytelseskomponentGrunnpensjon = createYtelseskomponentGrunnpensjon(ytelsePrMnd, sakType),
-                    ytelseskomponentTilleggspensjon = createYtelseskomponentTilleggspensjon(ytelsePrMnd, sakType),
-                ),
+                beloepNetto = null,
 
                 //4.1.7.4 Currency automatisk hukes for "NOK" norway krone.
                 valuta = "NOK",
