@@ -11,7 +11,6 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
-import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
@@ -39,7 +38,12 @@ class PrefillSEDServiceTest {
 
     @Before
     fun setup() {
-        prefillService = PrefillService(krrService, mockPrefillSEDService, innhentingService, etterlatteService, automatiseringStatistikkService, prefillNav)
+        prefillService = PrefillService(
+            krrService,
+            mockPrefillSEDService,
+            innhentingService,
+            automatiseringStatistikkService
+        )
         personcollection = PersonDataCollection(null, null)
         val personDataCollectionFamilie = PersonPDLMock.createEnkelFamilie(personFnr, avdodPersonFnr)
         personDataCollection = PersonDataCollection(gjenlevendeEllerAvdod = personDataCollectionFamilie.ektefellePerson, forsikretPerson = personDataCollectionFamilie.forsikretPerson )
