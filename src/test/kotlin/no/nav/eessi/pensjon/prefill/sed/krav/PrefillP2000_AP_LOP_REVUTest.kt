@@ -76,8 +76,6 @@ class PrefillP2000_AP_LOP_REVUTest {
         val sed = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
         assertNotNull(sed.nav?.krav)
         assertEquals("2018-06-05", sed.nav?.krav?.dato)
-
-
     }
 
     @Test

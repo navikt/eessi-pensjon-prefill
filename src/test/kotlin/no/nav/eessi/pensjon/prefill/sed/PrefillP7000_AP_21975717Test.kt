@@ -21,7 +21,6 @@ import java.nio.file.Paths
 
 class PrefillP7000_AP_21975717Test {
 
-
     private val personFnr = "01071843352"
     private lateinit var prefillPDLNav: PrefillPDLNav
     private lateinit var prefillData: PrefillDataModel

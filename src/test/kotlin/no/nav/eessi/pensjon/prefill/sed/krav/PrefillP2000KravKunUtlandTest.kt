@@ -20,6 +20,7 @@ import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertNotNull
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 
@@ -67,25 +68,14 @@ class PrefillP2000KravKunUtlandTest {
     }
 
     @Test
-    fun `Sjekk av kravsøknad alderpensjon P2000`() {
-//        val pendata: Pensjonsinformasjon = dataFromPEN.hentPensjonInformasjon(prefillData.bruker.norskIdent, prefillData.bruker.aktorId)
-
-//        assertNotNull(PensjonsinformasjonService.finnSak(prefillData.penSaksnummer, pendata))
-
-//        assertNotNull(pendata.brukersSakerListe)
-//        assertEquals("ALDER", PensjonsinformasjonService.finnSak(prefillData.penSaksnummer, pendata)?.sakType)
-    }
-
-    @Test
     fun `Utfylling alderpensjon uten kravhistorikk Kunutland uten virkningstidspunkt`() {
-
         val expected = "Søknad gjelder Førstegangsbehandling kun utland. Se egen rutine på navet"
+
         try {
             prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
         } catch (ex: ResponseStatusException) {
             assertEquals(expected, ex.reason)
         }
-
     }
 
 }

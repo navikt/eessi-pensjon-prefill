@@ -19,8 +19,6 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-
-
 class PrefillP8000GLmedUtlandInnvTest {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(65)
@@ -37,7 +35,6 @@ class PrefillP8000GLmedUtlandInnvTest {
     lateinit var pensjonCollection: PensjonCollection
     lateinit var prefillSEDService: PrefillSEDService
     lateinit var personDataCollection: PersonDataCollection
-
 
     @BeforeEach
     fun setup() {

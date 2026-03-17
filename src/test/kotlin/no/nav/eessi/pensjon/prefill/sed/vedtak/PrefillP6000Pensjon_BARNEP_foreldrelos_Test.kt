@@ -21,7 +21,6 @@ class PrefillP6000Pensjon_BARNEP_foreldrelos_Test {
     private lateinit var prefillNav: PrefillPDLNav
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
-//    private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var personDataCollection: PersonDataCollection
 
 

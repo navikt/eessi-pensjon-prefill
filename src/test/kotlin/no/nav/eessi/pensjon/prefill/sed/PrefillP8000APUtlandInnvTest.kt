@@ -10,6 +10,8 @@ import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.P8000AnmodningOmTilleggsinformasjon
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
@@ -51,28 +53,24 @@ class PrefillP8000APUtlandInnvTest {
 
     @Test
     fun `forventet korrekt utfylt P8000 alderperson med mockdata fra testfiler`() {
+        val sak = P8000AnmodningOmTilleggsinformasjon(EessiFellesDto.EessiSakType.GJENLEV, true)
 
-//        val sak = V1Sak()
-//        sak.sakType = EPSaktype.GJENLEV.toString()
-//        sak.sakId = 100
-//        sak.kravHistorikkListe = V1KravHistorikkListe()
+        val p8000 = prefill.prefill(prefillData, persondataCollection, sak)
 
-//        val p8000 = prefill.prefill(prefillData, persondataCollection, sak)
+        assertEquals("ODIN ETTØYE", p8000.nav?.bruker?.person?.fornavn)
+        assertEquals("BALDER", p8000.nav?.bruker?.person?.etternavn)
+        val navfnr1 = Fodselsnummer.fra(p8000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals(68, navfnr1?.getAge())
 
-//        assertEquals("ODIN ETTØYE", p8000.nav?.bruker?.person?.fornavn)
-//        assertEquals("BALDER", p8000.nav?.bruker?.person?.etternavn)
-//        val navfnr1 = Fodselsnummer.fra(p8000.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
-//        assertEquals(68, navfnr1?.getAge())
-//
-//        assertNotNull(p8000.nav?.bruker?.person?.pin)
-//        val pinlist = p8000.nav?.bruker?.person?.pin
-//        val pinitem = pinlist?.get(0)
-//        assertEquals(null, pinitem?.sektor)
-//        assertEquals(personFnr, pinitem?.identifikator)
-//
-//        assertNull(p8000.nav?.annenperson)
-//        assertNull(p8000.pensjon)
+        assertNotNull(p8000.nav?.bruker?.person?.pin)
+        val pinlist = p8000.nav?.bruker?.person?.pin
+        val pinitem = pinlist?.get(0)
+        assertEquals(null, pinitem?.sektor)
+        assertEquals(personFnr, pinitem?.identifikator)
 
+        assertNull(p8000.nav?.annenperson)
+        assertNull(p8000.pensjon)
     }
+
 }
 

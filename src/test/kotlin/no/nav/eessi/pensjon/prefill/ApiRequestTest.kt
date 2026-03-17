@@ -31,7 +31,7 @@ class ApiRequestTest {
     }
 
     private fun readJsonAndParseToSed(filename: String): String {
-        val p2200file = javaClass.getResource("/json/nav/$filename").readText()
+        val p2200file = javaClass.getResource("/json/nav/$filename")!!.readText()
         assertTrue(validateJson(p2200file))
         return p2200file
     }
@@ -49,27 +49,28 @@ class ApiRequestTest {
     @Test
     fun `check og valider request fra ui med institusion uten buc`() {
 
-        val req = "{\n" +
-                "  \"sakId\" : \"01234567890\",\n" +
-                "  \"vedtakId\" : null,\n" +
-                "  \"kravId\" : null,\n" +
-                "  \"aktoerId\" : \"1000060964183\",\n" +
-                "  \"fnr\" : null,\n" +
-                "  \"avdodfnr\" : null,\n" +
-                "  \"payload\" : \"{}\",\n" +
-                "  \"buc\" : \"P_BUC_01\",\n" +
-                "  \"sed\" : \"P2000\",\n" +
-                "  \"documentid\" : null,\n" +
-                "  \"euxCaseId\" : \"99191999911\",\n" +
-                "  \"institutions\" : [ {\n" +
-                "    \"country\" : \"NO\",\n" +
-                "    \"institution\" : \"NAVT003\",\n" +
-                "    \"name\" : null\n" +
-                "  } ],\n" +
-                "  \"subjectArea\" : \"Pensjon\",\n" +
-                "  \"skipSEDkey\" : null,\n" +
-                "  \"mockSED\" : true\n" +
-                "}"
+        val req = """{
+          "sakId" : "01234567890",
+          "vedtakId" : null,
+          "kravId" : null,
+          "aktoerId" : "1000060964183",
+          "fnr" : null,
+          "avdodfnr" : null,
+          "payload" : "{}",
+          "buc" : "P_BUC_01",
+          "sed" : "P2000",
+          "documentid" : null,
+          "euxCaseId" : "99191999911",
+          "institutions" : [ {
+            "country" : "NO",
+            "institution" : "NAVT003",
+            "name" : null
+          } ],
+          "subjectArea" : "Pensjon",
+          "skipSEDkey" : null,
+          "mockSED" : true
+        }""".trimIndent()
+
         val datamodel = ApiRequest.buildPrefillDataModelOnExisting( mapJsonToAny(req), PersonInfo("", ""), "")
         assertNotNull(datamodel)
         assertEquals(P2000, datamodel.sedType)
@@ -105,22 +106,6 @@ class ApiRequestTest {
         val payload = readJsonAndParseToSed("P6000-NAV.json")
         createMockApiRequest(P7000, P_BUC_06, payload)
     }
-
-//    Etter at SedType brukes som enum, går det ikke an å sende inn ugyldig sedtype lenger
-//    @Test
-//    fun `confirm document when sed is not valid`() {
-//        val mockData = ApiRequest(
-//                subjectArea = "Pensjon",
-//                sakId = "EESSI-PEN-123",
-//                institutions = listOf(InstitusjonItem("NO", "DUMMY")),
-//                sed = "Q3300",
-//                buc = P_BUC_06,
-//                aktoerId = "0105094340092"
-//        )
-//        assertThrows<ResponseStatusException> {
-//            ApiRequest.buildPrefillDataModelOnExisting(mockData, "12345", null)
-//        }
-//    }
 
     @Test
     fun `confirm document sed is null`() {
@@ -219,7 +204,6 @@ class ApiRequestTest {
         }
 
     }
-
 
     @Test
     fun `check on aktoerId is null`() {

@@ -17,7 +17,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class SedP3000XXTest {
-//    var dataFromPEN: PensjonsinformasjonService = mockk()
     private lateinit var prefillSEDService: PrefillSEDService
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)

@@ -111,7 +111,7 @@ class InnhentingServiceTest {
             subjectArea = "Pensjon",
             sakId = "EESSI-PEN-123",
             sed = P15000,
-            buc = BucType.P_BUC_10,
+            buc = P_BUC_10,
             aktoerId = "0105094340092",
             avdodfnr = "12345566"
         )
@@ -205,7 +205,7 @@ class InnhentingServiceTest {
             fnr: String = FNR,
             aktorId: String = AKTOERID,
             sedType: SedType,
-            bucType: BucType = BucType.P_BUC_10,
+            bucType: BucType = P_BUC_10,
             vedtakId: String? = null
         ) = PrefillDataModel(
             penSaksnummer = "1010",

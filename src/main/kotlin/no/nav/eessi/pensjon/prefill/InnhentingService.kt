@@ -16,7 +16,6 @@ import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.U
 import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
-import no.nav.eessi.pensjon.utils.toJson
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -26,8 +25,8 @@ import org.springframework.web.server.ResponseStatusException
 @Service
 class InnhentingService(
     private val personDataService: PersonDataService,
-    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest(),
     private val pesysService: PesysService,
+    @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest(),
 ) {
 
     private var HentPerson: MetricsHelper.Metric

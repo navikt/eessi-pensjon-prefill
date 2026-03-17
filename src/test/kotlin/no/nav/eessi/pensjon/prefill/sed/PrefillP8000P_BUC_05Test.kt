@@ -34,7 +34,6 @@ import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.LocalDate
 
-
 class PrefillP8000P_BUC_05Test {
 
     private val pesysSaksnummer = "14398627"
