@@ -95,7 +95,7 @@ object PrefillPensjonVedtaksbelop {
 
         return ytelsePerMaaned.map {
            createBeregningItem(it, sakType)
-        }.also { logger.debug("BeregningItem liste $it") }
+        }.distinct().also { logger.debug("BeregningItem liste $it") }
     }
 
     /**

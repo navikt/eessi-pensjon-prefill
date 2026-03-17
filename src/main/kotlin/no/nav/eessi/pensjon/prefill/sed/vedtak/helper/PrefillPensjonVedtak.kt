@@ -34,13 +34,13 @@ object PrefillPensjonVedtak {
                 type = createVedtakTypePensionWithRule(pesysPrefillData),
 
                 //4.1.2  $pensjon.vedtak[x].basertPaa
-                basertPaa = createVedtakGrunnlagPentionWithRule(pesysPrefillData),
+                basertPaa = createVedtakGrunnlagPensionWithRule(pesysPrefillData),
 
                 //4.1.3.1 $pensjon.vedtak[x].basertPaaAnnen
-                basertPaaAnnen = createVedtakAnnenTypePentionWithRule(pesysPrefillData),
+                basertPaaAnnen = createVedtakAnnenTypePensionWithRule(pesysPrefillData),
 
                 //4.1.4 $pensjon.vedtak[x].resultat
-                resultat = createTypeVedtakPentionWithRule(pesysPrefillData),
+                resultat = createTypeVedtakPensionWithRule(pesysPrefillData),
 
                 //4.1.6  $pensjon.vedtak[x].virkningsdato
                 virkningsdato = pesysPrefillData.vedtak.virkningstidspunkt.simpleFormat(),
@@ -97,8 +97,8 @@ object PrefillPensjonVedtak {
      * [99] Other
      *
      */
-    private fun createVedtakGrunnlagPentionWithRule(pendata: P6000MeldingOmVedtakDto): BasertPaa? {
-        logger.info("4.1.2         VedtakGrunnlagPention")
+    private fun createVedtakGrunnlagPensionWithRule(pendata: P6000MeldingOmVedtakDto): BasertPaa? {
+        logger.info("4.1.2         VedtakGrunnlagPension")
 
         val sakType = pendata.sakType
         logger.info("              Saktype: $sakType")
@@ -119,10 +119,10 @@ object PrefillPensjonVedtak {
     /**
      *  4.1.3.1 (other type)
      */
-    private fun createVedtakAnnenTypePentionWithRule(pendata: P6000MeldingOmVedtakDto): String? {
+    private fun createVedtakAnnenTypePensionWithRule(pendata: P6000MeldingOmVedtakDto): String? {
 
         logger.info("4.1.3.1       VedtakAnnenTypePensjon")
-        if (createVedtakGrunnlagPentionWithRule(pendata) == BasertPaa.annet) {
+        if (createVedtakGrunnlagPensionWithRule(pendata) == BasertPaa.annet) {
             return "Ytelsen er beregnet etter regler for barnepensjon"
         }
         return null
@@ -143,8 +143,8 @@ object PrefillPensjonVedtak {
      *  HVIS sakstype er Uføretrygd, OG kravtype er Førstegangsbehandling Norge/utland ELLER Mellombehandling, SÅ skal det hukes for «[04] Provisional or advance payment»
      *  Opphør - må håndteres Se pkt 6.2
      */
-    private fun createTypeVedtakPentionWithRule(pendata: P6000MeldingOmVedtakDto): String? {
-        logger.info("4.1.4         TypeVedtakPention (vedtak.resultat")
+    private fun createTypeVedtakPensionWithRule(pendata: P6000MeldingOmVedtakDto): String? {
+        logger.info("4.1.4         TypeVedtakPension (vedtak.resultat")
 
         val sakType = pendata.sakType
         val kravGjelder = pendata.vedtak.kravGjelder

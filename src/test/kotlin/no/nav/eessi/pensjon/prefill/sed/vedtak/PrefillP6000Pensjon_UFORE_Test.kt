@@ -14,7 +14,6 @@ import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
-import no.nav.eessi.pensjon.prefill.sed.PrefillTestHelper
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -92,7 +91,6 @@ class PrefillP6000Pensjon_UFORE_Test {
 
     @Test
     fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
-//        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-UT-201.xml")
         every { pesysService.hentP6000data(any()) } returns XmlToP6000Mapper.readP6000FromXml("/pensjonsinformasjon/vedtak/P6000-UT-201.xml")
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")

@@ -65,23 +65,11 @@ class PrefillP2000UtenKravhistorieTest {
     }
 
     @Test
-    fun `Sjekk av kravsoknad alderpensjon P2000`() {
-//        val pendata: Pensjonsinformasjon = dataFromPEN.hentPensjonInformasjon(prefillData.bruker.norskIdent, prefillData.bruker.aktorId)
-
-//        assertNotNull(PensjonsinformasjonService.finnSak(prefillData.penSaksnummer, pendata))
-
-//        assertNotNull(pendata.brukersSakerListe)
-//        assertEquals("ALDER", PensjonsinformasjonService.finnSak(prefillData.penSaksnummer, pendata)?.sakType)
-
-    }
-
-    @Test
     fun `Preutfylling P2000 uten kravdato skal feile`() {
         val ex = assertThrows<Exception> {
             prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
         }
         assertEquals("400 BAD_REQUEST \"Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland, eller sluttbehandling. Vennligst gå til EESSI-Pensjon fra vedtakskontekst.\"", ex.message)
     }
-
 
 }

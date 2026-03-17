@@ -15,11 +15,13 @@ import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
+import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
+import org.junit.jupiter.api.assertThrows
+import org.springframework.web.server.ResponseStatusException
 
 class PrefillP6000Pensjon_ALDER_Test {
 
@@ -28,7 +30,6 @@ class PrefillP6000Pensjon_ALDER_Test {
 
     private lateinit var prefillData: PrefillDataModel
     private lateinit var prefillSEDService: PrefillSEDService
-//    private lateinit var dataFromPEN: PensjonsinformasjonService
     private lateinit var personDataCollection: PersonDataCollection
     private val pesysService: PesysService = mockk()
 
@@ -40,7 +41,6 @@ class PrefillP6000Pensjon_ALDER_Test {
 
     @Test
     fun `forventet korrekt utfylling av Pensjon objekt på Alderpensjon`() {
-//        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-APUtland-301.xml")
         every { pesysService.hentP6000data(any()) } returns XmlToP6000Mapper.readP6000FromXml("/pensjonsinformasjon/vedtak/P6000-APUtland-301.xml")
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
         val innhentingService = InnhentingService(mockk(), pesysService = pesysService)
@@ -68,6 +68,7 @@ class PrefillP6000Pensjon_ALDER_Test {
 
         assertEquals(null, vedtak?.avslagbegrunnelse, "4.1.13.1 -- 4.1.13.2.1")
 
+        println("vedtak?.beregning: ${vedtak?.beregning?.toJson()}")
         assertEquals(1, vedtak?.beregning?.size, "4.1.7 vedtak?.beregning")
         val beregning = vedtak?.beregning?.firstOrNull()
 
@@ -93,34 +94,20 @@ class PrefillP6000Pensjon_ALDER_Test {
     }
 
     @Test
-    fun `preutfylling P6000 feiler ved mangler av vedtakId`() {
-//        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-AP-101.xml")
+    fun `feiler ved boddArbeidetUtland ikke sann`() {
         every { pesysService.hentP6000data(any()) } returns XmlToP6000Mapper.readP6000FromXml("/pensjonsinformasjon/vedtak/P6000-AP-101.xml")
 
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "")
+        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
         val innhentingService = InnhentingService(mockk(), pesysService)
+        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
 
-//        assertThrows<IkkeGyldigKallException> {
-//            innhentingService.hentPensjoninformasjonCollection(prefillData)
-//        }
+        assertThrows<ResponseStatusException> {
+            prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
+        }
     }
-
-//    @Test
-//    fun `feiler ved boddArbeidetUtland ikke sann`() {
-//        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-AP-101.xml")
-//        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-//        val innhentingService = InnhentingService(mockk(), pensjonsinformasjonService = dataFromPEN)
-//        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
-
-
-//        assertThrows<ResponseStatusException> {
-//            prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
-//        }
-//    }
 
     @Test
     fun `henting av bruttobelop skal hente verdier fra garantipensjon, grunnpensjon, pensjontillegg, inntektspensjon, saertillegg `() {
-//        dataFromPEN = PrefillTestHelper.lesPensjonsdataVedtakFraFil("/pensjonsinformasjon/vedtak/P6000-AP-GP-301.xml")
         every { pesysService.hentP6000data(any()) } returns XmlToP6000Mapper.readP6000FromXml("/pensjonsinformasjon/vedtak/P6000-AP-GP-301.xml")
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")

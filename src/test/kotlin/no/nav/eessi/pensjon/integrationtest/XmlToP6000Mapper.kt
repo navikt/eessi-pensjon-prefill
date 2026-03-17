@@ -84,7 +84,7 @@ object XmlToP6000Mapper {
 
         val vilkarsvurderingListe = vilkarsvurderingList.map { vvNode ->
             P6000MeldingOmVedtakDto.Vilkarsvurdering(
-                fom = vvNode.localDateOrNull("fom") ?: LocalDate.MIN,
+                fom = vvNode.localDateOrNull("fom") ?: LocalDate.now(),
                 vilkarsvurderingUforetrygd = vvNode.findFieldByLocalName("vilkarsvurderingUforetrygd")?.let { uNode ->
                     P6000MeldingOmVedtakDto.VilkarsvurderingUforetrygd(
                         alder = uNode.findFieldByLocalName("alder")?.asText(),
@@ -105,8 +105,11 @@ object XmlToP6000Mapper {
         val ytelsePerMaanedList = ytelsePerMaanedListeNode
             .findFieldByLocalName("ytelsePerMaanedList")?.let { it } ?: ytelsePerMaanedListeNode
         val ytelsePerMaanedListe = ytelsePerMaanedList
-            .map { yNode ->
+            .mapNotNull { yNode ->
             println("YtelsePerMaanedListe: $yNode")
+            if (yNode.localDateOrNull("fom") == null) {
+                null
+            } else {
             P6000MeldingOmVedtakDto.YtelsePerMaaned(
                 fom = yNode.localDateOrNull("fom") ?: LocalDate.now(),
                 tom = yNode.localDateOrNull("tom"),
@@ -120,6 +123,7 @@ object XmlToP6000Mapper {
                     )
                 } ?: emptyList()
             )
+            }
         }
 
         return P6000MeldingOmVedtakDto(
