@@ -5,6 +5,27 @@ import no.nav.eessi.pensjon.eux.model.sed.Grunnlag
 import no.nav.eessi.pensjon.eux.model.sed.Opptjening
 import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiKravGjelder
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiKravGjelder.F_BH_BO_UTL
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiKravGjelder.MELLOMBH
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiKravGjelder.REVURD
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.AVSL
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.INNV
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.AFP
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.AFP_PRIVAT
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.ALDER
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.BARNEP
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.FAM_PL
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.GAM_YRK
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.GENRL
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.GJENLEV
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.GRBL
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.KRIGSP
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.OMSORG
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.UFOREP
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksavslag.createAvlsagsBegrunnelseItem
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonVedtaksavslag.sjekkForVilkarsvurderingListeHovedytelseellerAvslag
@@ -25,11 +46,10 @@ object PrefillPensjonVedtak {
      *  4.1
      */
     fun createVedtakItem(pesysPrefillData: P6000MeldingOmVedtakDto): VedtakItem {
-        logger.info("PrefillPensjonReduksjon")
+        logger.info("Prefill Pensjon Reduksjon")
         logger.debug("4.1       VedtakItem")
 
         return VedtakItem(
-
                 //4.1.1  $pensjon.vedtak[x].type
                 type = createVedtakTypePensionWithRule(pesysPrefillData),
 
@@ -60,7 +80,6 @@ object PrefillPensjonVedtak {
 
     }
 
-
     /**
      * 4.1.1 - vedtaktype
      *
@@ -72,20 +91,20 @@ object PrefillPensjonVedtak {
      */
     fun createVedtakTypePensionWithRule(pendata: P6000MeldingOmVedtakDto): String {
         val sakType = pendata.sakType
-        logger.info("4.1.1         VedtakTypePension: $sakType")
+        logger.info("4.1.1         Vedtak TypePensjon: $sakType")
 
         return when (sakType) {
-            EessiFellesDto.EessiSakType.ALDER ->  "01"
-            EessiFellesDto.EessiSakType.UFOREP -> "02"
-            EessiFellesDto.EessiSakType.BARNEP, EessiFellesDto.EessiSakType.GJENLEV -> "03"
-            EessiFellesDto.EessiSakType.AFP -> TODO()
-            EessiFellesDto.EessiSakType.AFP_PRIVAT -> TODO()
-            EessiFellesDto.EessiSakType.FAM_PL -> TODO()
-            EessiFellesDto.EessiSakType.GAM_YRK -> TODO()
-            EessiFellesDto.EessiSakType.GENRL -> TODO()
-            EessiFellesDto.EessiSakType.GRBL -> TODO()
-            EessiFellesDto.EessiSakType.KRIGSP -> TODO()
-            EessiFellesDto.EessiSakType.OMSORG -> TODO()
+            ALDER ->  "01"
+            UFOREP -> "02"
+            BARNEP, GJENLEV -> "03"
+            AFP -> TODO()
+            AFP_PRIVAT -> TODO()
+            FAM_PL -> TODO()
+            GAM_YRK -> TODO()
+            GENRL -> TODO()
+            GRBL -> TODO()
+            KRIGSP -> TODO()
+            OMSORG -> TODO()
         }
     }
 
@@ -98,7 +117,7 @@ object PrefillPensjonVedtak {
      *
      */
     private fun createVedtakGrunnlagPensionWithRule(pendata: P6000MeldingOmVedtakDto): BasertPaa? {
-        logger.info("4.1.2         VedtakGrunnlagPension")
+        logger.info("4.1.2         Vedtak Grunnlag Pensjon")
 
         val sakType = pendata.sakType
         logger.info("              Saktype: $sakType")
@@ -106,7 +125,7 @@ object PrefillPensjonVedtak {
         //hvis avslag returner vi tomt verdi
         if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return null
 
-        return if (sakType == EessiFellesDto.EessiSakType.BARNEP) BasertPaa.annet
+        return if (sakType == BARNEP) BasertPaa.annet
         //TODO: Her må vi sjekke om dette blir riktig
         else {
             when (isMottarMinstePensjonsniva(pendata)) {
@@ -152,29 +171,23 @@ object PrefillPensjonVedtak {
         val vedtaksresultat = hentVilkarsResultatHovedytelse(pendata)
         logger.debug("              vedtaksresultat: $vedtaksresultat")
 
-        val erAvslag = vedtaksresultat == "AVSL"
-        val erInnvilgelse = vedtaksresultat == "INNV"
+        val erAvslag = vedtaksresultat == AVSL.name
+        val erInnvilgelse = vedtaksresultat == INNV.name
 
-        val erForsteGangBehandlingNorgeUtland = "F_BH_MED_UTL" == kravGjelder
-        val erForsteGangBehandlingBosattUtland = "F_BH_BO_UTL" == kravGjelder
-        val erMellombehandling = "MELLOMBH" == kravGjelder
-        val erRevurdering = kravGjelder == "REVURD"
+        val erForsteGangBehandlingNorgeUtland = F_BH_MED_UTL.name == kravGjelder
+        val erForsteGangBehandlingBosattUtland = F_BH_BO_UTL.name == kravGjelder
+        val erMellombehandling = MELLOMBH.name == kravGjelder
+        val erRevurdering = kravGjelder == REVURD.name
 
-        if (EessiFellesDto.EessiSakType.UFOREP != sakType && erInnvilgelse
+        if (UFOREP != sakType && erInnvilgelse
                 && (erForsteGangBehandlingNorgeUtland || erMellombehandling || erForsteGangBehandlingBosattUtland)) {
                 return "01"
         }
-        if (erAvslag)
-            return "02"
 
-        if (erRevurdering)
-            return "03"
-
-        if (EessiFellesDto.EessiSakType.UFOREP == sakType && (erForsteGangBehandlingNorgeUtland || erMellombehandling))
-            return "04"
-
-        if (EessiFellesDto.EessiSakType.UFOREP == sakType && erForsteGangBehandlingBosattUtland)
-            return "01"
+        if (erAvslag) return "02"
+        if (erRevurdering) return "03"
+        if (UFOREP == sakType && (erForsteGangBehandlingNorgeUtland || erMellombehandling)) return "04"
+        if (UFOREP == sakType && erForsteGangBehandlingBosattUtland) return "01"
 
         logger.debug("              Ingen verdier funnet. (null)")
         return null
@@ -184,7 +197,6 @@ object PrefillPensjonVedtak {
      * 4.1.10 - 4.1.12
      */
     private fun createGrunnlag(pendata: P6000MeldingOmVedtakDto): Grunnlag {
-
         logger.info("4.1.10        Grunnlag")
 
         if (sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata)) return Grunnlag()
@@ -206,12 +218,9 @@ object PrefillPensjonVedtak {
      */
     private fun createFramtidigtrygdetid(pendata: P6000MeldingOmVedtakDto): String {
         logger.info("4.1.12        Framtidigtrygdetid ${pendata.sakType}")
-
         return when (pendata.sakType) {
-            EessiFellesDto.EessiSakType.ALDER -> "0"
-            else -> {
-                "1"
-            }
+            ALDER -> "0"
+            else -> "1"
         }
     }
 
@@ -225,24 +234,15 @@ object PrefillPensjonVedtak {
      */
     private fun createOpptjeningForsikredeAnnen(pendata: P6000MeldingOmVedtakDto): String? {
         logger.info("4.1.11        OpptjeningForsikredeAnnen, sakType: ${pendata.sakType}")
-
         val sakType = pendata.sakType
 
         val resultatGjenlevendetillegg = pendata.vilkarsvurdering.firstOrNull()?.harResultatGjenlevendetillegg?: false
         val vinnendeMetode = hentVinnendeBergeningsMetode(pendata) ?: ""
 
-        if ((EessiFellesDto.EessiSakType.ALDER == sakType || EessiFellesDto.EessiSakType.UFOREP == sakType) && !resultatGjenlevendetillegg)
-            return "01"
-
-        if (EessiFellesDto.EessiSakType.ALDER == sakType && resultatGjenlevendetillegg && vinnendeMetode != "RETT_TIL_GJT")
-            return "01"
-
-        if (EessiFellesDto.EessiSakType.ALDER == sakType && resultatGjenlevendetillegg && "RETT_TIL_GJT" == vinnendeMetode)
-            return "02"
-
-        if (EessiFellesDto.EessiSakType.GJENLEV == sakType || EessiFellesDto.EessiSakType.BARNEP == sakType) {
-            return "03"
-        }
+        if ((ALDER == sakType || UFOREP == sakType) && !resultatGjenlevendetillegg) return "01"
+        if (ALDER == sakType && vinnendeMetode != "RETT_TIL_GJT") return "01"
+        if (ALDER == sakType) return "02"
+        if (GJENLEV == sakType || BARNEP == sakType) return "03"
 
         return null
     }

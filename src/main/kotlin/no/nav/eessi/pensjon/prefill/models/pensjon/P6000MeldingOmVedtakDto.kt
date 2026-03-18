@@ -21,10 +21,6 @@ data class P6000MeldingOmVedtakDto(
         val avdodMorBoddArbeidetUtland: Boolean?, // P6000
     )
 
-//    data class SakAlder(
-//        val sakType: EessiFellesDto.EessiSakType, // P2000 blant mange andre
-//    )
-
     data class Trygdeavtale(
         val erArt10BruktGP: Boolean?, // P6000
         val erArt10BruktTP: Boolean?, // P6000

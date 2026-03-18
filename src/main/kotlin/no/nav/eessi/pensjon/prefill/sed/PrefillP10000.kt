@@ -3,6 +3,8 @@ package no.nav.eessi.pensjon.prefill.sed
 import no.nav.eessi.pensjon.eux.model.sed.P10000
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
+import no.nav.eessi.pensjon.prefill.sed.PrefillP8000.PersonenRolle
+import no.nav.eessi.pensjon.prefill.sed.PrefillP8000.PersonenRolle.SOEKER_ETTERRLATTEPENSJON
 import no.nav.eessi.pensjon.shared.api.BankOgArbeid
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import org.slf4j.Logger
@@ -20,7 +22,7 @@ class PrefillP10000(private val prefillNav: PrefillPDLNav) {
 
         val gjenlevende = try {
             val gjenlevende = avdod?.let {
-                logger.info("Preutfylling Utfylling Pensjon Gjenlevende (etterlatt)")
+                logger.info("Preutfylling av Pensjon Gjenlevende (etterlatt)")
                 prefillNav.createBruker(personData.forsikretPerson!!, null, null, bruker)
             }
             gjenlevende
@@ -32,7 +34,7 @@ class PrefillP10000(private val prefillNav: PrefillPDLNav) {
         //Spesielle SED som har etterlette men benyttes av flere BUC
         //Må legge gjenlevende også som nav.annenperson
         if (avdod != null) {
-            gjenlevende?.person?.rolle = "01" //Claimant - etterlatte
+            gjenlevende?.person?.rolle = SOEKER_ETTERRLATTEPENSJON.value //Claimant - etterlatte
         }
 
         //henter opp persondata

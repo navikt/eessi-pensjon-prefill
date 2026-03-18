@@ -44,7 +44,7 @@ object PrefillPensjonReduksjon {
     }
 
     //5.1.1
-    /*
+    /**
         HVIS Sakstype er Uføretrygd
         OG Vilkårsprøving Detaljer Trygdeavtale
         Skal artikkel 10 anvendes på trygdetid
@@ -74,7 +74,7 @@ object PrefillPensjonReduksjon {
     }
 
     //5.1.4
-    /*
+    /**
         Hvis sakstype er Uføretrygd,
         OG det er svart JA i  Vilkårsprøving/Detaljer trygdeavtale/Nordisk trygdeavtale/Skal artikkel 10 anvendes på trygdetid,
         SÅ skal det hukes for «[02] 883/2004: Art. 54(2)b»
@@ -101,6 +101,5 @@ object PrefillPensjonReduksjon {
 
         return null
     }
-
 
 }

@@ -1,6 +1,9 @@
 package no.nav.eessi.pensjon.prefill.sed.vedtak
 
 import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.AVSL
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonReduksjon
 import no.nav.eessi.pensjon.prefill.sed.vedtak.helper.PrefillPensjonSak
@@ -119,7 +122,7 @@ object PrefillP6000Pensjon {
     private fun erAvslag(pesysPrefillData: P6000MeldingOmVedtakDto): Boolean {
         val vilkar = pesysPrefillData.vilkarsvurdering
         val ytelse = pesysPrefillData.ytelsePerMaaned
-        val erAvslag = "AVSL" == pesysPrefillData.vilkarsvurdering.maxByOrNull { it.fom }?.avslagHovedytelse
+        val erAvslag = AVSL.name == pesysPrefillData.vilkarsvurdering.maxByOrNull { it.fom }?.avslagHovedytelse
         return (erAvslag || (vilkar.isEmpty() && ytelse.isEmpty()) || ytelse.isEmpty())
     }
 }

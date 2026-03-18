@@ -19,7 +19,6 @@ class KrrService(private val krrRestTemplate: RestTemplate,
                  @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()) {
 
     private val logger: Logger = LoggerFactory.getLogger(KrrService::class.java)
-
     private var hentPersoner: MetricsHelper.Metric
 
     init {

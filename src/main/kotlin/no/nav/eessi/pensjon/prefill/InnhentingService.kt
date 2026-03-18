@@ -28,7 +28,6 @@ class InnhentingService(
     private val pesysService: PesysService,
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest(),
 ) {
-
     private var HentPerson: MetricsHelper.Metric
     private var addInstutionAndDocumentBucUtils: MetricsHelper.Metric
 
@@ -56,7 +55,7 @@ class InnhentingService(
                     logger.error("Mangler fnr eller npid for avdød")
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler fnr for avdød")
                 }
-                return try {
+                try {
                     hentIdent(Ident.bestemIdent(norskIdent))
                 } catch (ex: Exception) {
                     throw ResponseStatusException(HttpStatus.NOT_FOUND, "Korrekt aktoerIdent ikke funnet")
@@ -64,7 +63,7 @@ class InnhentingService(
             }
             P_BUC_05, P_BUC_06,P_BUC_10 -> {
                 val norskIdent = request.riktigAvdod() ?: return null
-                return try {
+                try {
                     hentIdent(Ident.bestemIdent(norskIdent))
                 } catch (ex: Exception) {
                     throw ResponseStatusException(HttpStatus.NOT_FOUND, "Korrekt aktoerIdent ikke funnet")

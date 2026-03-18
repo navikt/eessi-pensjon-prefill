@@ -5,6 +5,10 @@ import no.nav.eessi.pensjon.eux.model.sed.KravType.*
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Familierelasjonsrolle
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Sivilstandstype
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.BARNEP
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.UFOREP
 import no.nav.eessi.pensjon.prefill.models.pensjon.P15000overfoeringAvPensjonssakerTilEessiDto
 import no.nav.eessi.pensjon.prefill.person.PrefillSed
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -27,7 +31,7 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
 
         val kravType = prefillData.kravType ?: throw ResponseStatusException(
             HttpStatus.BAD_REQUEST,
-            "For preutfylling av P15000 så kreves det kravtype"
+            "For preutfylling av P15000 kreves kravtype"
         )
 
         val penSaksnummer = prefillData.penSaksnummer
@@ -55,14 +59,10 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         val eessielm = navsed.nav?.eessisak
 
         val gjenlevendeBruker: Bruker? = navsed.pensjon?.gjenlevende
-        val forsikretBruker = if (kravType != GJENLEV && gjenlevendeBruker != null) {
-            gjenlevendeBruker
-        } else {
-            navsed.nav?.bruker
-        }
+        val forsikretBruker = if (kravType != GJENLEV && gjenlevendeBruker != null) gjenlevendeBruker else navsed.nav?.bruker
 
-        logger.debug("gjenlevendeBruker: ${gjenlevendeBruker?.person?.fornavn} PIN: ${gjenlevendeBruker?.person?.pin?.firstOrNull()?.identifikator} ")
-        logger.debug("avDodBruker: ${forsikretBruker?.person?.fornavn} PIN: ${forsikretBruker?.person?.pin?.firstOrNull()?.identifikator} ")
+        logger.debug("Gjenlevende bruker: ${gjenlevendeBruker?.person?.fornavn} har PIN: ${gjenlevendeBruker?.person?.pin?.firstOrNull()?.identifikator} ")
+        logger.debug("Avdød bruker: ${forsikretBruker?.person?.fornavn} har PIN: ${forsikretBruker?.person?.pin?.firstOrNull()?.identifikator} ")
 
         val forsikretPerson = forsikretBruker?.person
         val forsikretPersonPin = forsikretPerson?.pin?.firstOrNull()
@@ -103,7 +103,6 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         }
     }
 
-
     private fun relasjon(pensjonsinformasjon: P15000overfoeringAvPensjonssakerTilEessiDto?, avdodFnr: String?): String? {
         return if (pensjonsinformasjon != null && avdodFnr != null) {
             val relasjon = relasjonRolle(pensjonsinformasjon, avdodFnr)
@@ -123,40 +122,32 @@ class PrefillP15000(private val prefillSed: PrefillSed) {
         relasjon: String?,
         kravType: KravType
     ): Bruker? {
-        if (kravType == GJENLEV) {
-            return if (gjenlevende != null) {
-
-                val relasjontilAvdod = if (relasjon != null) {
-                    RelasjonAvdodItem(relasjon = relasjon)
-                } else {
-                    null
-                }
+        return if (kravType == GJENLEV) {
+            if (gjenlevende != null) {
+                val relasjontilAvdod = if (relasjon != null) RelasjonAvdodItem(relasjon = relasjon) else null
                 val person = gjenlevende.person?.copy(relasjontilavdod = relasjontilAvdod)
                 val gjenlevendeBruker = gjenlevende.copy(person = person)
-
                 gjenlevendeBruker
-            } else {
-                null
-            }
+            } else null
         } else
-            return null
+            null
     }
 
     private fun sakTypeAsText(sakType: String?) =
         when (sakType) {
-            "UFOREP" -> "uføretrygdsak"
-            "ALDER" -> "alderspensjonssak"
-            "GJENLEV" -> "gjenlevendesak"
-            "BARNEP" -> "barnepensjonssak"
+            UFOREP.name -> "uføretrygdsak"
+            ALDER.name -> "alderspensjonssak"
+            GJENLEV.name -> "gjenlevendesak"
+            BARNEP.name -> "barnepensjonssak"
             null -> "SAKTYPE MANGLER"
             else -> "$sakType-sak"
         }
 
     private fun sedTypeAsText(kravType: KravType) =
         when (kravType) {
-            ALDER -> "alderspensjonskrav"
-            GJENLEV -> "gjenlevende-krav"
-            UFOREP -> "uføretrygdkrav"
+            KravType.ALDER -> "alderspensjonskrav"
+            KravType.GJENLEV -> "gjenlevende-krav"
+            KravType.UFOREP -> "uføretrygdkrav"
         }
 
     private fun relasjonRolle(pensjonInfo: P15000overfoeringAvPensjonssakerTilEessiDto, avdodFnr: String): String? {

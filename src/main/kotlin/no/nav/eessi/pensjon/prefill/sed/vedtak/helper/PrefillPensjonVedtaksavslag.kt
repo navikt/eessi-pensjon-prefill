@@ -2,6 +2,7 @@ package no.nav.eessi.pensjon.prefill.sed.vedtak.helper
 
 import no.nav.eessi.pensjon.eux.model.sed.AvslagbegrunnelseItem
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
+import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakStatus.*
 import no.nav.eessi.pensjon.prefill.models.pensjon.P6000MeldingOmVedtakDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -13,11 +14,11 @@ object PrefillPensjonVedtaksavslag {
     fun sjekkForVilkarsvurderingListeHovedytelseellerAvslag(pendata: P6000MeldingOmVedtakDto): Boolean {
         try {
             val hovedytelseAvslag = pendata.vilkarsvurdering.first()
-            if (hovedytelseAvslag.resultatHovedytelse == "AVSL" || hovedytelseAvslag.avslagHovedytelse == "AVSL") {
+            if (hovedytelseAvslag.resultatHovedytelse == AVSL.name || hovedytelseAvslag.avslagHovedytelse == AVSL.name) {
                 return true
             }
         } catch (ex: Exception) {
-            logger.error("Ingen vilkarsvurderingListe, sjekk på AVSL")
+            logger.error("Ingen vilkarsvurderingListe, sjekk på AVSL $ex")
         }
         return false
     }
@@ -32,7 +33,6 @@ object PrefillPensjonVedtaksavslag {
 
         val item = listOf(
             AvslagbegrunnelseItem(
-
                 //4.1.13.1
                 begrunnelse = avslagbegrunnelse,
             )
@@ -63,12 +63,10 @@ object PrefillPensjonVedtaksavslag {
     fun createAvlsagsBegrunnelse(pendata: P6000MeldingOmVedtakDto): String? {
         logger.info("4.1.13.1          AvlsagsBegrunnelse")
 
-        if (pendata.vilkarsvurdering.isEmpty()) {
-            return null
-        }
+        if (pendata.vilkarsvurdering.isEmpty()) return null
         val sakType = pendata.sakType
 
-        val erAvslagVilkarsproving = VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse(pendata) == "AVSL"
+        val erAvslagVilkarsproving = VedtakPensjonDataHelper.hentVilkarsResultatHovedytelse(pendata) == AVSL.name
 
         val harBoddArbeidetUtland = VedtakPensjonDataHelper.harBoddArbeidetUtland(pendata)
         val erTrygdetidListeTom = pendata.trygdetid.isEmpty()
@@ -119,8 +117,8 @@ object PrefillPensjonVedtaksavslag {
                 }
             }
         }
-
         logger.info("              -- Ingen avslagsbegrunnelse")
         return null
     }
+
 }

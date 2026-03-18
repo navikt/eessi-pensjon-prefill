@@ -56,7 +56,6 @@ object PrefillPensjonTilleggsinformasjon {
 
     }
 
-
     //6.5.2.1
     private fun createAndreinstitusjonerItem(andreinstitusjonerItem: AndreinstitusjonerItem?): List<AndreinstitusjonerItem>? {
         logger.debug("6.5.2.1       AndreinstitusjonerItem (review address)")
@@ -74,8 +73,7 @@ object PrefillPensjonTilleggsinformasjon {
      * SÅ skal Antatt virkningsdato vises her.  Datoen skal vises i formatet DD-MM-YYYY
      */
     private fun createOpphorerDato(pendata: P6000MeldingOmVedtakDto): String? {
-        logger.debug("6.2       OpphorerDato")
-
+        logger.debug("6.2       Opphører dato")
         val resultatbegrunnelse = hentVilkarsResultatHovedytelse(pendata)
 
         if ("REVURD" == pendata.vedtak.kravGjelder && "ANNULERING" == resultatbegrunnelse)

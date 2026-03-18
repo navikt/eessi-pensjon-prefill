@@ -20,7 +20,7 @@ object PrefillPensjonSak {
                 //6.1 --
                 artikkel54 = createArtikkel54(pendata),
                 //6.5.1
-                kravtype = createKravBegrensetInnsyn(),
+                kravtype = createKravBegrensetInnsyn()
         )
     }
 
@@ -34,7 +34,7 @@ object PrefillPensjonSak {
         )
     }
 
-    /*
+    /**
         6.1
         HVIS sakstyper er uføretrygd,
         SÅ skal det velges «[0] No»
@@ -44,8 +44,6 @@ object PrefillPensjonSak {
     */
     private fun createArtikkel54(pendata: P6000MeldingOmVedtakDto): String? {
         logger.debug("6.1       createArtikkel54")
-        return if (EessiFellesDto.EessiSakType.UFOREP == pendata.sakType) {
-            return "0"
-        } else null
+        return if (EessiFellesDto.EessiSakType.UFOREP == pendata.sakType) "0" else null
     }
 }

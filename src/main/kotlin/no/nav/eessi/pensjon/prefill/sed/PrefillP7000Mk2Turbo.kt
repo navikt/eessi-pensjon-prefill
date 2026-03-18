@@ -36,7 +36,6 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
 
         logger.info("Prefill med antall P6000: ${listP6000?.size}, land: ${listP6000?.map { it.first.fraLand }} ")
 
-
         val eessisakerall = mapGyldigeEessisakerFraP6000(listP6000, eessielm)
 
         val p7000 = P7000(
@@ -60,9 +59,9 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                 samletVedtak = prefilSamletMeldingVedtak(listP6000)
             )
         )
-
         logger.debug("Tilpasser  Mk2 Turb P7000 forenklet preutfylling, Ferdig.")
         return p7000
+
     }
 
     fun prefillGjenlevende(gjenlevendePerson: Person?, gjenlevendePin: List<PinItem>?, p6000list: List<Pair<P6000Dokument, P6000>>?): Bruker? {
@@ -79,7 +78,6 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
     }
 
     fun hentAllePinFraP6000(p6000List: List<Pair<P6000Dokument, P6000>>?, localPin: List<PinItem>): List<PinItem>? {
-
         val allePins = p6000List?.mapNotNull {
             val p6000 = it.second
             val korrektbruker = finnKorrektBruker(p6000)
@@ -99,7 +97,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             ?.filter { it.land != "NO" }
             ?: emptyList()
 
-        val eessisakno = listOf<EessisakItem>(
+        val eessisakno = listOf(
             EessisakItem(
                 land = eessiSakNo?.land,
                 saksnummer = eessiSakNo?.saksnummer,
@@ -112,7 +110,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
     }
 
     fun prefilSamletMeldingVedtak(document: List<Pair<P6000Dokument, P6000>>?): SamletMeldingVedtak? {
-        if (document == null || document.isEmpty()) {
+        if (document.isNullOrEmpty()) {
             return null
         }
 
@@ -155,23 +153,17 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
                     innvilgetPensjon = mapP6000artikkelTilInnvilgetPensjon(p6000vedtak.artikkel)
 
                 )
-
-            } else {
-                null
-            }
+            } else null
         }
     }
 
     private fun mapP6000artikkelTilInnvilgetPensjon(artikkel: String?): String? {
         return when (artikkel) {
-            "01" -> "01"
-            "02" -> "02"
-            "03", "04" -> "03"
+            "04" -> "03"
             "05" -> "04"
-            else -> null
+            else -> artikkel
         }
     }
-
 
     private fun finnReduksjonsGrunn(reduksjonItem: ReduksjonItem?): String? {
         if(reduksjonItem?.aarsak != null)  return "03"
@@ -181,7 +173,6 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             logger.error("Reduksjonstype er 'null' eller har ingen verdi i P6000, setter reduksjonsgrunn til null i P7000")
             return null
         }
-
         return type
     }
 
@@ -202,9 +193,7 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
     }
 
     // mottattdato dersom dato ikke finnes.!
-    fun mapVedtakDatoEllerSistMottattdato(vedtakDato: String?, sistMottatt: LocalDate): String {
-        return vedtakDato ?: sistMottatt.toString()
-    }
+    fun mapVedtakDatoEllerSistMottattdato(vedtakDato: String?, sistMottatt: LocalDate): String = vedtakDato ?: sistMottatt.toString()
 
     fun mapYtelserP6000(beregniger: List<BeregningItem>?): List<YtelserItem>? {
         logger.debug("beregning: ${beregniger?.toJson()}")
@@ -224,30 +213,12 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
         }
     }
 
-    private fun mapUtbetalingHyppighet(utbetalingshyppighet: String?): String? {
-        val sjekkformap = mapOf(
-            "aarlig" to "01",
-            "kvartalsvis" to "02",
-            "maaned_12_per_aar" to "03",
-            "maaned_13_per_aar" to "04",
-            "maaned_14_per_aar" to "05",
-            "ukentlig" to "06",
-            "annet" to "99"
-        )
-        return sjekkformap[utbetalingshyppighet] ?: utbetalingshyppighet
-    }
-
-
-    fun finnKorrektBruker(p6000: P6000): Bruker? {
-        return p6000.pensjon?.gjenlevende ?: p6000.nav?.bruker
-    }
+    fun finnKorrektBruker(p6000: P6000): Bruker? = p6000.pensjon?.gjenlevende ?: p6000.nav?.bruker
 
     fun mapInstusjonP6000(eessiSak: EessisakItem?, p6000bruker: Bruker?, tilleggsinformasjon: Tilleggsinformasjon?, fraLand: String?): Institusjon {
         val andreinst = tilleggsinformasjon?.andreinstitusjoner?.firstOrNull{ it.land == fraLand }
 
         // P7000Institusjon -> Pinitem, eessisak,  institusjon
-
-
         return Institusjon(
             saksnummer = eessiSak?.saksnummer, // 1.1.2 hentes fra P6000
             land =  fraLand, //buc sender countrycode , // eessiSak?.land, //1.1.2 (P6000)
@@ -271,10 +242,9 @@ class PrefillP7000Mk2Turbo(private val prefillSed: PrefillSed) {
             //resultat = "02" er avslag
             val avslag = p6000pensjon?.vedtak?.firstOrNull { it.resultat == "02" }
 
-            if (avslag == null) {
-                null
-            }
-            else{
+            if (avslag == null) null
+
+            else {
                 PensjonAvslagItem(
                     pensjonType = avslag.type,
                     begrunnelse = avslag.avslagbegrunnelse?.first()?.begrunnelse,

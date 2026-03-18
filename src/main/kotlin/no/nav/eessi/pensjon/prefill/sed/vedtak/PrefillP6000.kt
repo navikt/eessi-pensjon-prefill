@@ -48,7 +48,7 @@ class PrefillP6000(
             )
         }
 
-        logger.debug("Henter opp Persondata fra TPS")
+        logger.debug("Henter opp Persondata")
         val nav = prefillNav.prefill(
             penSaksnummer = prefillData.penSaksnummer,
             bruker = prefillData.bruker,
@@ -57,7 +57,6 @@ class PrefillP6000(
             krav = p6000Pensjon?.kravDato,
             annenPerson = null
         )
-
         logger.info("-------------------| Preutfylling [$sedType] END |------------------- ")
 
         return P6000(

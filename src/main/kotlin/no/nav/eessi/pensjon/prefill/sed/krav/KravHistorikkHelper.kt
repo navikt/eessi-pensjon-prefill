@@ -17,10 +17,6 @@ object KravHistorikkHelper {
     fun hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(kravHistorikkListe: List<KravHistorikk>?): KravHistorikk =
         hentKravHistorikkMedKravType(listOf(EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL, EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL, EessiFellesDto.EessiKravGjelder.REVURD, EessiFellesDto.EessiKravGjelder.F_BH_BO_UTL, EessiFellesDto.EessiKravGjelder.SLUTT_BH_UTL), kravHistorikkListe)
 
-    fun finnKravHistorikk(kravType: EessiFellesDto.EessiKravGjelder, kravHistorikkListe: List<KravHistorikk>?): List<KravHistorikk>? {
-        return sortertKravHistorikk(kravHistorikkListe)?.filter { it.kravType == kravType }
-    }
-
     private fun hentKravHistorikkMedKravType(kravType: List<EessiFellesDto.EessiKravGjelder>, kravHistorikkListe: List<KravHistorikk>?): KravHistorikk {
         val sortList = sortertKravHistorikk(kravHistorikkListe)
         val sortListFraKravIndex = sortList?.sortedBy { kravType.indexOfFirst { type -> type == it.kravType } }

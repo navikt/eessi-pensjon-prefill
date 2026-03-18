@@ -28,7 +28,7 @@ class PrefillP4000(private val prefillSed: PrefillSed) {
                 )
             )
         } catch (ex: Exception) {
-            logger.error("Feiler ved prefill P4000 person", ex)
+            logger.error("Feiler ved prefill av P4000 person", ex)
             P4000(prefillData.sedType)
         }
     }
@@ -39,12 +39,12 @@ class PrefillP4000(private val prefillSed: PrefillSed) {
             return try {
                 val personDataNode = mapper.readTree(p4000json)
 
-                logger.debug("Prøver å preutfylle mappe om en p4000-innseningdata til P4000")
+                logger.debug("Prøver å preutfylle mappe om en p4000-innsendingsdata til P4000")
                 val personDataJson =  personDataNode["periodeInfo"].toString()
                 mapJsonToAny(personDataJson)
 
             } catch (ex: Exception) {
-                logger.debug("Feiler ved mapping av P4000, fortsetter")
+                logger.debug("Feiler ved mapping av P4000, fortsetter, $ex")
                 null
             }
     }

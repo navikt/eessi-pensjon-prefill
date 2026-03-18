@@ -15,7 +15,7 @@ class PrefillP5000(private val prefillSed: PrefillSed) {
 
     fun prefill(prefillData: PrefillDataModel, personDataCollection: PersonDataCollection): P5000 {
 
-        logger.info("Preutlfyll P5000: ")
+        logger.info("Preutfylling av P5000: ")
         val sed = prefillSed.prefill(prefillData, personDataCollection)
 
         return P5000(
