@@ -39,14 +39,13 @@ class PesysServiceTest {
         fun `henter verdier for `(sed: String?) {
             server.expect(requestTo("/sed/$sed"))
                 .andExpect(method(HttpMethod.GET))
-                .andExpect(header("vedtakId", "123"))
                 .andExpect(header("fnr", "456"))
                 .andExpect(header("sakId", "789"))
                 .andRespond(withSuccess("", MediaType.APPLICATION_JSON)) // empty body => null DTO
             val result = when (sed) {
-                "p2000" -> pesysService.hentP2000data("123", "456", "789")
-                "p2100" -> pesysService.hentP2100data("123", "456", "789")
-                "p2200" -> pesysService.hentP2200data("123", "456", "789")
+                "p2000" -> pesysService.hentP2000data("456", "789")
+                "p2100" -> pesysService.hentP2100data("456", "789")
+                "p2200" -> pesysService.hentP2200data("456", "789")
                 else -> {
                     assert(false) { "Ugyldig sed-verdi i test: $sed" }
                     null
@@ -69,7 +68,7 @@ class PesysServiceTest {
                 .andExpect(header("sakId", "789"))
                 .andRespond(withSuccess("", MediaType.APPLICATION_JSON))
 
-            val result = pesysService.hentP2000data(null, "456", "789")
+            val result = pesysService.hentP2000data("456", "789")
 
             assertNull(result)
             server.verify()
@@ -85,7 +84,7 @@ class PesysServiceTest {
                 .andExpect(header("sakId", "789"))
                 .andRespond(withSuccess(p2000Json, MediaType.APPLICATION_JSON))
 
-            val result = pesysService.hentP2000data("", "456", "789")
+            val result = pesysService.hentP2000data("456", "789")
             // vedtak
             assert(result?.vedtak?.boddArbeidetUtland == true)
             // sak

@@ -37,7 +37,7 @@ class PrefillP2000MedUforeSakTest {
     @BeforeEach
     fun setup() {
         innhentingService = InnhentingService(mockk(), pesysService = pesysService)
-        every { pesysService.hentP2000data(any(),any(), any()) } returns mockk(){
+        every { pesysService.hentP2000data(any(), any()) } returns mockk(){
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiSakType.UFOREP,
                 kravHistorikk = listOf(

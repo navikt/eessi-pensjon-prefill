@@ -62,7 +62,7 @@ class PrefillP2000APUtlandInnvTest {
 
     private fun pesysMock(ytelesTyper: List<String>? = listOf<String>(YtelseskomponentType.GAP.name)) {
 
-        every { pesysService.hentP2000data(any(),any(),any()) } returns mockk() {
+        every { pesysService.hentP2000data(any(), any()) } returns mockk() {
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiFellesDto.EessiSakType.ALDER,
                 kravHistorikk = listOf(

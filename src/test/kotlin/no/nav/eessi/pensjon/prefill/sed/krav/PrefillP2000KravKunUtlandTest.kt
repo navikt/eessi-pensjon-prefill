@@ -20,7 +20,6 @@ import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertNotNull
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 
@@ -38,7 +37,7 @@ class PrefillP2000KravKunUtlandTest {
 
     @BeforeEach
     fun setup() {
-        every { pesysService.hentP2000data(any(),any(),any()) } returns mockk(){
+        every { pesysService.hentP2000data(any(), any()) } returns mockk(){
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiSakType.ALDER,
                 kravHistorikk = listOf(
