@@ -172,9 +172,6 @@ class PrefillP15000IntegrationTest {
     @Throws(Exception::class)
     fun `prefill P15000 P_BUC_10 fra vedtakskontekst hvor saktype er ALDER og pensjoninformasjon returnerer ALDER med GJENLEV`() {
         every { personService.hentIdent(IdentGruppe.AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
-//        every { pensjoninformasjonservice.hentMedVedtak(any())} returns Pensjonsinformasjon()
-
-//        v1Sak(ALDER.toString())
         every { pesysService.hentP15000data(eq(SAK_ID)) } returns mockk<P15000overfoeringAvPensjonssakerTilEessiDto>(relaxed = true){
             every { sakType } returns EessiSakType.ALDER.name
         }

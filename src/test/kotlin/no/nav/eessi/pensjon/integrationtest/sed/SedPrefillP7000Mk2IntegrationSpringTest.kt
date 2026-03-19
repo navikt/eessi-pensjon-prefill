@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.integrationtest.sed
 
 import com.ninjasquad.springmockk.MockkBean
+import com.ninjasquad.springmockk.MockkBeans
 import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.BucType
@@ -55,17 +56,13 @@ private const val NPID_VOKSEN = "01220049651"
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@MockkBeans(
+    MockkBean(name = "pdlRestTemplate", classes = [RestTemplate::class])
+)
 @EmbeddedKafka
 class SedPrefillP7000Mk2IntegrationSpringTest {
-
-    @MockkBean
-    lateinit var pdlRestTemplate: RestTemplate
-
     @MockkBean
     private lateinit var kodeverkClient: KodeverkClient
-
-//    @MockkBean
-//    private lateinit var pensjoninformasjonservice: PensjonsinformasjonService
 
     @MockkBean
     private lateinit var personService: PersonService
@@ -328,14 +325,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
 
-//        val sak = V1Sak()
-//        sak.sakType = EPSaktype.GJENLEV.toString()
-//        sak.sakId = 100
-//        sak.kravHistorikkListe = V1KravHistorikkListe()
-
-//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
-
 
         //mock p6000 fra RINA med data som skal benyttes i P7000
         val p6000fraRequest = listOf(mockP6000requestdata("SE","P6000SE-INNV.json"), mockP6000requestdata("NO", "P6000SE-INNV.json"))
@@ -453,12 +443,6 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
 
-//        val sak = V1Sak()
-//        sak.sakType = EPSaktype.ALDER.toString()
-//        sak.sakId = 100
-//        sak.kravHistorikkListe = V1KravHistorikkListe()
-//
-//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
 
         //mock p6000 fra RINA med data som skal benyttes i P7000
