@@ -1,6 +1,7 @@
 package no.nav.eessi.pensjon.integrationtest.sed
 
 import com.ninjasquad.springmockk.MockkBean
+import com.ninjasquad.springmockk.MockkBeans
 import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
@@ -38,17 +39,15 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.client.RestTemplate
 
-//Daniel
-
 @SpringBootTest(classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc
 @DirtiesContext
 @EmbeddedKafka
+@MockkBeans(
+    MockkBean(name = "pdlRestTemplate", classes = [RestTemplate::class])
+)
 class SedPrefillP8000IntegrationSpringTest {
-
-    @MockkBean
-    lateinit var pdlRestTemplate: RestTemplate
 
     @MockkBean
     private lateinit var kodeverkClient: KodeverkClient
@@ -204,15 +203,6 @@ class SedPrefillP8000IntegrationSpringTest {
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_3)) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
         every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_4)) } returns DigitalKontaktinfo(epostadresse = "melleby11@melby.no", mobiltelefonnummer = "22222222", aktiv = true, personident = FNR_VOKSEN_4)
 
-
-//        val sak = V1Sak().apply {
-//            sakType = EPSaktype.ALDER.toString()
-//            sakId  = 100
-//            kravHistorikkListe = V1KravHistorikkListe()
-//            kravHistorikkListe.kravHistorikkListe.add(V1KravHistorikk().apply { kravArsak = KravArsak.GJNL_SKAL_VURD.name })
-//        }
-//
-//        every {pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
@@ -329,18 +319,6 @@ class SedPrefillP8000IntegrationSpringTest {
             harKravhistorikkGjenlevende = true
         )
         every { pesysService.hentP8000data(any()) } returns mockP8000
-
-//        val v1Kravhistorikk = V1KravHistorikk()
-//        v1Kravhistorikk.kravArsak = KravArsak.GJNL_SKAL_VURD.name
-//
-//        val sak = V1Sak().apply {
-//            sakType = EPSaktype.ALDER.toString()
-//            sakId  = 21337890
-//            kravHistorikkListe = V1KravHistorikkListe()
-//            kravHistorikkListe.kravHistorikkListe.add(V1KravHistorikk().apply { kravArsak = KravArsak.GJNL_SKAL_VURD.name })
-//        }
-//
-//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns sak
         every { kodeverkClient.finnLandkode(any()) } returns "QX"
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
 
@@ -614,7 +592,6 @@ class SedPrefillP8000IntegrationSpringTest {
     fun `prefill sed P8000 - Med Bruk av Syntetisk fnr Gitt en alderspensjon så skal det genereres en P8000 uten referanse til person`() {
         val syntFnr = "54496214261"
 
-//        every { pensjoninformasjonservice.hentRelevantPensjonSak(any(), any()) } returns V1Sak()
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(syntFnr)
         every { personService.hentPerson(NorskIdent(syntFnr)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", syntFnr, AKTOER_ID)
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)

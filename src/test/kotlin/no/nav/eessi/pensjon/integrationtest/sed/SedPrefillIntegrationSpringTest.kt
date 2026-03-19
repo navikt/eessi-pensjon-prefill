@@ -62,7 +62,6 @@ import org.springframework.web.client.RestTemplate
 import java.io.File
 import java.time.LocalDate
 
-//Daniel
 @SpringBootTest(
     classes = [IntegrasjonsTestConfig::class, UnsecuredWebMvcTestLauncher::class, SedPrefillIntegrationSpringTest.TestConfig::class],
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
