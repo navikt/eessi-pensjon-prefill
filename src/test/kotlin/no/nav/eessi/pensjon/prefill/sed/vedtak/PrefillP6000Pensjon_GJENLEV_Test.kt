@@ -114,7 +114,6 @@ class PrefillP6000Pensjon_GJENLEV_Test {
     }
 
     @Test
-    @Disabled
     fun `forventet en delvis utfylt p6000 selv om det mangler vedtak`() {
         prefillData = PrefillDataModelMother.initialPrefillDataModel(
             SedType.P6000,
@@ -126,7 +125,7 @@ class PrefillP6000Pensjon_GJENLEV_Test {
         )
         val request = apiRequest(SedType.P6000).copy(aktoerId = AKTOERID)
 
-        every { innhentingService.hentFnrEllerNpidFraAktoerService(eq("12345678501")) } returns personFnr
+        every { innhentingService.hentFnrEllerNpidFraAktoerService(eq(AKTOERID)) } returns personFnr
         every { innhentingService.getAvdodAktoerIdPDL(eq(request)) } returns AKTOERID
         every { innhentingService.hentPersonData(any()) } returns personDataCollection
         every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(
