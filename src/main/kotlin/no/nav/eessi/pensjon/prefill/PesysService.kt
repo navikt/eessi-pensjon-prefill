@@ -24,30 +24,27 @@ class PesysService(
     private val logger: Logger = LoggerFactory.getLogger(PesysService::class.java)
     private val secureLog = LoggerFactory.getLogger("secureLog")
 
-    fun hentP2000data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
+    fun hentP2000data(fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
         val response = getWithHeaders<Any>(
             "/sed/p2000",
-            "vedtakId" to vedtakId,
             "fnr" to fnr,
             "sakId" to sakId
         )
         return p2xxxFraListe(response)
     }
 
-    fun hentP2100data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
+    fun hentP2100data(fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
         val response = getWithHeaders<Any>(
             "/sed/p2100",
-            "vedtakId" to vedtakId,
             "fnr" to fnr,
             "sakId" to sakId
         )
         return p2xxxFraListe(response)
     }
 
-    fun hentP2200data(vedtakId: String?, fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
+    fun hentP2200data(fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
         val response = getWithHeaders<Any>(
             "/sed/p2200",
-            "vedtakId" to vedtakId,
             "fnr" to fnr,
             "sakId" to sakId
         )

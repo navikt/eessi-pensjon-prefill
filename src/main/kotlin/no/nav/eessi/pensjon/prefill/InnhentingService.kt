@@ -91,7 +91,7 @@ class InnhentingService(
             P2000 -> {
                 validateInputs(penSak to "sakId", fnr to "fnr")
 
-                val p2000data = penSak?.let { pesysService.hentP2000data(vedtaksId, fnr, penSak) }
+                val p2000data = penSak?.let { pesysService.hentP2000data(fnr, penSak) }
                 PensjonCollection(
                     p2xxxMeldingOmPensjonDto = p2000data.takeIf { p2000data?.sak?.sakType == ALDER } ,
                     vedtakId = vedtaksId,
@@ -101,7 +101,7 @@ class InnhentingService(
             P2100 -> {
                 validateInputs(penSak to "sakId", fnr to "fnr")
 
-                val p2100data = penSak?.let { pesysService.hentP2100data(vedtaksId,fnr, penSak) }
+                val p2100data = penSak?.let { pesysService.hentP2100data(fnr, penSak) }
                 PensjonCollection(
                     p2xxxMeldingOmPensjonDto = p2100data.takeIf { p2100data?.sak?.sakType in eessipensjonSakTyper } ,
                     vedtakId = vedtaksId,
@@ -111,7 +111,7 @@ class InnhentingService(
             P2200 -> {
                 validateInputs(penSak to "sakId", fnr to "fnr")
 
-                val p2200data = penSak?.let { pesysService.hentP2200data(vedtaksId,fnr, penSak) }
+                val p2200data = penSak?.let { pesysService.hentP2200data(fnr, penSak) }
                 PensjonCollection(
                     p2xxxMeldingOmPensjonDto = p2200data.takeIf { p2200data?.sak?.sakType == UFOREP } ,
                     vedtakId = vedtaksId,
