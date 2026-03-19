@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.exchange
 import tools.jackson.databind.ObjectMapper
 
 @Service
@@ -25,41 +26,30 @@ class PesysService(
     private val secureLog = LoggerFactory.getLogger("secureLog")
 
     fun hentP2000data(fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
-        val response = getWithHeaders<Any>(
+        val response =  getWithHeaders<List<P2xxxMeldingOmPensjonDto>>(
             "/sed/p2000",
             "fnr" to fnr,
             "sakId" to sakId
         )
-        return p2xxxFraListe(response)
+        return response?.let { returnerSakMedRiktigStatus(it) }
     }
 
     fun hentP2100data(fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
-        val response = getWithHeaders<Any>(
+        val response =  getWithHeaders<List<P2xxxMeldingOmPensjonDto>>(
             "/sed/p2100",
             "fnr" to fnr,
             "sakId" to sakId
         )
-        return p2xxxFraListe(response)
+        return response?.let { returnerSakMedRiktigStatus(it) }
     }
 
     fun hentP2200data(fnr: String, sakId: String): P2xxxMeldingOmPensjonDto? {
-        val response = getWithHeaders<Any>(
+        val response = getWithHeaders<List<P2xxxMeldingOmPensjonDto>>(
             "/sed/p2200",
             "fnr" to fnr,
             "sakId" to sakId
         )
-        return p2xxxFraListe(response)
-    }
-
-     fun p2xxxFraListe(response: Any?): P2xxxMeldingOmPensjonDto? {
-        logger.debug("p2xxxFraListe: {}", response)
-
-        val resp = when (response) {
-            is List<*> -> response.flatMap { mapToP2xxxList(it) }
-            else -> mapToP2xxxList(response)
-        }.also { logger.info("HentSakListe: $it") }
-
-        return returnerSakMedRiktigStatus(resp)
+        return response?.let { returnerSakMedRiktigStatus(it) }
     }
 
     fun returnerSakMedRiktigStatus(response: List<P2xxxMeldingOmPensjonDto>): P2xxxMeldingOmPensjonDto? {
@@ -73,45 +63,13 @@ class PesysService(
         return resultat
     }
 
-
-    private fun mapToP2xxxList(value: Any?): List<P2xxxMeldingOmPensjonDto> {
-        return when (value) {
-            null -> emptyList()
-            is P2xxxMeldingOmPensjonDto -> listOf(value)
-            is Map<*, *> -> listOf(ObjectMapper().convertValue(value, P2xxxMeldingOmPensjonDto::class.java))
-            else -> parseP2xxxJson(value.toString())
-        }
-    }
-
-    private fun parseP2xxxJson(rawJson: String): List<P2xxxMeldingOmPensjonDto> {
-        val json = rawJson.trim()
-        if (json.isEmpty()) return emptyList()
-
-        return if (json.startsWith("[")) {
-            mapJsonToAny<List<P2xxxMeldingOmPensjonDto>>(json)
-        } else {
-            listOf(mapJsonToAny<P2xxxMeldingOmPensjonDto>(json))
-        }
-    }
-
     fun hentP6000data(sakId: String?): P6000MeldingOmVedtakDto? {
-        val response = getWithHeaders<Any>(
+        val response = getWithHeaders<List<P6000MeldingOmVedtakDto>>(
             "/sed/p6000",
             "sakId" to sakId,
         ).also { secureLog.info("HentSakListe: $it") }
 
-        val resp = when (response) {
-            is List<*> -> response.mapNotNull {
-                when (it) {
-                    is P6000MeldingOmVedtakDto -> it
-                    is Map<*, *> -> ObjectMapper().convertValue(it, P6000MeldingOmVedtakDto::class.java)
-                    else -> null
-                }
-            }
-
-            else -> emptyList()
-        }.also { logger.info("Hentet ${it.size} saker") }
-        return resp.sortedByDescending { it.vedtak.datoFattetVedtak }.firstOrNull()
+        return response?.sortedByDescending { it.vedtak.datoFattetVedtak }?.firstOrNull()
     }
 
 
@@ -162,7 +120,7 @@ class PesysService(
         logger.info("Henter pesys informasjon fra: $path")
 
         val entity = HttpEntity<Void>(httpHeaders)
-        return pesysClientRestTemplate.exchange(path, HttpMethod.GET, entity, T::class.java).body
+        return pesysClientRestTemplate.exchange<T>(path, HttpMethod.GET, entity).body
             .also { logger.debug("Svar fra Pesys nytt endepunkt: ${it?.toJson()}, url: $path , headers: ${headers.toJson()}") }
     }
 }

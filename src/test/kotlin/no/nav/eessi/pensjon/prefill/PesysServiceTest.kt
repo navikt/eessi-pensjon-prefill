@@ -108,8 +108,38 @@ class PesysServiceTest {
     }
 
     @Nested
-    inner class HentP2100Verdier {
+    inner class HentP2200Verdier {
+        @Test
+        fun `hentP2200data mapper alle verdier fra p2100-alder json til P2xxxMeldingOmPensjonDto`() {
+            val p2000Json = javaClass.getResource("/pesys-endepunkt-2026/p2200-pesys.json")!!.readText()
+            server.expect(requestTo("/sed/p2000"))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(headerDoesNotExist("vedtakId"))
+                .andExpect(header("fnr", "456"))
+                .andExpect(header("sakId", "789"))
+                .andRespond(withSuccess(p2000Json, MediaType.APPLICATION_JSON))
 
+            val result = pesysService.hentP2000data("456", "789")
+            // vedtak
+            assert(result?.vedtak?.boddArbeidetUtland == true)
+            // sak
+            assert(result?.sak?.sakType?.name == "ALDER")
+            assert(result?.sak?.forsteVirkningstidspunkt.toString() == "2025-01-01")
+            assert(result?.sak?.status?.name == "LOPENDE")
+            // kravHistorikk
+            val kravHistorikk = result?.sak?.kravHistorikk
+            assert(kravHistorikk?.size == 3)
+            assert(kravHistorikk?.first()?.kravId == "49256020")
+            assert(kravHistorikk?.get(2)?.kravStatus?.name == "TIL_BEHANDLING")
+            assert(kravHistorikk?.get(2)?.kravAarsak?.name == "ANNEN_ARSAK")
+            // ytelsePerMaaned
+            val ytelsePerMaaned = result?.sak?.ytelsePerMaaned
+            assert(ytelsePerMaaned?.size == 2)
+            assert(ytelsePerMaaned?.first()?.belop == 5057)
+            assert(ytelsePerMaaned?.get(1)?.ytelseskomponent?.get(2)?.ytelsesKomponentType == "TP")
+            assert(ytelsePerMaaned?.get(1)?.ytelseskomponent?.get(2)?.belopTilUtbetaling == 2160)
+            server.verify()
+        }
     }
 
     @Nested
@@ -150,32 +180,6 @@ class PesysServiceTest {
             server.verify()
         }
     }
-
-    @Test
-    fun `hentP2000data `() {
-        assertNotNull(pesysService.p2xxxFraListe(alderJson().trimIndent()))
-        assertNotNull(pesysService.p2xxxFraListe("""[${alderJson()}]""".trimIndent()))
-    }
-
-    fun alderJson() = """
-         {
-              "vedtak" : null,
-              "sak" : {
-                "sakType" : "ALDER",
-                "forsteVirkningstidspunkt" : null,
-                "kravHistorikk" : [ {
-                  "kravId" : 49609017,
-                  "kravType" : "F_BH_MED_UTL",
-                  "mottattDato" : "2025-10-01",
-                  "virkningstidspunkt" : "2025-11-01",
-                  "kravAarsak" : "NY_SOKNAD",
-                  "kravStatus" : "TIL_BEHANDLING"
-                } ],
-                "ytelsePerMaaned" : [ ],
-                "status" : "TIL_BEHANDLING"
-              }
-            }
-    """.trimIndent()
 
 
     fun p6000FlereVedtakJson() = """

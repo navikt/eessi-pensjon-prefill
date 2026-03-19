@@ -1,4 +1,4 @@
-{
+[{
   "vedtak" : {
     "boddArbeidetUtland" : true
   },
@@ -6,70 +6,107 @@
     "sakType" : "UFOREP",
     "forsteVirkningstidspunkt" : "2025-01-01",
     "kravHistorikk" : [ {
-      "kravId" : 43602867,
-      "kravType" : "F_BH_MED_UTL",
-      "mottattDato" : "2024-12-01",
-      "virkningstidspunkt" : "2025-01-01",
-      "kravAarsak" : "NY_SOKNAD",
-      "kravStatus" : "INNV"
-    }, {
-      "kravId" : 48405617,
+      "kravId" : 49256020,
       "kravType" : "REVURD",
-      "mottattDato" : "2025-09-16",
+      "mottattDato" : "2025-10-14",
       "virkningstidspunkt" : "2025-01-01",
       "kravAarsak" : "ENDRET_OPPTJENING",
       "kravStatus" : "INNV"
     }, {
-      "kravId" : 48615438,
+      "kravId" : 49587267,
       "kravType" : "REVURD",
-      "mottattDato" : "2025-09-18",
-      "virkningstidspunkt" : "2025-01-01",
-      "kravAarsak" : "ENDRET_OPPTJENING",
-      "kravStatus" : "INNV"
-    }, {
-      "kravId" : 48695674,
-      "kravType" : "REVURD",
-      "mottattDato" : "2025-09-19",
-      "virkningstidspunkt" : "2025-01-01",
-      "kravAarsak" : "ENDRET_OPPTJENING",
-      "kravStatus" : "INNV"
-    }, {
-      "kravId" : 48765907,
-      "kravType" : "REVURD",
-      "mottattDato" : "2025-09-22",
-      "virkningstidspunkt" : "2025-01-01",
-      "kravAarsak" : "ENDRET_OPPTJENING",
-      "kravStatus" : "INNV"
-    }, {
-      "kravId" : 48885912,
-      "kravType" : "REVURD",
-      "mottattDato" : "2025-09-26",
-      "virkningstidspunkt" : "2025-01-01",
-      "kravAarsak" : "ENDRET_OPPTJENING",
-      "kravStatus" : "INNV"
-    }, {
-      "kravId" : 48826368,
-      "kravType" : "REVURD",
-      "mottattDato" : "2025-09-24",
-      "virkningstidspunkt" : "2025-01-01",
-      "kravAarsak" : "ENDRET_OPPTJENING",
-      "kravStatus" : "INNV"
+      "mottattDato" : "2026-02-11",
+      "virkningstidspunkt" : "2026-03-01",
+      "kravAarsak" : "ANNEN_ARSAK",
+      "kravStatus" : "TIL_BEHANDLING"
     } ],
     "ytelsePerMaaned" : [ {
       "fom" : "2025-01-01",
-      "belop" : 19646,
+      "belop" : 5057,
       "ytelseskomponent" : [ {
-        "ytelsesKomponentType" : "UT_ORDINER",
-        "belopTilUtbetaling" : 19646
+        "ytelsesKomponentType" : "IP",
+        "belopTilUtbetaling" : 1986
+      }, {
+        "ytelsesKomponentType" : "GP",
+        "belopTilUtbetaling" : 1004
+      }, {
+        "ytelsesKomponentType" : "TP",
+        "belopTilUtbetaling" : 2067
       } ]
     }, {
       "fom" : "2025-05-01",
-      "belop" : 20617,
+      "belop" : 5286,
       "ytelseskomponent" : [ {
-        "ytelsesKomponentType" : "UT_ORDINER",
-        "belopTilUtbetaling" : 20617
+        "ytelsesKomponentType" : "IP",
+        "belopTilUtbetaling" : 2076
+      }, {
+        "ytelsesKomponentType" : "GP",
+        "belopTilUtbetaling" : 1050
+      }, {
+        "ytelsesKomponentType" : "TP",
+        "belopTilUtbetaling" : 2160
       } ]
     } ],
-    "status" : "INNV"
+    "status" : "TIL_BEHANDLING"
   }
-}
+},
+  {
+    "vedtak" : {
+      "boddArbeidetUtland" : true
+    },
+    "sak" : {
+      "sakType" : "ALDER",
+      "forsteVirkningstidspunkt" : "2025-01-01",
+      "kravHistorikk" : [ {
+        "kravId" : 49256020,
+        "kravType" : "REVURD",
+        "mottattDato" : "2025-10-14",
+        "virkningstidspunkt" : "2025-01-01",
+        "kravAarsak" : "ENDRET_OPPTJENING",
+        "kravStatus" : "INNV"
+      }, {
+        "kravId" : 49255969,
+        "kravType" : "REVURD",
+        "mottattDato" : "2025-10-14",
+        "virkningstidspunkt" : "2025-01-01",
+        "kravAarsak" : "ENDRET_OPPTJENING",
+        "kravStatus" : "INNV"
+      }, {
+        "kravId" : 49587267,
+        "kravType" : "REVURD",
+        "mottattDato" : "2026-02-11",
+        "virkningstidspunkt" : "2026-03-01",
+        "kravAarsak" : "ANNEN_ARSAK",
+        "kravStatus" : "TIL_BEHANDLING"
+      } ],
+      "ytelsePerMaaned" : [ {
+        "fom" : "2025-01-01",
+        "belop" : 5057,
+        "ytelseskomponent" : [ {
+          "ytelsesKomponentType" : "IP",
+          "belopTilUtbetaling" : 1986
+        }, {
+          "ytelsesKomponentType" : "GP",
+          "belopTilUtbetaling" : 1004
+        }, {
+          "ytelsesKomponentType" : "TP",
+          "belopTilUtbetaling" : 2067
+        } ]
+      }, {
+        "fom" : "2025-05-01",
+        "belop" : 5286,
+        "ytelseskomponent" : [ {
+          "ytelsesKomponentType" : "IP",
+          "belopTilUtbetaling" : 2076
+        }, {
+          "ytelsesKomponentType" : "GP",
+          "belopTilUtbetaling" : 1050
+        }, {
+          "ytelsesKomponentType" : "TP",
+          "belopTilUtbetaling" : 2160
+        } ]
+      } ],
+      "status" : "LOPENDE"
+    }
+  }
+]
