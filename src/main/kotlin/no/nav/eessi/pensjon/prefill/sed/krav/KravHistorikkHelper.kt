@@ -56,7 +56,7 @@ object KravHistorikkHelper {
     fun hentKravHistorikkMedKravStatusInnvilget(sak: P2xxxMeldingOmPensjonDto.Sak?): KravHistorikk? {
         val sortList = sortertKravHistorikk(sak?.kravHistorikk)
         sortList?.forEach {
-            logger.info("leter etter Krav status med ${EessiSakStatus.INNV}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
+            logger.info("leter etter Krav status med ${EessiSakStatus.INNV}, fant kravstatus: ${it.kravStatus}, kravårsak: ${it.kravAarsak}, med virkningstidspunkt dato : ${it.virkningstidspunkt}")
             if (EessiSakStatus.INNV == it.kravStatus) {
                 logger.info("Fant Kravhistorikk med ${it.kravStatus}")
                 return it
