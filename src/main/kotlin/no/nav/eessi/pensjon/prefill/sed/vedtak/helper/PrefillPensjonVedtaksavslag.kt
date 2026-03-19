@@ -18,7 +18,7 @@ object PrefillPensjonVedtaksavslag {
                 return true
             }
         } catch (ex: Exception) {
-            logger.error("Ingen vilkarsvurderingListe, sjekk på AVSL $ex")
+            logger.warn("Ingen vilkarsvurderingListe, sjekk på AVSL $ex")
         }
         return false
     }

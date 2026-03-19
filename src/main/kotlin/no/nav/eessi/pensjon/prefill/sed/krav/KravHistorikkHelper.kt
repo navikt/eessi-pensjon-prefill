@@ -65,7 +65,7 @@ object KravHistorikkHelper {
                 return it
             }
         }
-        logger.error("Fant ikke noe Kravhistorikk..${EessiSakStatus.TIL_BEHANDLING}. Mangler vilkårsprlving/vedtak. følger ikke normal behandling")
+        logger.warn("Fant ikke noe Kravhistorikk..${EessiSakStatus.TIL_BEHANDLING}. Mangler vilkårsprlving/vedtak. følger ikke normal behandling")
         return null
     }
 
@@ -80,7 +80,7 @@ object KravHistorikkHelper {
                 return it
             }
         }
-        logger.error("Fant ikke noe Kravhistorikk..${EessiSakStatus.AVSL}. Mangler vilkårsprøving. følger ikke normal behandling")
+        logger.warn("Fant ikke noe Kravhistorikk..${EessiSakStatus.AVSL}. Mangler vilkårsprøving. følger ikke normal behandling")
         return null
     }
 
