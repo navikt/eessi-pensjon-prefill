@@ -551,8 +551,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
               } ]
             }
           },
-          "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedGVer" : "4"
         }
         """.trimIndent()
 
@@ -564,8 +563,6 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
-
-        println("@@@@@@@: $response")
 
         JSONAssert.assertEquals(validResponse, response, false)
     }

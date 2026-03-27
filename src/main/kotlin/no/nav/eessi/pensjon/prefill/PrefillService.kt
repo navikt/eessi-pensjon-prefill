@@ -1,7 +1,7 @@
 package no.nav.eessi.pensjon.prefill
 
 import io.micrometer.core.instrument.Metrics
-import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
+//import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo.Companion.validateEmail
@@ -58,7 +58,7 @@ class PrefillService(
                 secureLog.info("Sed ferdig utfylt: $sed")
 
                 //synk sed versjon med buc versjon
-                setSEDVersion(sed.sedVer)
+//                setSEDVersion(sed.sedVer)
 
                 try {
                     Metrics.counter("Sed_Prefill","type", sed.type.name).increment()

@@ -150,7 +150,6 @@ class PrefillP8000P_BUC_05Test {
             {
               "sed" : "P8000",
               "sedGVer" : "4",
-              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -220,7 +219,6 @@ class PrefillP8000P_BUC_05Test {
             {
               "sed" : "P8000",
               "sedGVer" : "4",
-              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",

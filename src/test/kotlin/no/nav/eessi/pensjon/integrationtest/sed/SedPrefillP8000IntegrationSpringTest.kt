@@ -174,8 +174,7 @@ class SedPrefillP8000IntegrationSpringTest {
               "referanseTilPerson" : "02"
             }
           },
-          "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedGVer" : "4"
         }
         """.trimIndent()
 
@@ -284,8 +283,7 @@ class SedPrefillP8000IntegrationSpringTest {
               "referanseTilPerson" : "01"
             }
           },
-          "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedGVer" : "4"
         }
         """.trimIndent()
 

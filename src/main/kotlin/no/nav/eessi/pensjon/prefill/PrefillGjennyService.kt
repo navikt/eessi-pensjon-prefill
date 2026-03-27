@@ -14,7 +14,6 @@ import no.nav.eessi.pensjon.eux.model.sed.P8000Pensjon
 import no.nav.eessi.pensjon.eux.model.sed.Pensjon
 import no.nav.eessi.pensjon.eux.model.sed.Person
 import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.eux.model.sed.SED.Companion.setSEDVersion
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteVedtakResponseData
@@ -95,7 +94,7 @@ class PrefillGjennyService(
                     }
                 }.also { secureLog.info("PrefillGjennySedtoJson: ${it.toJson()}") }
 
-                setSEDVersion(sed.sedVer)
+//                setSEDVersion(sed.sedVer)
                 automatiseringStatistikkService.genererAutomatiseringStatistikk(sed,  prefillData.buc)
                 logger.info(" ******* Prefutfylling ferdig ******* ")
 
