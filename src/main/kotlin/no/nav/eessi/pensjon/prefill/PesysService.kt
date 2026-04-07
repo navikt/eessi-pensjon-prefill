@@ -57,11 +57,11 @@ class PesysService(
         logger.info("Saker for bruker: ${response.map { it.sak?.status?.name + ":" + it.sak?.sakType }}")
         val sortertListe = response.sortedByDescending { it.sak?.forsteVirkningstidspunkt }
         val resultat =
-            sortertListe.firstOrNull { it.sak?.status == LOPENDE } ?:
-            sortertListe.firstOrNull { it.sak?.status == INNV } ?:
-            sortertListe.firstOrNull { it.sak?.status == TIL_BEHANDLING } ?:
-            sortertListe.firstOrNull { it.sak?.status == AVSL } ?:
-            sortertListe.firstOrNull()
+            sortertListe.lastOrNull { it.sak?.status == LOPENDE } ?:
+            sortertListe.lastOrNull { it.sak?.status == INNV } ?:
+            sortertListe.lastOrNull { it.sak?.status == TIL_BEHANDLING } ?:
+            sortertListe.lastOrNull { it.sak?.status == AVSL } ?:
+            sortertListe.lastOrNull()
         return resultat
     }
 
