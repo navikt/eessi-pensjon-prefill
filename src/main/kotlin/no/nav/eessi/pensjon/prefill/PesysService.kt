@@ -53,6 +53,7 @@ class PesysService(
     }
 
     fun returnerSakMedRiktigStatus(response: List<P2xxxMeldingOmPensjonDto>): P2xxxMeldingOmPensjonDto? {
+        secureLog.info(response.toString())
         logger.info("Saker for bruker: ${response.map { it.sak?.status?.name + ":" + it.sak?.sakType }}")
         val sortertListe = response.sortedByDescending { it.sak?.forsteVirkningstidspunkt }
         val resultat =
