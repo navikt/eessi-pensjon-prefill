@@ -54,12 +54,13 @@ class PesysService(
 
     fun returnerSakMedRiktigStatus(response: List<P2xxxMeldingOmPensjonDto>): P2xxxMeldingOmPensjonDto? {
         logger.info("Saker for bruker: ${response.map { it.sak?.status?.name + ":" + it.sak?.sakType }}")
+        val sortertListe = response.sortedByDescending { it.sak?.forsteVirkningstidspunkt }
         val resultat =
-            response.firstOrNull { it.sak?.status == LOPENDE } ?:
-            response.firstOrNull { it.sak?.status == INNV } ?:
-            response.firstOrNull { it.sak?.status == TIL_BEHANDLING } ?:
-            response.firstOrNull { it.sak?.status == AVSL } ?:
-            response.firstOrNull()
+            sortertListe.firstOrNull { it.sak?.status == LOPENDE } ?:
+            sortertListe.firstOrNull { it.sak?.status == INNV } ?:
+            sortertListe.firstOrNull { it.sak?.status == TIL_BEHANDLING } ?:
+            sortertListe.firstOrNull { it.sak?.status == AVSL } ?:
+            sortertListe.firstOrNull()
         return resultat
     }
 
