@@ -33,8 +33,8 @@ class RestTemplateConfig(
 ) {
     private val logger = LoggerFactory.getLogger(RestTemplateConfig::class.java)
 
-    @Value("\${PENSJONSINFORMASJON_URL}")
-    lateinit var pensjonUrl: String
+    @Value("\${PESYS_URL}")
+    lateinit var pesysUrl: String
 
     @Value("\${KRR_URL}")
     lateinit var krrUrl: String
@@ -49,7 +49,7 @@ class RestTemplateConfig(
     fun krrRestTemplate() = opprettRestTemplate(krrUrl, "krr-credentials")
 
     @Bean
-    fun pensjoninformasjonRestTemplate() = opprettRestTemplate(pensjonUrl, "pensjon-credentials")
+    fun pesysClientRestTemplate() = opprettRestTemplate(pesysUrl, "pensjon-credentials")
 
     private fun opprettRestTemplate(url: String, oAuthKey: String) : RestTemplate {
         return RestTemplateBuilder()
