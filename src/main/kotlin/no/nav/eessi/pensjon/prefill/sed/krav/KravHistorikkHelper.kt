@@ -14,6 +14,10 @@ object KravHistorikkHelper {
         return kravHistorikkListe?.sortedBy { it.mottattDato}
     }
 
+    private fun sortertKravHistorikkAvslag(kravHistorikkListe:List<KravHistorikk>?): List<KravHistorikk>? {
+        return kravHistorikkListe?.sortedByDescending { it.mottattDato}
+    }
+
     fun hentKravHistorikkForsteGangsBehandlingUtlandEllerForsteGang(kravHistorikkListe: List<KravHistorikk>?): KravHistorikk =
         hentKravHistorikkMedKravType(listOf(EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL, EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL, EessiFellesDto.EessiKravGjelder.REVURD, EessiFellesDto.EessiKravGjelder.F_BH_BO_UTL, EessiFellesDto.EessiKravGjelder.SLUTT_BH_UTL), kravHistorikkListe)
 
@@ -70,7 +74,7 @@ object KravHistorikkHelper {
     }
 
     fun hentKravHistorikkMedKravStatusAvslag(sak: P2xxxMeldingOmPensjonDto.Sak?): KravHistorikk? {
-        val sortList = sortertKravHistorikk(sak?.kravHistorikk)
+        val sortList = sortertKravHistorikkAvslag(sak?.kravHistorikk)
         sortList?.forEach {
             logger.info("leter etter Krav status med ${EessiSakStatus.AVSL}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
             if (EessiSakStatus.AVSL == it.kravStatus) {
