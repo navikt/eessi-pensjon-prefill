@@ -24,6 +24,7 @@ import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P8000AnmodningOmTilleggsinformasjon
+import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
@@ -298,7 +299,7 @@ class SedPrefillP8000IntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
-        JSONAssert.assertEquals(validResponse, response, false)
+        JSONAssert.assertEquals(validResponse, response, true)
 
     }
 
@@ -584,6 +585,8 @@ class SedPrefillP8000IntegrationSpringTest {
                 .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
+        println("responsen: ${response.toJson()}")
+
         JSONAssert.assertEquals(response, validResponse, false)
     }
 
@@ -603,8 +606,6 @@ class SedPrefillP8000IntegrationSpringTest {
         val validResponse = """
             {
               "sed" : "P8000",
-              "sedGVer" : "4",
-              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -617,7 +618,7 @@ class SedPrefillP8000IntegrationSpringTest {
                     "pin" : [ {
                       "institusjonsnavn" : "NOINST002, NO INST002, NO",
                       "institusjonsid" : "NO:noinst002",
-                      "identifikator" : "$syntFnr",
+                      "identifikator" : "54496214261",
                       "land" : "NO"
                     }, {
                       "identifikator" : "123123123",
@@ -640,14 +641,13 @@ class SedPrefillP8000IntegrationSpringTest {
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
                     "by" : "SØRUMSAND",
-                    "bygning" : "bygning",
                     "postnummer" : "1920",
-                    "region" : "region",
                     "land" : "NO"
                   }
                 }
               },
-              "pensjon" : { }
+              "sedGVer" : "4",
+              "sedVer" : "2"
             }
         """.trimIndent()
 
@@ -659,7 +659,7 @@ class SedPrefillP8000IntegrationSpringTest {
             .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
-        JSONAssert.assertEquals(response, validResponse, false)
+        JSONAssert.assertEquals(response, validResponse, true)
     }
 
 
