@@ -252,6 +252,7 @@ class PrefillGjennyService(
                     EessisakItem(
                         institusjonsid = eessiInformasjon.institutionid,
                         institusjonsnavn = eessiInformasjon.institutionnavn,
+                        saksnummer = prefillData.penSaksnummer,
                         land = eessiInformasjon.institutionLand
                     )
                 ),
