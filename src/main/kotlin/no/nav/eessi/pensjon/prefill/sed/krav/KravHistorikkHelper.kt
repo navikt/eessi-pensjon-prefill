@@ -11,10 +11,6 @@ object KravHistorikkHelper {
     private val logger: Logger by lazy { LoggerFactory.getLogger(KravHistorikkHelper::class.java) }
 
     private fun sortertKravHistorikk(kravHistorikkListe:List<KravHistorikk>?): List<KravHistorikk>? {
-        return kravHistorikkListe?.sortedBy { it.mottattDato}
-    }
-
-    private fun sortertKravHistorikkAvslag(kravHistorikkListe:List<KravHistorikk>?): List<KravHistorikk>? {
         return kravHistorikkListe?.sortedByDescending { it.mottattDato}
     }
 
@@ -59,22 +55,26 @@ object KravHistorikkHelper {
 
     fun hentKravHistorikkMedKravStatusInnvilget(sak: P2xxxMeldingOmPensjonDto.Sak?): KravHistorikk? {
         val sortList = sortertKravHistorikk(sak?.kravHistorikk)
-        sortList?.forEach {
-            logger.info("leter etter Krav status med ${EessiSakStatus.INNV}, fant kravstatus: ${it.kravStatus}, kravårsak: ${it.kravAarsak}, med virkningstidspunkt dato : ${it.virkningstidspunkt}")
-            if (EessiSakStatus.INNV == it.kravStatus) {
-                logger.info("Fant Kravhistorikk med ${it.kravStatus}")
-                return it
-            } else if (EessiSakStatus.TIL_BEHANDLING == it.kravStatus && sak?.ytelsePerMaaned?.firstOrNull()?.belop != null) {
-            logger.info("Fant Krav med status ${EessiSakStatus.TIL_BEHANDLING}, med kravtype: ${it.kravType} og virkningstidspunkt dato: ${it.virkningstidspunkt}")
-                return it
+
+        val innvilget = sortList?.filter { it.kravStatus == EessiSakStatus.INNV}
+        val tilBehandling = sortList?.filter { it.kravStatus == EessiSakStatus.TIL_BEHANDLING  && sak?.ytelsePerMaaned?.firstOrNull()?.belop != null }
+
+        //logger.info("leter etter Krav status med ${EessiSakStatus.INNV}, fant kravstatus: ${it.kravStatus}, kravårsak: ${it.kravAarsak}, med virkningstidspunkt dato : ${it.virkningstidspunkt}")
+        if (!innvilget.isNullOrEmpty()) {
+            return innvilget.sortedByDescending { it.mottattDato }.firstOrNull().also { logger.info("Fant Kravhistorikk med ${it?.kravStatus}") }
+
+        } else if (!tilBehandling.isNullOrEmpty()) {
+            return tilBehandling.sortedByDescending { it.mottattDato }.firstOrNull().also {
+                logger.info("Fant Krav med status ${EessiSakStatus.TIL_BEHANDLING}, med kravtype: ${it?.kravType} og virkningstidspunkt dato: ${it?.virkningstidspunkt}")
             }
         }
+
         logger.warn("Fant ikke noe Kravhistorikk..${EessiSakStatus.TIL_BEHANDLING}. Mangler vilkårsprlving/vedtak. følger ikke normal behandling")
         return null
     }
 
     fun hentKravHistorikkMedKravStatusAvslag(sak: P2xxxMeldingOmPensjonDto.Sak?): KravHistorikk? {
-        val sortList = sortertKravHistorikkAvslag(sak?.kravHistorikk)
+        val sortList = sortertKravHistorikk(sak?.kravHistorikk)
         sortList?.forEach {
             logger.info("leter etter Krav status med ${EessiSakStatus.AVSL}, fant ${it.kravType} med virkningstidspunkt dato : ${it.virkningstidspunkt}")
             if (EessiSakStatus.AVSL == it.kravStatus) {
