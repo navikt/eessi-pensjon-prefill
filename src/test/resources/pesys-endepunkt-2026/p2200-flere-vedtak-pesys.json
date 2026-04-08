@@ -1,0 +1,67 @@
+[{
+  "vedtak" : {
+    "boddArbeidetUtland" : false
+  },
+  "sak" : {
+    "sakType" : "UFOREP",
+    "forsteVirkningstidspunkt" : null,
+    "status" : "TIL_BEHANDLING",
+    "kravHistorikk" : [ {
+      "kravId" : 1,
+      "kravType" : "REVURD",
+      "mottattDato" : "2026-02-11",
+      "virkningstidspunkt" : "2026-03-01",
+      "kravAarsak" : "ANNEN_ARSAK",
+      "kravStatus" : "TIL_BEHANDLING"
+    } ],
+    "ytelsePerMaaned" : [ {
+      "fom" : "2025-01-01",
+      "belop" : 5057
+    } ]
+  }
+},
+  {
+    "vedtak" : {
+      "boddArbeidetUtland" : true
+    },
+    "sak" : {
+      "sakType" : "UFOREP",
+      "forsteVirkningstidspunkt" : null,
+      "status" : "TIL_BEHANDLING",
+      "kravHistorikk" : [ {
+        "kravId" : 2,
+        "kravType" : "REVURD",
+        "mottattDato" : "2026-02-11",
+        "virkningstidspunkt" : "2026-03-01",
+        "kravAarsak" : "ANNEN_ARSAK",
+        "kravStatus" : "TIL_BEHANDLING"
+      } ],
+      "ytelsePerMaaned" : [ {
+        "fom" : "2025-01-01",
+        "belop" : 5057
+      } ]
+    }
+  },
+  {
+    "vedtak" : {
+      "boddArbeidetUtland" : false
+    },
+    "sak" : {
+      "sakType" : "UFOREP",
+      "forsteVirkningstidspunkt" : null,
+      "status" : "TIL_BEHANDLING",
+      "kravHistorikk" : [ {
+        "kravId" : 3,
+        "kravType" : "REVURD",
+        "mottattDato" : "2026-02-11",
+        "virkningstidspunkt" : "2026-03-01",
+        "kravAarsak" : "ANNEN_ARSAK",
+        "kravStatus" : "TIL_BEHANDLING"
+      } ],
+      "ytelsePerMaaned" : [ {
+        "fom" : "2025-01-01",
+        "belop" : 5057
+      } ]
+    }
+  }
+]

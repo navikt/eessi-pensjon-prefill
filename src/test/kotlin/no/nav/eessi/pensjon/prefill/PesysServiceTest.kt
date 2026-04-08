@@ -140,6 +140,20 @@ class PesysServiceTest {
             assert(ytelsePerMaaned?.get(1)?.ytelseskomponent?.get(2)?.belopTilUtbetaling == 2160)
             server.verify()
         }
+
+        @Test
+        fun `hentP2200data skal sortere paa boddArbeidetUtland`() {
+            val p2200Json = javaClass.getResource("/pesys-endepunkt-2026/p2200-flere-vedtak-pesys.json")!!.readText()
+            server.expect(requestTo("/sed/p2200"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess(p2200Json, MediaType.APPLICATION_JSON))
+
+            val result = pesysService.hentP2200data("456", "789")
+
+            assert(result?.vedtak?.boddArbeidetUtland ==true)
+            assert(result?.sak?.kravHistorikk[0]?.kravId == "2")
+            server.verify()
+        }
     }
 
     @Nested

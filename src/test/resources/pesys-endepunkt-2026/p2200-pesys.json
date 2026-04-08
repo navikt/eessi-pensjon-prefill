@@ -1,6 +1,6 @@
 [{
   "vedtak" : {
-    "boddArbeidetUtland" : true
+    "boddArbeidetUtland" : false
   },
   "sak" : {
     "sakType" : "UFOREP",
