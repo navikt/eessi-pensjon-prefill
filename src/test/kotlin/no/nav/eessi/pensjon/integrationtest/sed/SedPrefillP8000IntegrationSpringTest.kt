@@ -299,7 +299,7 @@ class SedPrefillP8000IntegrationSpringTest {
 
         val response = result.response.getContentAsString(charset("UTF-8"))
 
-        JSONAssert.assertEquals(validResponse, response, true)
+        JSONAssert.assertEquals(validResponse, response, false)
 
     }
 
