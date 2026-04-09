@@ -32,7 +32,7 @@ class PrefillP6000GjennyPensjonTest {
         assertEquals("", result?.vedtak?.firstOrNull()?.beregning?.firstOrNull()?.periode?.tom)
         assertEquals("2025-07-23", result?.vedtak?.firstOrNull()?.beregning?.firstOrNull()?.periode?.fom)
         assertEquals(LocalDate.of(2025,7,23), result?.vedtak?.firstOrNull()?.iverksettelsesTidspunkt)
-
+        assertEquals("2025-07-23", result?.tilleggsinformasjon?.dato)
     }
 
     @Test
