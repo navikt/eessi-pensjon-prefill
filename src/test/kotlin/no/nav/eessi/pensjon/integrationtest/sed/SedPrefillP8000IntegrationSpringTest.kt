@@ -644,8 +644,7 @@ class SedPrefillP8000IntegrationSpringTest {
                   }
                 }
               },
-              "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedGVer" : "4"
             }
         """.trimIndent()
 
