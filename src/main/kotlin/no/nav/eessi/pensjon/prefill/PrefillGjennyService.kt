@@ -207,7 +207,7 @@ class PrefillGjennyService(
                 gjenlevendePerson,
                 etterlatteRespData,
                 eessiInfo
-        ).also { logger.debug("PrefillP6000GjennyPensjon: ${it.toJson()}") }
+        ).also { logger.debug("PrefillP6000GjennyPensjon: ${it?.toJson()}") }
 
         val nav = prefillNav.prefill(
             penSaksnummer = prefillData.penSaksnummer,
