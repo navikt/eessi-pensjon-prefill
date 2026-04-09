@@ -9,7 +9,7 @@ import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
 data class EtterlatteVedtakResponseData(
     val vedtak: List<GjennyVedtak>
 ) {
-    fun hentVedtakItems(): List<VedtakItem>? = vedtak.map { vedtak ->
+    fun hentVedtakItems(): List<VedtakItem> = vedtak.map { vedtak ->
         VedtakItem(
             virkningsdato = vedtak.virkningstidspunkt.toString(),
             resultat = vedtak.type?.value,
@@ -22,7 +22,8 @@ data class EtterlatteVedtakResponseData(
                         tom = it.tilOgMed?.toString() ?: ""
                     )
                 )
-            }
+            },
+            iverksettelsesTidspunkt = vedtak.iverksettelsesTidspunkt?.toLocalDate()
         )
     }
 

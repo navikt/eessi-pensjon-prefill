@@ -34,7 +34,7 @@ class PrefillP6000GjennyPensjonTest {
                             beloep = "2358"
                         )
                     ),
-                    iverksettelsesTidspunkt = LocalDateTime.now(),
+                    iverksettelsesTidspunkt = LocalDateTime.of(2025, 7, 23, 23, 59),
                 )
             )
         )
@@ -63,6 +63,7 @@ class PrefillP6000GjennyPensjonTest {
         assertEquals("2025-07-23", result?.vedtak?.firstOrNull()?.virkningsdato)
         assertEquals("", result?.vedtak?.firstOrNull()?.beregning?.firstOrNull()?.periode?.tom)
         assertEquals("2025-07-23", result?.vedtak?.firstOrNull()?.beregning?.firstOrNull()?.periode?.fom)
+        assertEquals(LocalDate.of(2025,7,23), result?.vedtak?.firstOrNull()?.iverksettelsesTidspunkt)
 
     }
 

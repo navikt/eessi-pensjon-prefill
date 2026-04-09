@@ -21,7 +21,10 @@ class PrefillP6000GjennyPensjon {
                     )
                 )),
             vedtak = etterlatteResponseData?.hentVedtakItems(),
-            tilleggsinformasjon = Tilleggsinformasjon(andreinstitusjoner = listOf(eessiInformasjon.asAndreinstitusjonerItem()))
+            tilleggsinformasjon = Tilleggsinformasjon(
+                dato = etterlatteResponseData?.vedtak?.firstOrNull()?.iverksettelsesTidspunkt.toString(),
+                andreinstitusjoner = listOf(eessiInformasjon.asAndreinstitusjonerItem())
+            )
         )
     }
 }
