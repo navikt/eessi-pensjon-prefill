@@ -178,12 +178,10 @@ class SedPrefillPDLIntegrationSpringTest {
             },
             "etterspurtedokumenter" : "P5000 and P6000"
           },
-          "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedGVer" : "4"
         }         
         """.trimIndent()
 
-        println("**** $actual")
         JSONAssert.assertEquals(excpected, actual , true)
 
     }
@@ -219,7 +217,6 @@ class SedPrefillPDLIntegrationSpringTest {
             {
               "sed" : "P2100",
               "sedGVer" : "4",
-              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -385,8 +382,7 @@ class SedPrefillPDLIntegrationSpringTest {
               "dato" : "2014-06-04"
             }
           },
-          "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedGVer" : "4"
         }
         """.trimIndent()
 

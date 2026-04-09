@@ -613,7 +613,6 @@ class PrefillUfoereIntegrationTest {
                 {
                   "sed" : "P2200",
                   "sedGVer" : "4",
-                  "sedVer" : "2",
                   "nav" : {
                     "eessisak" : [ {
                       "institusjonsid" : "NO:noinst002",
@@ -675,8 +674,7 @@ class PrefillUfoereIntegrationTest {
                     },
                     "etterspurtedokumenter" : "P5000 and P6000"
                   },
-                  "sedGVer" : "4",
-                  "sedVer" : "2"
+                  "sedGVer" : "4"
                 }
             """.trimIndent()
 
