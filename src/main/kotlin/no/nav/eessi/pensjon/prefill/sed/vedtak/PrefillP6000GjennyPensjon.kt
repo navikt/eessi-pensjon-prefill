@@ -3,6 +3,8 @@ package no.nav.eessi.pensjon.prefill.sed.vedtak
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteVedtakResponseData
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
+import no.nav.eessi.pensjon.utils.toJson
+import java.time.format.DateTimeFormatter
 
 class PrefillP6000GjennyPensjon {
 
@@ -12,6 +14,7 @@ class PrefillP6000GjennyPensjon {
         eessiInformasjon: EessiInformasjon,
     ): P6000Pensjon? {
         if (etterlatteResponseData?.vedtak?.isEmpty() == true) return null
+        val dato = etterlatteResponseData?.vedtak?.firstOrNull()?.iverksettelsesTidspunkt
         return P6000Pensjon(
             gjenlevende = gjenlevende,
             sak = Sak(
@@ -22,7 +25,7 @@ class PrefillP6000GjennyPensjon {
                 )),
             vedtak = etterlatteResponseData?.hentVedtakItems(),
             tilleggsinformasjon = Tilleggsinformasjon(
-                dato = etterlatteResponseData?.vedtak?.firstOrNull()?.iverksettelsesTidspunkt.toString(),
+                dato = dato?.format(DateTimeFormatter.ISO_DATE),
                 andreinstitusjoner = listOf(eessiInformasjon.asAndreinstitusjonerItem())
             )
         )

@@ -20,42 +20,10 @@ class PrefillP6000GjennyPensjonTest {
 
     @Test
     fun prefillP6000GjennyPensjonTest() {
-        val etterlatteResData = EtterlatteVedtakResponseData(
-            vedtak = listOf(
-                GjennyVedtak(
-                    sakId = 123456,
-                    sakType = "Omstilling",
-                    virkningstidspunkt = LocalDate.parse("2025-07-23"),
-                    type = VedtakStatus.INNVILGELSE,
-                    utbetaling = listOf(
-                        GjennyUtbetaling(
-                            fraOgMed = LocalDate.parse("2025-07-23"),
-                            tilOgMed = null,
-                            beloep = "2358"
-                        )
-                    ),
-                    iverksettelsesTidspunkt = LocalDateTime.of(2025, 7, 23, 23, 59),
-                )
-            )
-        )
+        val etterlatteResData = mockEtterlatteRespData(LocalDateTime.of(2025, 7, 23, 23, 59))
+        val eessiInformasjon = mockEessiInfo()
+        val gjenlevende = mockBruker()
 
-        val eessiInformasjon = EessiInformasjon(
-            institutionid = "321",
-            institutionnavn = "",
-            institutionGate = "",
-            institutionPostnr = "",
-            institutionLand = "",
-            institutionBy = "",
-        )
-
-        val gjenlevende = Bruker(
-            person = Person(
-                fornavn = "Gjenlevende",
-                etternavn = "Etternavn",
-                pin = listOf(PinItem(identifikator = "12345678901")),
-                statsborgerskap = null
-            )
-        )
         val result = prefillP6000GjennyPensjon.prefillP6000GjennyPensjon(gjenlevende, etterlatteResData, eessiInformasjon)
 
         assertEquals("03", result?.vedtak?.firstOrNull()?.type)
@@ -66,5 +34,54 @@ class PrefillP6000GjennyPensjonTest {
         assertEquals(LocalDate.of(2025,7,23), result?.vedtak?.firstOrNull()?.iverksettelsesTidspunkt)
 
     }
+
+    @Test
+    fun `Prefill P6000 Gjenny Pensjon med null som iverksettelsesdato `() {
+        val etterlatteResData = mockEtterlatteRespData(null)
+        val eessiInformasjon = mockEessiInfo()
+        val gjenlevende = mockBruker()
+
+        val result = prefillP6000GjennyPensjon.prefillP6000GjennyPensjon(gjenlevende, etterlatteResData, eessiInformasjon)
+
+        assertEquals(null, result?.vedtak?.firstOrNull()?.iverksettelsesTidspunkt)
+
+    }
+
+    private fun mockEtterlatteRespData(dato: LocalDateTime?): EtterlatteVedtakResponseData = EtterlatteVedtakResponseData(
+        vedtak = listOf(
+            GjennyVedtak(
+                sakId = 123456,
+                sakType = "Omstilling",
+                virkningstidspunkt = LocalDate.parse("2025-07-23"),
+                type = VedtakStatus.INNVILGELSE,
+                utbetaling = listOf(
+                    GjennyUtbetaling(
+                        fraOgMed = LocalDate.parse("2025-07-23"),
+                        tilOgMed = null,
+                        beloep = "2358"
+                    )
+                ),
+                iverksettelsesTidspunkt = dato,
+            )
+        )
+    )
+
+    private fun mockBruker(): Bruker = Bruker(
+        person = Person(
+            fornavn = "Gjenlevende",
+            etternavn = "Etternavn",
+            pin = listOf(PinItem(identifikator = "12345678901")),
+            statsborgerskap = null
+        )
+    )
+
+    private fun mockEessiInfo(): EessiInformasjon = EessiInformasjon(
+        institutionid = "321",
+        institutionnavn = "",
+        institutionGate = "",
+        institutionPostnr = "",
+        institutionLand = "",
+        institutionBy = "",
+    )
 
 }
