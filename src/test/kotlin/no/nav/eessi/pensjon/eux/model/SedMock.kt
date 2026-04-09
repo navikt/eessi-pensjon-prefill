@@ -16,7 +16,6 @@ class SedMock {
                 nav = NavMock().genererNavMock(),
                 pensjon = PensjonMock().genererMockData(),
                 type = SedType.P2200,
-//                sedVer = "0",
                 sedGVer = "4"
         )
     }

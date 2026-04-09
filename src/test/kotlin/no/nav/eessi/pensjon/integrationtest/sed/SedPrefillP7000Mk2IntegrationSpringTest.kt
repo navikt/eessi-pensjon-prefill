@@ -300,8 +300,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
               } ]
             }
           },
-          "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedGVer" : "4"
         }
         """.trimIndent()
 
@@ -421,8 +420,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
               } ]
             }
           },
-          "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedGVer" : "4"
         }
         """.trimIndent()
 
@@ -649,8 +647,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
               } ]
             }
           },
-          "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedGVer" : "4"
         }     
         """.trimIndent()
 
@@ -710,8 +707,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                   }
                 }
               },
-              "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedGVer" : "4"
             }        
         """.trimIndent()
 
@@ -1091,7 +1087,6 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
       }
     ]
   },
-  "sedVer": "0",
   "sedGVer": "4",
   "sed": "P6000"
 }

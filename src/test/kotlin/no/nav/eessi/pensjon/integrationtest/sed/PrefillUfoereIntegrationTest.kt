@@ -198,11 +198,11 @@ class PrefillUfoereIntegrationTest {
                 },
                 "etterspurtedokumenter" : "P5000 and P6000"
               },
-              "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedGVer" : "4"
             }    
         """.trimIndent()
-        JSONAssert.assertEquals(response, validResponse, false)
+        JSONAssert.assertEquals(response, validResponse, true
+        )
 
     }
 
@@ -551,8 +551,7 @@ class PrefillUfoereIntegrationTest {
                },
                "etterspurtedokumenter" : "P5000 and P6000"
               },
-              "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedGVer" : "4"
             }
         """.trimIndent()
 

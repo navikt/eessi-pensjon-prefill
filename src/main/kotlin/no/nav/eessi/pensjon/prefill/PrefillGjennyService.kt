@@ -94,7 +94,6 @@ class PrefillGjennyService(
                     }
                 }.also { secureLog.info("PrefillGjennySedtoJson: ${it.toJson()}") }
 
-//                setSEDVersion(sed.sedVer)
                 automatiseringStatistikkService.genererAutomatiseringStatistikk(sed,  prefillData.buc)
                 logger.info(" ******* Prefutfylling ferdig ******* ")
 

@@ -8,7 +8,6 @@ class SedBuilder {
     class ValidResponseBuilder {
         var sed: SedType = SedType.P2000
         var sedGVer: String = "4"
-        var sedVer: String = "2"
         var pensjon: Pensjon? = null
         var nav: NavBuilder = NavBuilder()
 

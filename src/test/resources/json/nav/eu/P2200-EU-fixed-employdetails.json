@@ -324,7 +324,6 @@
         "value" : [ "02" ]
       }
     },
-    "sedPackage": "Sector Components/Pensions/P2200",
-    "sedVer" : "0"
+    "sedPackage": "Sector Components/Pensions/P2200"
   }
 }

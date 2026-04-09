@@ -250,7 +250,6 @@
       "saksnummer" : "2345234234"
     } ]
   },
-  "sedVer" : "0",
   "pensjon" : {
     "ytelser" : [ {
       "status" : "02",

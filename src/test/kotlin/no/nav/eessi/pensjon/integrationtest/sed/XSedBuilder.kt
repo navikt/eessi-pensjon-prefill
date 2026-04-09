@@ -8,7 +8,6 @@ class XSedBuilder {
     class ValidResponseBuilderXSEd {
         var sed: SedType = SedType.X010
         var sedGVer: String = "4"
-        var sedVer: String = "2"
         var xnav: XNavBuilder = XNavBuilder()
 
         fun build(): SED {

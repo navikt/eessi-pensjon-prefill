@@ -328,7 +328,6 @@ class SedPrefillP8000IntegrationSpringTest {
             {
               "sed" : "P8000",
               "sedGVer" : "4",
-              "sedVer" : "2",
               "nav" : {
               "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -504,8 +503,7 @@ class SedPrefillP8000IntegrationSpringTest {
               "referanseTilPerson" : "02"
             }
           },
-          "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedGVer" : "4"
         }
         """.trimIndent()
 
@@ -528,7 +526,6 @@ class SedPrefillP8000IntegrationSpringTest {
             {
               "sed" : "P8000",
               "sedGVer" : "4",
-              "sedVer" : "2",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",

@@ -982,7 +982,6 @@ class SedPrefillIntegrationSpringTest {
                 {
                   "sed" : "X010",
                   "sedGVer" : "4",
-                  "sedVer" : "2",
                   "nav" : {
                     "sak" : {
                       "kontekst" : {
