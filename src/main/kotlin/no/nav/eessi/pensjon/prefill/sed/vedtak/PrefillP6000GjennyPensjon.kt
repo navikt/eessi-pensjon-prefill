@@ -14,7 +14,8 @@ class PrefillP6000GjennyPensjon {
         eessiInformasjon: EessiInformasjon,
     ): P6000Pensjon? {
         if (etterlatteResponseData?.vedtak?.isEmpty() == true) return null
-        val dato = etterlatteResponseData?.vedtak?.firstOrNull()?.iverksettelsesTidspunkt
+        val dato = etterlatteResponseData?.vedtak?.map { it.iverksettelsesTidspunkt }?.sortedByDescending { it }?.firstOrNull()
+
         return P6000Pensjon(
             gjenlevende = gjenlevende,
             sak = Sak(
