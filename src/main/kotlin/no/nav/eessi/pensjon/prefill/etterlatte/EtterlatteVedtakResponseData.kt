@@ -7,7 +7,7 @@ import no.nav.eessi.pensjon.eux.model.sed.VedtakItem
 
 
 data class EtterlatteVedtakResponseData(
-    val vedtak: List<GjennyVedtak>
+    private val vedtak: List<GjennyVedtak>
 ) {
     fun hentVedtakItems(): List<VedtakItem> {
         return vedtak.map { vedtak ->
@@ -26,6 +26,7 @@ data class EtterlatteVedtakResponseData(
                     )
                 },
                 iverksettelsesTidspunkt = vedtak.iverksettelsesTidspunkt?.toLocalDate()
+                    ?: vedtak.attestertTidspunkt?.toLocalDate(),
             )
         }
     }
