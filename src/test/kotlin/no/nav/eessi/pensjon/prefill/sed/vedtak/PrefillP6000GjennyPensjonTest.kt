@@ -8,6 +8,7 @@ import no.nav.eessi.pensjon.prefill.etterlatte.GjennyUtbetaling
 import no.nav.eessi.pensjon.prefill.etterlatte.GjennyVedtak
 import no.nav.eessi.pensjon.prefill.etterlatte.VedtakStatus
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
+import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -25,10 +26,11 @@ class PrefillP6000GjennyPensjonTest {
         val gjenlevende = mockBruker()
 
         val result = prefillP6000GjennyPensjon.prefillP6000GjennyPensjon(gjenlevende, etterlatteResData, eessiInformasjon)
+        println("RESULT: ${result?.toJson()}")
 
         assertEquals("03", result?.vedtak?.firstOrNull()?.type)
         assertEquals("01", result?.vedtak?.firstOrNull()?.resultat)
-        assertEquals("2025-07-23", result?.vedtak?.firstOrNull()?.virkningsdato)
+        assertEquals("2021-07-23", result?.vedtak?.firstOrNull()?.virkningsdato)
         assertEquals("", result?.vedtak?.firstOrNull()?.beregning?.firstOrNull()?.periode?.tom)
         assertEquals("2025-07-23", result?.vedtak?.firstOrNull()?.beregning?.firstOrNull()?.periode?.fom)
         assertEquals(LocalDate.of(2025,7,23), result?.vedtak?.firstOrNull()?.iverksettelsesTidspunkt)
@@ -43,15 +45,15 @@ class PrefillP6000GjennyPensjonTest {
 
         val result = prefillP6000GjennyPensjon.prefillP6000GjennyPensjon(gjenlevende, etterlatteResData, eessiInformasjon)
 
-        assertEquals(null, result?.vedtak?.firstOrNull()?.iverksettelsesTidspunkt)
+        assertEquals(null, result?.tilleggsinformasjon?.dato)
 
     }
 
     @Test
     fun `Prefill P6000 Gjenny Pensjon med vedtaket som har den nyeste iverksettelsesdatoen `() {
         val etterlatteResData = EtterlatteVedtakResponseData(listOf(
-            gjennyVedtak(LocalDateTime.of(2025, 7, 23, 23, 59), VedtakStatus.AVSLAG),
-            gjennyVedtak(LocalDateTime.of(2020, 7, 23, 23, 59), VedtakStatus.AVSLAG)
+            gjennyVedtak(LocalDateTime.of(2020, 7, 23, 23, 59), VedtakStatus.AVSLAG),
+            gjennyVedtak(LocalDateTime.of(2025, 7, 23, 23, 59), VedtakStatus.AVSLAG)
         ))
 
         val eessiInformasjon = mockEessiInfo()
@@ -59,14 +61,48 @@ class PrefillP6000GjennyPensjonTest {
 
         val result = prefillP6000GjennyPensjon.prefillP6000GjennyPensjon(gjenlevende, etterlatteResData, eessiInformasjon)
 
-        assertEquals("2025-07-23", result?.vedtak?.firstOrNull()?.iverksettelsesTidspunkt.toString())
+        assertEquals("2025-07-23", result?.tilleggsinformasjon?.dato)
+
+    }
+
+    @Test
+    fun `Prefill P6000 Gjenny Pensjon med vedtaket som har ddtgdfgen nyeste iverksettelsesdatoen `() {
+        val etterlatteResData = EtterlatteVedtakResponseData(listOf(
+            gjennyVedtak(LocalDateTime.of(2025, 7, 23, 23, 59), VedtakStatus.AVSLAG),
+            gjennyVedtak(LocalDateTime.of(2020, 7, 23, 23, 59), VedtakStatus.AVSLAG),
+            gjennyVedtak(LocalDateTime.of(2026, 7, 23, 23, 59), VedtakStatus.INNVILGELSE)
+        ))
+
+        val eessiInformasjon = mockEessiInfo()
+        val gjenlevende = mockBruker()
+
+        val result = prefillP6000GjennyPensjon.prefillP6000GjennyPensjon(gjenlevende, etterlatteResData, eessiInformasjon)
+
+        assertEquals("2026-07-23", result?.tilleggsinformasjon?.dato)
+
+    }
+
+    @Test
+    fun `Prefill Gjenny P6000 Pensjon med AVSLAG skal gi null på virkningstidspunkt `() {
+        val etterlatteResData = EtterlatteVedtakResponseData(listOf(
+            gjennyVedtak(LocalDateTime.of(2020, 7, 23, 23, 59), VedtakStatus.AVSLAG)
+        ))
+
+        val eessiInformasjon = mockEessiInfo()
+        val gjenlevende = mockBruker()
+
+        val result = prefillP6000GjennyPensjon.prefillP6000GjennyPensjon(gjenlevende, etterlatteResData, eessiInformasjon)
+        println("RES: ${result?.vedtak?.toJson()}")
+
+        assertEquals("2020-07-23", result?.tilleggsinformasjon?.dato)
+        assertEquals(null, result?.vedtak?.firstOrNull()?.virkningsdato)
 
     }
 
     private fun gjennyVedtak(dato: LocalDateTime?, status: VedtakStatus) = GjennyVedtak(
         sakId = 123456,
         sakType = "Omstilling",
-        virkningstidspunkt = LocalDate.parse("2025-07-23"),
+        virkningstidspunkt = LocalDate.parse("2021-07-23"),
         type = status,
         utbetaling = listOf(
             GjennyUtbetaling(
