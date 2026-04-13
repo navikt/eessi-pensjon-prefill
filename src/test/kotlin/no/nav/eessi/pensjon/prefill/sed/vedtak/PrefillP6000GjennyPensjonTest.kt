@@ -22,8 +22,8 @@ class PrefillP6000GjennyPensjonTest {
     @Test
     fun prefillP6000GjennyPensjonTest() {
         val etterlatteResData = EtterlatteVedtakResponseData(listOf(gjennyVedtak(
-            LocalDateTime.of(2025, 7, 23, 23, 59),
-            VedtakStatus.INNVILGELSE
+            attDato = LocalDateTime.of(2025, 7, 23, 23, 59),
+            status = VedtakStatus.INNVILGELSE
         )))
         val eessiInformasjon = mockEessiInfo()
         val gjenlevende = mockBruker()
@@ -58,8 +58,8 @@ class PrefillP6000GjennyPensjonTest {
     @Test
     fun `Prefill P6000 Gjenny Pensjon med vedtaket som har den nyeste iverksettelsesdatoen `() {
         val etterlatteResData = EtterlatteVedtakResponseData(listOf(
-            gjennyVedtak(LocalDateTime.of(2020, 7, 23, 23, 59), VedtakStatus.AVSLAG),
-            gjennyVedtak(LocalDateTime.of(2025, 7, 23, 23, 59), VedtakStatus.AVSLAG)
+            gjennyVedtak(attDato = LocalDateTime.of(2020, 7, 23, 23, 59), status = VedtakStatus.AVSLAG),
+            gjennyVedtak(attDato = LocalDateTime.of(2025, 7, 23, 23, 59), status = VedtakStatus.AVSLAG)
         ))
 
         val eessiInformasjon = mockEessiInfo()
@@ -74,9 +74,9 @@ class PrefillP6000GjennyPensjonTest {
     @Test
     fun `Prefill P6000 Gjenny Pensjon med vedtaket som har ddtgdfgen nyeste iverksettelsesdatoen `() {
         val etterlatteResData = EtterlatteVedtakResponseData(listOf(
-            gjennyVedtak(LocalDateTime.of(2025, 7, 23, 23, 59), VedtakStatus.AVSLAG),
-            gjennyVedtak(LocalDateTime.of(2020, 7, 23, 23, 59), VedtakStatus.AVSLAG),
-            gjennyVedtak(LocalDateTime.of(2026, 7, 23, 23, 59), VedtakStatus.INNVILGELSE)
+            gjennyVedtak(attDato = LocalDateTime.of(2025, 7, 23, 23, 59), status = VedtakStatus.AVSLAG),
+            gjennyVedtak(attDato = LocalDateTime.of(2020, 7, 23, 23, 59), status = VedtakStatus.AVSLAG),
+            gjennyVedtak(attDato = LocalDateTime.of(2026, 7, 23, 23, 59), status = VedtakStatus.INNVILGELSE)
         ))
 
         val eessiInformasjon = mockEessiInfo()
@@ -89,25 +89,9 @@ class PrefillP6000GjennyPensjonTest {
     }
 
     @Test
-    fun `Prefill Gjenny P6000 Pensjon med AVSLAG skal gi null på virkningstidspunkt `() {
-        val etterlatteResData = EtterlatteVedtakResponseData(listOf(
-            gjennyVedtak(LocalDateTime.of(2020, 7, 23, 23, 59), VedtakStatus.AVSLAG)
-        ))
-
-        val eessiInformasjon = mockEessiInfo()
-        val gjenlevende = mockBruker()
-
-        val result = prefillP6000GjennyPensjon.prefillP6000GjennyPensjon(gjenlevende, etterlatteResData, eessiInformasjon)
-
-        assertEquals("2020-07-23", result?.tilleggsinformasjon?.dato)
-        assertEquals(null, result?.vedtak?.firstOrNull()?.virkningsdato)
-
-    }
-
-    @Test
     fun `Prefill Gjenny P6000 Pensjon med AVSLAG skal gi ut attestertTidspunkt på vedtaksdato pkt 6_4 `() {
         val etterlatteResData = EtterlatteVedtakResponseData(listOf(
-            gjennyVedtak(null, VedtakStatus.AVSLAG, LocalDateTime.of(2000, 7, 23, 23, 59) )
+            gjennyVedtak(null, VedtakStatus.AVSLAG, attDato = LocalDateTime.of(2000, 7, 23, 23, 59) )
         ))
 
         val eessiInformasjon = mockEessiInfo()
@@ -116,11 +100,11 @@ class PrefillP6000GjennyPensjonTest {
         val result = prefillP6000GjennyPensjon.prefillP6000GjennyPensjon(gjenlevende, etterlatteResData, eessiInformasjon)
 
         assertEquals("2000-07-23", result?.tilleggsinformasjon?.dato)
-        assertEquals(null, result?.vedtak?.firstOrNull()?.virkningsdato)
+        assertEquals("2021-07-23", result?.vedtak?.firstOrNull()?.virkningsdato)
 
     }
 
-    private fun gjennyVedtak(dato: LocalDateTime?, status: VedtakStatus, attDato: LocalDateTime? = null) = GjennyVedtak(
+    private fun gjennyVedtak(dato: LocalDateTime? = null, status: VedtakStatus, attDato: LocalDateTime? = null) = GjennyVedtak(
         sakId = 123456,
         sakType = "Omstilling",
         virkningstidspunkt = LocalDate.parse("2021-07-23"),

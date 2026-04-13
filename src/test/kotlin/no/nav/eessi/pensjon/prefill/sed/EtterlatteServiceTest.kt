@@ -56,7 +56,7 @@ class EtterlatteServiceTest {
         assertTrue(result.isSuccess)
         verifyRequestVedtakMadeOnce()
         assertNotNull(result.getOrNull())
-        assertEquals(LocalDate.of(2025,7,18),result.getOrNull()?.hentVedtakItems()?.firstOrNull()?.iverksettelsesTidspunkt)
+        assertEquals("2025-01-01",result.getOrNull()?.hentVedtakItems()?.firstOrNull()?.virkningsdato)
     }
 
     private fun mockSuccessfulVedtakResponse(fnr: String, responseBody: String) {

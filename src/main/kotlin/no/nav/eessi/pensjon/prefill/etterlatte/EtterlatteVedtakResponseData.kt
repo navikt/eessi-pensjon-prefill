@@ -11,10 +11,9 @@ data class EtterlatteVedtakResponseData(
 ) {
     fun hentVedtakItems(): List<VedtakItem> {
         return vedtak.map { vedtak ->
-            val avslElInnv = vedtak.type?.value
             VedtakItem(
-                virkningsdato = if (avslElInnv == "01") vedtak.virkningstidspunkt.toString() else null,
-                resultat = avslElInnv,
+                virkningsdato = vedtak.virkningstidspunkt?.let { vedtak.virkningstidspunkt.toString() },
+                resultat = vedtak.type?.value,
                 type = "03", // Etterlatte pensjon
                 beregning = vedtak.utbetaling?.map {
                     BeregningItem(
@@ -25,8 +24,7 @@ data class EtterlatteVedtakResponseData(
                         )
                     )
                 },
-                iverksettelsesTidspunkt = vedtak.iverksettelsesTidspunkt?.toLocalDate()
-                    ?: vedtak.attestertTidspunkt?.toLocalDate(),
+                iverksettelsesTidspunkt = vedtak.attestertTidspunkt?.toLocalDate(),
             )
         }
     }
