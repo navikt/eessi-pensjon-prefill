@@ -10,6 +10,7 @@ data class GjennyVedtak(
     val type: VedtakStatus?,
     val utbetaling: List<GjennyUtbetaling>?,
     val iverksettelsesTidspunkt: LocalDateTime?,
+    val attestertTidspunkt: LocalDateTime?,
 )
 
 data class GjennyUtbetaling(

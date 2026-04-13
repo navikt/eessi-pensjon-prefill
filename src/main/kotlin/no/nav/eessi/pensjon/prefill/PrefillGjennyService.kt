@@ -199,7 +199,7 @@ class PrefillGjennyService(
     ): P6000 {
         val sedType = prefillData.sedType
 
-        logger.debug("Prefiller med vedtaksdata fra Gjenny: $etterlatteRespData")
+        logger.debug("Prefiller med vedtaksdata fra Gjenny: ${etterlatteRespData?.toJson()}")
         val gjenlevendePerson = prefillNav.createBruker(personData.gjenlevendeEllerAvdod!!, null, null, prefillData.bruker)
         val p6000Pensjon = PrefillP6000GjennyPensjon().prefillP6000GjennyPensjon(
                 gjenlevendePerson,

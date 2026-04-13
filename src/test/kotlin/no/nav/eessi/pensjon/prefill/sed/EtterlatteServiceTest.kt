@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class EtterlatteServiceTest {
@@ -55,7 +56,7 @@ class EtterlatteServiceTest {
         assertTrue(result.isSuccess)
         verifyRequestVedtakMadeOnce()
         assertNotNull(result.getOrNull())
-        assertEquals(LocalDateTime.parse("2025-07-18T14:23:45.123456"),result.getOrNull()?.vedtak?.firstOrNull()?.iverksettelsesTidspunkt)
+        assertEquals("2025-01-01",result.getOrNull()?.hentVedtakItems()?.firstOrNull()?.virkningsdato)
     }
 
     private fun mockSuccessfulVedtakResponse(fnr: String, responseBody: String) {

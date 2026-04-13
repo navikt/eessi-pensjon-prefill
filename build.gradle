@@ -23,10 +23,6 @@ apply from: "buildSrc/ep-module.gradle"
 
 group = 'no.nav.eessi.pensjon'
 
-//jar {
-//    archivesBaseName = 'eessi-pensjon-prefill'
-//}
-
 dependencies {
     // Spring-boot BOM-fil spesifiserer versjoner for Spring Boot-avhengigheter
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -69,7 +65,7 @@ dependencies {
 
     implementation ("org.springframework.kafka:spring-kafka:$springKafkaVersion")
 
-    implementation("no.nav.eessi.pensjon:ep-eux:3.0.45")
+    implementation("no.nav.eessi.pensjon:ep-eux:3.0.47")
     implementation("no.nav.eessi.pensjon:ep-metrics:3.0.20")
     implementation("no.nav.eessi.pensjon:ep-logging:3.0.27")
     implementation("no.nav.eessi.pensjon:ep-kodeverk:5.0.45") {
