@@ -24,6 +24,7 @@ data class P2xxxMeldingOmPensjonDto(
 
     data class Vedtak(
         val boddArbeidetUtland: Boolean? = null,
+        val vedtakId: String? = null,
     ) : VedtakInterface
 
     // TODO: Valdiere senere
