@@ -146,56 +146,26 @@ class InnhentingServiceTest {
 
         @BeforeEach
         fun setup() {
-            every { pesysService.hentP2000data(any(), any()) } returns mockk() {
-                every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
-                    sakType = EessiFellesDto.EessiSakType.ALDER,
-                    kravHistorikk = listOf(
-                        P2xxxMeldingOmPensjonDto.KravHistorikk(
-                            mottattDato = LocalDate.of(2015, 11, 25),
-                            kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
-                            virkningstidspunkt = LocalDate.of(2015, 11, 25),
-                        )
-                    ),
-                    ytelsePerMaaned = emptyList(),
-                    forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
-                    status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
-                )
-                every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true, vedtakId = "123456")
-            }
+            every { pesysService.hentP2000data(any(), any()) } returns mockP2xxxData(EessiFellesDto.EessiSakType.ALDER)
+            every { pesysService.hentP2100data(any(), any()) } returns mockP2xxxData(EessiFellesDto.EessiSakType.GJENLEV)
+            every { pesysService.hentP2200data(any(), any()) } returns mockP2xxxData(EessiFellesDto.EessiSakType.UFOREP)
+        }
 
-            every { pesysService.hentP2100data(any(), any()) } returns mockk() {
-                every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
-                    sakType = EessiFellesDto.EessiSakType.GJENLEV,
-                    kravHistorikk = listOf(
-                        P2xxxMeldingOmPensjonDto.KravHistorikk(
-                            mottattDato = LocalDate.of(2015, 11, 25),
-                            kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
-                            virkningstidspunkt = LocalDate.of(2015, 11, 25),
-                        )
-                    ),
-                    ytelsePerMaaned = emptyList(),
-                    forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
-                    status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
-                )
-                every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true, vedtakId = "123456")
-            }
-
-            every { pesysService.hentP2200data(any(), any()) } returns mockk() {
-                every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
-                    sakType = EessiFellesDto.EessiSakType.UFOREP,
-                    kravHistorikk = listOf(
-                        P2xxxMeldingOmPensjonDto.KravHistorikk(
-                            mottattDato = LocalDate.of(2015, 11, 25),
-                            kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
-                            virkningstidspunkt = LocalDate.of(2015, 11, 25),
-                        )
-                    ),
-                    ytelsePerMaaned = emptyList(),
-                    forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
-                    status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
-                )
-                every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true, vedtakId = "123456")
-            }
+        private fun mockP2xxxData(sakType: EessiFellesDto.EessiSakType) = mockk<P2xxxMeldingOmPensjonDto> {
+            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                sakType = sakType,
+                kravHistorikk = listOf(
+                    P2xxxMeldingOmPensjonDto.KravHistorikk(
+                        mottattDato = LocalDate.of(2015, 11, 25),
+                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
+                        virkningstidspunkt = LocalDate.of(2015, 11, 25),
+                    )
+                ),
+                ytelsePerMaaned = emptyList(),
+                forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
+                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
+            )
+            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true, vedtakId = "123456")
         }
 
         @Test
