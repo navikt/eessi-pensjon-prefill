@@ -6,8 +6,6 @@ import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.BucType.*
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.*
-import no.nav.eessi.pensjon.eux.model.buc.SakType
-import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.AKTORID
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
@@ -19,7 +17,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 
@@ -169,8 +166,8 @@ class InnhentingServiceTest {
         }
 
         @Test
-        fun `Gitt en P2100 med saktype ALDER saa skal hentPensjoninformasjonCollection sitt resultat paa saktype gi ut ALDER`() {
-            val prefillData = prefillDataModel(sedType = P2100, vedtakId = "123456" )
+        fun `Gitt en P2000 med saktype ALDER saa skal hentPensjoninformasjonCollection sitt resultat paa saktype gi ut ALDER`() {
+            val prefillData = prefillDataModel(sedType = P2000, vedtakId = "123456" )
 
             val resultat = innhentingsService.hentPensjoninformasjonCollection(prefillData)
             assertEquals(EessiFellesDto.EessiSakType.ALDER, resultat.p2xxxMeldingOmPensjonDto?.sak?.sakType)
