@@ -94,7 +94,7 @@ class InnhentingService(
                 val p2000data = penSak?.let { pesysService.hentP2000data(fnr, penSak) }
                 PensjonCollection(
                     p2xxxMeldingOmPensjonDto = p2000data.takeIf { p2000data?.sak?.sakType == ALDER } ,
-                    vedtakId = vedtaksId,
+                    vedtakId = vedtaksId ?: p2000data?.vedtak?.vedtakId,
                     sedType = sedType
                 )
             }
@@ -104,7 +104,7 @@ class InnhentingService(
                 val p2100data = penSak?.let { pesysService.hentP2100data(fnr, penSak) }
                 PensjonCollection(
                     p2xxxMeldingOmPensjonDto = p2100data.takeIf { p2100data?.sak?.sakType in eessipensjonSakTyper } ,
-                    vedtakId = vedtaksId,
+                    vedtakId = vedtaksId ?: p2100data?.vedtak?.vedtakId,
                     sedType = sedType
                 )
             }
@@ -114,7 +114,7 @@ class InnhentingService(
                 val p2200data = penSak?.let { pesysService.hentP2200data(fnr, penSak) }
                 PensjonCollection(
                     p2xxxMeldingOmPensjonDto = p2200data.takeIf { p2200data?.sak?.sakType == UFOREP } ,
-                    vedtakId = vedtaksId,
+                    vedtakId = vedtaksId ?: p2200data?.vedtak?.vedtakId,
                     sedType = sedType
                 )
             }

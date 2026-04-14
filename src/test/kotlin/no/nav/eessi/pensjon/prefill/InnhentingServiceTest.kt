@@ -6,6 +6,8 @@ import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.BucType.*
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.*
+import no.nav.eessi.pensjon.eux.model.buc.SakType
+import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.AKTORID
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
@@ -15,6 +17,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 
@@ -141,7 +146,7 @@ class InnhentingServiceTest {
 
         @BeforeEach
         fun setup() {
-            every { pesysService.hentP2100data(any(), any()) } returns mockk() {
+            every { pesysService.hentP2000data(any(), any()) } returns mockk() {
                 every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                     sakType = EessiFellesDto.EessiSakType.ALDER,
                     kravHistorikk = listOf(
@@ -155,7 +160,41 @@ class InnhentingServiceTest {
                     forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
                     status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
                 )
-                every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
+                every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true, vedtakId = "123456")
+            }
+
+            every { pesysService.hentP2100data(any(), any()) } returns mockk() {
+                every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                    sakType = EessiFellesDto.EessiSakType.GJENLEV,
+                    kravHistorikk = listOf(
+                        P2xxxMeldingOmPensjonDto.KravHistorikk(
+                            mottattDato = LocalDate.of(2015, 11, 25),
+                            kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
+                            virkningstidspunkt = LocalDate.of(2015, 11, 25),
+                        )
+                    ),
+                    ytelsePerMaaned = emptyList(),
+                    forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
+                    status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
+                )
+                every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true, vedtakId = "123456")
+            }
+
+            every { pesysService.hentP2200data(any(), any()) } returns mockk() {
+                every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                    sakType = EessiFellesDto.EessiSakType.UFOREP,
+                    kravHistorikk = listOf(
+                        P2xxxMeldingOmPensjonDto.KravHistorikk(
+                            mottattDato = LocalDate.of(2015, 11, 25),
+                            kravType = EessiFellesDto.EessiKravGjelder.F_BH_KUN_UTL,
+                            virkningstidspunkt = LocalDate.of(2015, 11, 25),
+                        )
+                    ),
+                    ytelsePerMaaned = emptyList(),
+                    forsteVirkningstidspunkt = LocalDate.of(2025, 12, 12),
+                    status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
+                )
+                every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true, vedtakId = "123456")
             }
         }
 
@@ -165,6 +204,22 @@ class InnhentingServiceTest {
 
             val resultat = innhentingsService.hentPensjoninformasjonCollection(prefillData)
             assertEquals(EessiFellesDto.EessiSakType.ALDER, resultat.p2xxxMeldingOmPensjonDto?.sak?.sakType)
+        }
+
+        @ParameterizedTest
+        @CsvSource(
+            value = ["P2000", "P2100", "P2200"]
+        )
+        fun `En P2100 med vedtak skal bruke vedtakId fra sed eller fra response fra pesys `(pSedType: String) {
+            val sedType = SedType.valueOf(pSedType)
+
+            var prefillData = prefillDataModel(sedType = sedType, vedtakId = "111111" )
+            var resultat = innhentingsService.hentPensjoninformasjonCollection(prefillData)
+            assertEquals("111111", resultat.vedtakId)
+
+            prefillData = prefillDataModel(sedType = sedType, vedtakId = null )
+            resultat = innhentingsService.hentPensjoninformasjonCollection(prefillData)
+            assertEquals("123456", resultat.vedtakId)
         }
 
         @Test
