@@ -8,7 +8,6 @@ import java.time.LocalDateTime
 
 data class PrefillAutomatiseringMelding (
     val opprettetTidspunkt: LocalDateTime = LocalDateTime.now(),
-    val sedVersjon: String,
     val bucType: BucType,
     val sedType: SedType,
     val antallPreutfylteFelter: Int,
