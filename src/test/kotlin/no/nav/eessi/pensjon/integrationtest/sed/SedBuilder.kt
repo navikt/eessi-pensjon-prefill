@@ -7,7 +7,6 @@ class SedBuilder {
 
     class ValidResponseBuilder {
         var sed: SedType = SedType.P2000
-        var sedGVer: String = "4"
         var pensjon: Pensjon? = null
         var nav: NavBuilder = NavBuilder()
 
@@ -17,7 +16,7 @@ class SedBuilder {
                 SedType.P2000 -> return P2000(sed, p2000pensjon = pensjon?.let { pensjon as P2000Pensjon}, nav = nav.build())
                 SedType.P4000 -> return P4000(sed, p4000Pensjon =  P4000Pensjon(null), nav = nav.build())
                 SedType.P6000 -> return P6000(sed, pensjon = pensjon?.let { pensjon as P6000Pensjon}, nav = nav.apply { krav = null } .build())
-                else -> { SED(sed, sedGVer = sedGVer, pensjon = null, nav = nav.build()) }
+                else -> { SED(sed, pensjon = null, nav = nav.build()) }
             }
          }
     }

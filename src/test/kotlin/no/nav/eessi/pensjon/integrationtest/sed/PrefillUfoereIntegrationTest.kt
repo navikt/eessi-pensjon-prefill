@@ -197,8 +197,7 @@ class PrefillUfoereIntegrationTest {
                   "dato" : "2020-08-08"
                 },
                 "etterspurtedokumenter" : "P5000 and P6000"
-              },
-              "sedGVer" : "4"
+              }
             }    
         """.trimIndent()
         JSONAssert.assertEquals(response, validResponse, true
@@ -550,8 +549,7 @@ class PrefillUfoereIntegrationTest {
                  "dato" : "2020-08-08"
                },
                "etterspurtedokumenter" : "P5000 and P6000"
-              },
-              "sedGVer" : "4"
+              }
             }
         """.trimIndent()
 
@@ -611,7 +609,6 @@ class PrefillUfoereIntegrationTest {
     private fun validResponse(ident: String) = """
                 {
                   "sed" : "P2200",
-                  "sedGVer" : "4",
                   "nav" : {
                     "eessisak" : [ {
                       "institusjonsid" : "NO:noinst002",
@@ -672,8 +669,7 @@ class PrefillUfoereIntegrationTest {
                       "dato" : "2020-08-08"
                     },
                     "etterspurtedokumenter" : "P5000 and P6000"
-                  },
-                  "sedGVer" : "4"
+                  }
                 }
             """.trimIndent()
 

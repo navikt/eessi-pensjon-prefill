@@ -299,8 +299,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                 } ]
               } ]
             }
-          },
-          "sedGVer" : "4"
+          }
         }
         """.trimIndent()
 
@@ -419,8 +418,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                 } ]
               } ]
             }
-          },
-          "sedGVer" : "4"
+          }
         }
         """.trimIndent()
 
@@ -548,8 +546,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                 "innvilgetPensjon" : "02"
               } ]
             }
-          },
-          "sedGVer" : "4"
+          }
         }
         """.trimIndent()
 
@@ -646,8 +643,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                 } ]
               } ]
             }
-          },
-          "sedGVer" : "4"
+          }
         }     
         """.trimIndent()
 
@@ -706,8 +702,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                     "kjoenn" : "M"
                   }
                 }
-              },
-              "sedGVer" : "4"
+              }
             }        
         """.trimIndent()
 
@@ -1087,7 +1082,6 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
       }
     ]
   },
-  "sedGVer": "4",
   "sed": "P6000"
 }
             
