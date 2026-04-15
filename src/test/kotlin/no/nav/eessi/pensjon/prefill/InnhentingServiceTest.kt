@@ -137,8 +137,8 @@ class InnhentingServiceTest {
     }
 
     class InnhentingSaktyperTest {
+        val pesysService: PesysService = mockk()
         val personDataService: PersonDataService = mockk()
-        private val pesysService: PesysService = mockk()
         val innhentingsService = InnhentingService(personDataService, pesysService = pesysService)
 
         @BeforeEach
