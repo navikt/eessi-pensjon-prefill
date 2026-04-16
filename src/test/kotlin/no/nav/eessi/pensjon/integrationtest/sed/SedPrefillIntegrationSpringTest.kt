@@ -168,26 +168,6 @@ class SedPrefillIntegrationSpringTest {
             )
         )
         every { pesysService.hentP6000data(any()) } returns mockP6000MeldingOmVedtakDto
-
-
-        val mockP2000 = mockk<P2xxxMeldingOmPensjonDto> {
-            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
-                sakType = EessiFellesDto.EessiSakType.ALDER,
-                kravHistorikk = listOf(
-                    P2xxxMeldingOmPensjonDto.KravHistorikk(
-                        mottattDato = LocalDate.parse("2020-08-08"),
-//                        kravType = EessiFellesDto.EessiKravGjelder.REVURD,
-                        virkningstidspunkt = LocalDate.parse("2019-07-15"),
-                        kravStatus = EessiFellesDto.EessiSakStatus.INGEN_STATUS,
-//                        kravArsak = EessiKravArsak.NY_SOKNAD.name
-                    )
-                ),
-                ytelsePerMaaned = emptyList(),
-                forsteVirkningstidspunkt = null,
-                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
-            )
-            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
-        }
     }
 
     @ParameterizedTest(name = "for verdier for sakId:{0}, vedtak:{1}, sedType:{2}, og feilmelding:{3}")
@@ -301,17 +281,6 @@ class SedPrefillIntegrationSpringTest {
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(
             true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true
         )
-//        every { pesysService.hentP6000data(any()) } returns P6000MeldingOmVedtakDto(
-//            gjenlevendeFnr = FNR_VOKSEN,
-//            avdodFnr = FNR_VOKSEN_4,
-//            krav = Krav(
-//                type = KravType.GJENLEV,
-//                belop = 15000.0,
-//                betalingshyppighet = Betalingshyppighet.MANEDLIG
-//            )
-//        )
-//
-//        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-BARNEP-GJENLEV.xml")
 
         val apijson = dummyApijson(
             sakid = "22874955",
@@ -323,7 +292,6 @@ class SedPrefillIntegrationSpringTest {
         )
 
         val result = mockMvcPrefill(apijson)
-
         val response = result.response.getContentAsString(charset("UTF-8"))
 
         val mapper = jacksonObjectMapper()
@@ -340,8 +308,7 @@ class SedPrefillIntegrationSpringTest {
     @Throws(Exception::class)
     fun `prefill sed P6000 P_BUC_01 Alderpensjon med avslag skal returnere en gyldig SED`() {
 
-        val person = mockPersonService(FNR_VOKSEN_3, AKTOER_ID, fornavn = "Alder", etternavn = "Pensjonist")
-//        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/vedtak/P6000-AP-Avslag.xml")
+        mockPersonService(FNR_VOKSEN_3, AKTOER_ID, fornavn = "Alder", etternavn = "Pensjonist")
 
         val mockP6000MeldingOmVedtakDto = P6000MeldingOmVedtakDto(
             sakType = EessiFellesDto.EessiSakType.ALDER,
@@ -682,7 +649,7 @@ class SedPrefillIntegrationSpringTest {
     fun `prefill sed P2000 alder F_BH_KUN_UTL return valid sedjson`() {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
-//        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/AP_2000_KUN_UTLAND.xml")
+
         val mockP2000 = mockk<P2xxxMeldingOmPensjonDto> {
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
                 sakType = EessiFellesDto.EessiSakType.ALDER,
@@ -735,7 +702,6 @@ class SedPrefillIntegrationSpringTest {
 
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
-//        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000krav-alderpensjon-avslag.xml")
 
         val mockP2000 = mockk<P2xxxMeldingOmPensjonDto> {
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
@@ -974,7 +940,6 @@ class SedPrefillIntegrationSpringTest {
 
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith()
-//        every { pensjonsinformasjonOidcRestTemplate.exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java)) } returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-UP-21337890.xml")
 
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sedType = X010)
 
@@ -1039,38 +1004,32 @@ class SedPrefillIntegrationSpringTest {
 
     @Test
     @Throws(Exception::class)
-    fun `prefill sed med uten korrekt kravtype skal kaste en Exception`() {
+    fun `prefill sed med uten korrekt kravdato skal kaste en Exception`() {
         every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN)
         every { personService.hentPerson(NorskIdent(FNR_VOKSEN)) } returns PersonPDLMock.createWith(
             true, fnr = FNR_VOKSEN, aktoerid = AKTOER_ID
         )
-//        every { pesysService.hentP2000data(any()) } returns mockk{
-//            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
-//                sakType = EessiFellesDto.EessiSakType.ALDER,
-//                kravHistorikk = listOf(
-//                    P2xxxMeldingOmPensjonDto.KravHistorikk(
-//                        mottattDato = LocalDate.parse("2020-08-08"),
-////                        kravType = EessiFellesDto.EessiKravGjelder.REVURD,
-////                        virkningstidspunkt = LocalDate.parse("2019-07-15"),
-//                        kravStatus = EessiFellesDto.EessiSakStatus.INGEN_STATUS,
-////                        kravArsak = EessiKravArsak.NY_SOKNAD.name
-//                    )
-//                ),
-//                ytelsePerMaaned = emptyList(),
-//                forsteVirkningstidspunkt = null,
-//                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
-//            )
-//            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
-//        }
-
-
-//        every { pensjonsinformasjonOidcRestTemplate .exchange(any<String>(), any(), any<HttpEntity<Unit>>(), eq(String::class.java))} returns PrefillTestHelper.readXMLresponse("/pensjonsinformasjon/krav/P2000-AP-MANGLER_BOSATT_UTLAND.xml")
+        every { pesysService.hentP2000data(any(), any()) } returns mockk{
+            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                sakType = EessiFellesDto.EessiSakType.ALDER,
+                kravHistorikk = listOf(
+                    P2xxxMeldingOmPensjonDto.KravHistorikk(
+                        mottattDato = LocalDate.parse("2020-08-08"),
+                        virkningstidspunkt = LocalDate.parse("2019-07-15"),
+                        kravStatus = EessiFellesDto.EessiSakStatus.INGEN_STATUS,
+                    )
+                ),
+                ytelsePerMaaned = emptyList(),
+                forsteVirkningstidspunkt = null,
+                status = EessiFellesDto.EessiSakStatus.TIL_BEHANDLING,
+            )
+            every { vedtak } returns P2xxxMeldingOmPensjonDto.Vedtak(boddArbeidetUtland = true)
+        }
 
         val apijson = dummyApijson(sakid = "21920707", aktoerId = AKTOER_ID)
-
-        val melding =
-            "Det finnes ingen iverksatte vedtak for førstegangsbehandling kun utland, eller sluttbehandling. Vennligst gå til EESSI-Pensjon fra vedtakskontekst."
-//        mockMvcSedPrefill(apijson, melding)
+        val melding = "Kravdato mangler\n" +
+                "Gjelder utsendelsen \"Førstegangsbehandling kun utland\", se egen rutine på Navet."
+        mockMvcSedPrefill(apijson, melding)
     }
 
     private val PREFILL_URL = "/sed/prefill"
