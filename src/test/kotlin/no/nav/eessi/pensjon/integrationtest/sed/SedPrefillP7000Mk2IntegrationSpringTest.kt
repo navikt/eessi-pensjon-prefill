@@ -89,28 +89,15 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
 
     @Test
     fun `prefill sed P7000 - Gitt en alderspensjon med flere P6000 med invilgelse og avslag skal det preutfylles gyldig SED`() {
-        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
-        every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
-        every { kodeverkClient.finnLandkode(any())} returns "QX"
+        stubAlderspensjonBruker()
 
-        //mock p6000 fra RINA med data som skal benyttes i P7000
-        val p6000fraRequest = listOf(mockP6000requestdata("SE", "P6000SE-INNV.json"), mockP6000KomplettRequestdata("NO"))
-        val payload = mapAnyToJson(p6000fraRequest)
+        val payload = payloadOf(
+            mockP6000requestdata("SE", "P6000SE-INNV.json"),
+            mockP6000KomplettRequestdata("NO")
+        )
+        val apijson = p7000Request(payload = payload)
 
-        //mock apiRequest
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_01, payload = payload ).toJson()
-
-        val result = mockMvc.perform(post("/sed/prefill")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(apijson))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
-        println("ææææææ: $response")
+        val response = executePrefill(apijson)
 
         val p7000Actual = mapJsonToAny<P7000>(response)
         val p7000Person = p7000Actual.nav?.bruker?.person!!
@@ -196,23 +183,14 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
     @Test
     @Throws(Exception::class)
     fun `prefill sed P7000 - Gitt gjenlevendepensjon med flere P6000 med avslag skal det preutfylles gyldig SED`() {
-        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
-        every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
+        stubGjenlevendeBrukerFnr()
 
-        every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_3)) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
-        every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_4)) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
+        val payload = payloadOf(
+            mockP6000requestdata("SE", "P6000SE-INNV.json"),
+            mockP6000requestdata("NO", "P6000SE-INNV.json")
+        )
 
-
-        //mock p6000 fra RINA med data som skal benyttes i P7000
-        val p6000fraRequest = listOf(mockP6000requestdata("SE","P6000SE-INNV.json"), mockP6000requestdata("NO", "P6000SE-INNV.json"))
-        val payload = mapAnyToJson(p6000fraRequest)
-
-        //mock apiRequest
-        val subject = dummyApiSubject(FNR_VOKSEN_4)
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_02, subject = subject, payload = payload ).toJson()
+        val apijson = p7000Request(payload = payload, buc = P_BUC_02, subject = dummyApiSubject(FNR_VOKSEN_4))
 
         val validResponse = """
         {
@@ -303,35 +281,21 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         }
         """.trimIndent()
 
-        val result = mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = executePrefill(apijson)
         JSONAssert.assertEquals(response, validResponse, false)
     }
 
     @Test
     @Throws(Exception::class)
     fun `prefill sed P7000 for Npid bruker - Gitt gjenlevendepensjon med flere P6000 med avslag skal det preutfylles gyldig SED`() {
-        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID))} returns Npid(NPID_VOKSEN)
-        every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
-        every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", NPID_VOKSEN, AKTOER_ID)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
-        every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_4)
+        stubGjenlevendeBrukerNpid()
 
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
+        val payload = payloadOf(
+            mockP6000requestdata("SE", "P6000SE-INNV.json"),
+            mockP6000requestdata("NO", "P6000SE-INNV.json")
+        )
 
-        //mock p6000 fra RINA med data som skal benyttes i P7000
-        val p6000fraRequest = listOf(mockP6000requestdata("SE","P6000SE-INNV.json"), mockP6000requestdata("NO", "P6000SE-INNV.json"))
-        val payload = mapAnyToJson(p6000fraRequest)
-
-        //mock apiRequest
-        val subject = dummyApiSubject(FNR_VOKSEN_4)
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_02, subject = subject, payload = payload ).toJson()
+        val apijson = p7000Request(payload = payload, buc = P_BUC_02, subject = dummyApiSubject(FNR_VOKSEN_4))
 
         val validResponse = """
         {
@@ -422,32 +386,20 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         }
         """.trimIndent()
 
-        val result = mockMvc.perform(post("/sed/prefill")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(apijson))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = executePrefill(apijson)
         JSONAssert.assertEquals(response, validResponse, false)
     }
 
     @Test
     fun `prefill sed P7000 - Gitt gjenlevendepensjon med to P6000 med godkjent pensjon skal det preutfylles gyldig SED`() {
-        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID))} returns NorskIdent(FNR_VOKSEN_3)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
-        every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
+        stubLeverBruker()
 
-        every { kodeverkClient.finnLandkode(any()) } returns "QX"
+        val payload = payloadOf(
+            mockP6000requestdata("NO", "P7000/P6000Sendt.json"),
+            mockP6000requestdata("SE", "P7000/P6000Mottatt.json")
+        )
 
-        //mock p6000 fra RINA med data som skal benyttes i P7000
-
-        val p6000fraRequest = listOf(mockP6000requestdata("NO", "P7000/P6000Sendt.json"), mockP6000requestdata("SE", "P7000/P6000Mottatt.json"))
-        val payload = mapAnyToJson(p6000fraRequest)
-
-        //mock apiRequest
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_01, subject = null, payload = payload ).toJson()
+        val apijson = p7000Request(payload = payload)
 
         val validResponse = """
         {
@@ -550,32 +502,20 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         }
         """.trimIndent()
 
-        val result = mockMvc.perform(post("/sed/prefill")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(apijson))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
-
+        val response = executePrefill(apijson)
         JSONAssert.assertEquals(validResponse, response, false)
     }
 
-
     @Test
     fun `prefill sed P7000 - Gitt en alderspensjon med flere P6000 med avslag skal det preutfylles gyldig SED`() {
-        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
-        every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
-        every { kodeverkClient.finnLandkode(any())} returns "QX"
+        stubAlderspensjonBruker()
 
-        //mock p6000 fra RINA med data som skal benyttes i P7000
-        val p6000fraRequest = listOf(mockP6000requestdata("SE", "P6000SE-INNV.json"), mockP6000requestdata("NO", "P6000SE-INNV.json"))
-        val payload = mapAnyToJson(p6000fraRequest)
+        val payload = payloadOf(
+            mockP6000requestdata("SE", "P6000SE-INNV.json"),
+            mockP6000requestdata("NO", "P6000SE-INNV.json")
+        )
 
-        //mock apiRequest
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_01, payload = payload ).toJson()
+        val apijson = p7000Request(payload = payload)
 
         val validResponse = """ 
         {
@@ -647,26 +587,15 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
         }     
         """.trimIndent()
 
-        val result = mockMvc.perform(post("/sed/prefill")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(apijson))
-                .andExpect(status().isOk)
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andReturn()
-
-        val response = result.response.getContentAsString(charset("UTF-8"))
+        val response = executePrefill(apijson)
         JSONAssert.assertEquals(response, validResponse, false)
     }
 
     @Test
     fun `prefill sed P7000 - Gitt en alderspensjon uten noen P6000 - gyldig SED`() {
-        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
-        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
-        every { krrService.hentPersonerFraKrr(any()) } returns DigitalKontaktinfo(epostadresse = "melleby12@melby.no", mobiltelefonnummer = "11111111", aktiv = true, personident = FNR_VOKSEN_3)
-        every { kodeverkClient.finnLandkode(any())} returns "QX"
+        stubAlderspensjonBruker()
 
-        //mock apiRequest
-        val apijson = dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = P_BUC_01).toJson()
+        val apijson = p7000Request()
         val validResponse = """ 
             {
               "sed" : "P7000",
@@ -706,17 +635,71 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             }        
         """.trimIndent()
 
-        val result = mockMvc.perform(post("/sed/prefill")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(apijson))
+        val response = executePrefill(apijson)
+        JSONAssert.assertEquals(response, validResponse, false)
+    }
+
+    private fun stubAlderspensjonBruker() {
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Alder", "Pensjon", FNR_VOKSEN_3, AKTOER_ID)
+        every { krrService.hentPersonerFraKrr(any()) } returns kontaktInfo(FNR_VOKSEN_3)
+        stubLandkodeQx()
+    }
+
+    private fun stubLeverBruker() {
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
+        every { krrService.hentPersonerFraKrr(any()) } returns kontaktInfo(FNR_VOKSEN_3)
+        stubLandkodeQx()
+    }
+
+    private fun stubGjenlevendeBrukerFnr() {
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", FNR_VOKSEN_3, AKTOER_ID)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
+        every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_3)) } returns kontaktInfo(FNR_VOKSEN_3)
+        every { krrService.hentPersonerFraKrr(eq(FNR_VOKSEN_4)) } returns kontaktInfo(FNR_VOKSEN_4)
+        stubLandkodeQx()
+    }
+
+    private fun stubGjenlevendeBrukerNpid() {
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns Npid(NPID_VOKSEN)
+        every { personService.hentIdent(AKTORID, NorskIdent(FNR_VOKSEN_4)) } returns AktoerId(AKTOER_ID_2)
+        every { personService.hentPerson(Npid(NPID_VOKSEN)) } returns PersonPDLMock.createWith(true, "Lever", "Gjenlev", NPID_VOKSEN, AKTOER_ID)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_4)) } returns PersonPDLMock.createWith(true, "Avdød", "Død", FNR_VOKSEN_4, AKTOER_ID_2, true)
+        every { krrService.hentPersonerFraKrr(any()) } returns kontaktInfo(FNR_VOKSEN_4)
+        stubLandkodeQx()
+    }
+
+    private fun stubLandkodeQx() {
+        every { kodeverkClient.finnLandkode(any()) } returns "QX"
+    }
+
+    private fun kontaktInfo(personident: String) = DigitalKontaktinfo(
+        epostadresse = "melleby12@melby.no",
+        mobiltelefonnummer = "11111111",
+        aktiv = true,
+        personident = personident
+    )
+
+    private fun payloadOf(vararg p6000: Pair<P6000Dokument, P6000>): String = mapAnyToJson(p6000.toList())
+
+    private fun p7000Request(payload: String? = null, buc: BucType = P_BUC_01, subject: ApiSubject? = null): String =
+        dummyApiRequest(sakid = "21337890", aktoerId = AKTOER_ID, sed = P7000, buc = buc, subject = subject, payload = payload).toJson()
+
+    private fun executePrefill(apijson: String): String {
+        val result = mockMvc.perform(
+            post("/sed/prefill")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(apijson)
+        )
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andReturn()
 
-        val response = result.response.getContentAsString(charset("UTF-8"))
-        JSONAssert.assertEquals(response, validResponse, false)
+        return result.response.getContentAsString(charset("UTF-8"))
     }
-
 
     private fun dummyApiRequest(sakid: String, vedtakid: String? = "", aktoerId: String, sed: SedType? = P2000, buc: BucType? = P_BUC_06, subject: ApiSubject? = null, refperson: ReferanseTilPerson? = null, payload: String? = null): ApiRequest {
         return ApiRequest(
@@ -1087,5 +1070,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             
         """.trimIndent()
     }
+
+
 
 
