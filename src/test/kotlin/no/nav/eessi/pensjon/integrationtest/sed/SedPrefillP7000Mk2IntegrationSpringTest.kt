@@ -278,7 +278,8 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
               } ]
             }
           },
-          "sedGVer" : "4"
+          "sedGVer" : "4",
+          "sedVer" : "2"
         }
         """.trimIndent()
 
@@ -384,7 +385,8 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
               } ]
             }
           },
-          "sedGVer" : "4"
+          "sedGVer" : "4",
+          "sedVer" : "2"
         }
         """.trimIndent()
 
@@ -587,8 +589,9 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
               } ]
             }
           },
-          "sedGVer" : "4"
-        }     
+          "sedGVer" : "4",
+          "sedVer" : "2"
+        }    
         """.trimIndent()
 
         val response = executePrefill(apijson)
@@ -636,7 +639,8 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                   }
                 }
               },
-              "sedGVer" : "4"
+              "sedGVer" : "4",
+              "sedVer" : "2"
             }        
         """.trimIndent()
 

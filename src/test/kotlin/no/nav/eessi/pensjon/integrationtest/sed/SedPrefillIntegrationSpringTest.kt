@@ -14,6 +14,8 @@ import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.sed.Betalingshyppighet
 import no.nav.eessi.pensjon.eux.model.sed.Krav
 import no.nav.eessi.pensjon.eux.model.sed.KravType
+import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.eux.model.sed.X009
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.Postnummer
@@ -944,34 +946,30 @@ class SedPrefillIntegrationSpringTest {
         val apijson = dummyApijson(sakid = "21337890", aktoerId = AKTOER_ID, sedType = X010)
 
         val validResponse = """
-                {
-                  "sed" : "X010",
-                  "sedGVer" : "4",
-                  "nav" : {
-                    "sak" : {
-                      "kontekst" : {
-                        "bruker" : {
-                          "person" : {
-                            "etternavn" : "Testesen",
-                            "fornavn" : "Test",
-                            "kjoenn" : "M",
-                            "foedselsdato" : "1988-07-12"
-                          }
-                        }
-                      },
-                      "paaminnelse" : {
-                        "svar" : {
-                          "informasjon" : {
-                            "kommersenere" : [ { 
-                                "type": "dokument",
-                                "opplysninger": "."
-                            } ]
-                          }
-                        }
+            {
+              "sed" : "X010",
+              "nav" : {
+                "sak" : {
+                  "kontekst" : {
+                    "bruker" : {
+                      "person" : {
+                        "etternavn" : "Testesen",
+                        "fornavn" : "Test",
+                        "kjoenn" : "M",
+                        "foedselsdato" : "1988-07-12"
                       }
+                    }
+                  },
+                  "paaminnelse" : {
+                    "svar" : {
+                      "informasjon" : { }
                     }
                   }
                 }
+              },
+              "sedGVer" : "4",
+              "sedVer" : "2"
+            }
         """.trimIndent()
 
         val response = prefillFraRestOgVerifiserResultet(apijson)

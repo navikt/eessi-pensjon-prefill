@@ -178,7 +178,8 @@ class SedPrefillPDLIntegrationSpringTest {
             },
             "etterspurtedokumenter" : "P5000 and P6000"
           },
-          "sedGVer" : "4"
+          "sedGVer" : "4",
+          "sedVer" : "2"
         }         
         """.trimIndent()
 
@@ -304,7 +305,9 @@ class SedPrefillPDLIntegrationSpringTest {
                     "land" : "NO"
                   }
                 }
-              }
+              },
+              "sedGVer" : "4",
+              "sedVer" : "2"
             }
           """.trimIndent()
 

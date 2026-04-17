@@ -198,7 +198,9 @@ class PrefillUfoereIntegrationTest {
                 },
                 "etterspurtedokumenter" : "P5000 and P6000"
               },
-              "sedGVer" : "4"
+              "sedGVer" : "4",
+              "sedVer" : "2"
+
             }    
         """.trimIndent()
         JSONAssert.assertEquals(response, validResponse, true
@@ -551,7 +553,8 @@ class PrefillUfoereIntegrationTest {
                },
                "etterspurtedokumenter" : "P5000 and P6000"
               },
-              "sedGVer" : "4"
+              "sedGVer" : "4",
+              "sedVer" : "2"
             }
         """.trimIndent()
 
@@ -673,7 +676,8 @@ class PrefillUfoereIntegrationTest {
                     },
                     "etterspurtedokumenter" : "P5000 and P6000"
                   },
-                  "sedGVer" : "4"
+                  "sedGVer" : "4",
+                  "sedVer" : "2"
                 }
             """.trimIndent()
 

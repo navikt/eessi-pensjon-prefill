@@ -220,7 +220,9 @@ class PrefillP15000IntegrationTest {
                 }
               },
               "pensjon" : { },
-              "sedGVer" : "4"
+              "sedGVer" : "4",
+              "sedVer" : "2"
+
             }
         """.trimIndent()
 
@@ -480,7 +482,9 @@ class PrefillP15000IntegrationTest {
                   }
                 }
               },
-              "sedGVer" : "4"
+              "sedGVer" : "4",
+              "sedVer" : "2"
+
             }
         """.trimIndent()
 
@@ -565,7 +569,10 @@ class PrefillP15000IntegrationTest {
                   }
                 }
               },
-              "sedGVer" : "4"
+              "sedGVer" : "4",
+              "sedVer" : "2"
+
+              
             }
             """.trimIndent()
 

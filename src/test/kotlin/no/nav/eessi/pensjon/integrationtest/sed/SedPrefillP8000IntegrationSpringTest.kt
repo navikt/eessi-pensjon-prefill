@@ -374,7 +374,9 @@ class SedPrefillP8000IntegrationSpringTest {
                 "anmodning" : {
                   "referanseTilPerson" : "02"
                 }
-              }                      
+              },
+              "sedGVer" : "4",
+              "sedVer" : "2"
             }
         """.trimIndent()
 
@@ -503,7 +505,8 @@ class SedPrefillP8000IntegrationSpringTest {
               "referanseTilPerson" : "02"
             }
           },
-          "sedGVer" : "4"
+          "sedGVer" : "4",
+          "sedVer" : "2"
         }
         """.trimIndent()
 
@@ -561,14 +564,13 @@ class SedPrefillP8000IntegrationSpringTest {
                   "adresse" : {
                     "gate" : "Oppoverbakken 66",
                     "by" : "SØRUMSAND",
-                    "bygning" : "bygning",
                     "postnummer" : "1920",
-                    "region" : "region",
                     "land" : "NO"
                   }
                 }
               },
-              "pensjon" : { }
+              "sedGVer" : "4",
+              "sedVer" : "2"
             }
         """.trimIndent()
 
@@ -641,7 +643,8 @@ class SedPrefillP8000IntegrationSpringTest {
                   }
                 }
               },
-              "sedGVer" : "4"
+              "sedGVer" : "4",
+              "sedVer" : "2"
             }
         """.trimIndent()
 

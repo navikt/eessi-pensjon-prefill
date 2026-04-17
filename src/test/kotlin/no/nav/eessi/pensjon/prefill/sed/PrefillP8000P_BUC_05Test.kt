@@ -27,6 +27,7 @@ import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.api.ReferanseTilPerson
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
+import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -144,12 +145,12 @@ class PrefillP8000P_BUC_05Test {
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, ufoerFnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
 
-        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
+        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
+        println("DRITT: ${p8000.toJsonSkipEmpty()}")
 
         val expected = """
             {
               "sed" : "P8000",
-              "sedGVer" : "4",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -181,21 +182,22 @@ class PrefillP8000P_BUC_05Test {
                   },
                   "adresse" : {
                     "gate" : "LUNGJTEGATA 12",
-                    "by" : "UTLANDBY",
-                    "region" : "region",
-                    "postnummer" : "1231",
                     "bygning" : "bygning",
+                    "by" : "UTLANDBY",
+                    "postnummer" : "1231",
+                    "region" : "region",
                     "land" : "SE"
                   }
                 }
               },
-            "pensjon" : {
+              "pensjon" : {
                 "anmodning" : {
                   "referanseTilPerson" : "02"
                 }
-              }              
-             }
-
+              },
+              "sedGVer" : "4",
+              "sedVer" : "2"
+            }
         """.trimIndent()
 
        JSONAssert.assertEquals(p8000.toJsonSkipEmpty(), expected, true)
@@ -214,11 +216,13 @@ class PrefillP8000P_BUC_05Test {
 
         prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P8000, ufoerFnr, penSaksnummer = "100", avdod = PersonInfo(norskIdent = avdodFnr, aktorId = "21323"),  refTilPerson = ReferanseTilPerson.SOKER, bucType = P_BUC_05)
 
-        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
+        val p8000 =  prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
+
+        println("DRITT: ${p8000.toJsonSkipEmpty()}")
+
         val expected = """
             {
               "sed" : "P8000",
-              "sedGVer" : "4",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -250,19 +254,21 @@ class PrefillP8000P_BUC_05Test {
                   },
                   "adresse" : {
                     "gate" : "LUNGJTÖEGATA 12",
-                    "by" : "UTLANDBY",
                     "bygning" : "bygning",
+                    "by" : "UTLANDBY",
                     "postnummer" : "1231",
                     "region" : "region",
                     "land" : "SE"
                   }
                 }
               },
-            "pensjon" : {
+              "pensjon" : {
                 "anmodning" : {
                   "referanseTilPerson" : "02"
                 }
-              }              
+              },
+              "sedGVer" : "4",
+              "sedVer" : "2"
             }
 
         """.trimIndent()

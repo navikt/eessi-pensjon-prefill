@@ -109,7 +109,8 @@ class PrefillX010Test {
                   }
                 }
               },
-              "sedGVer" : "4"
+              "sedGVer" : "4",
+              "sedVer" : "2"
             }
         """.trimIndent()
     }
@@ -153,7 +154,8 @@ class PrefillX010Test {
               }
             }
           },
-          "sedGVer" : "4"
+          "sedGVer" : "4",
+          "sedVer" : "2"
         }
             """.trimIndent()
     }
