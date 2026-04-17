@@ -1,5 +1,6 @@
 {
   "sed" : "P5000",
+  "sedGVer" : "4",
   "nav" : {
     "bruker" : {
       "mor" : {

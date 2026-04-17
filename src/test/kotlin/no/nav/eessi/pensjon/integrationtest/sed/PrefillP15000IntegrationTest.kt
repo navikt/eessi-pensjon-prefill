@@ -185,7 +185,6 @@ class PrefillP15000IntegrationTest {
             .andReturn()
 
         val response = result.response.getContentAsString(charset("UTF-8"))
-        println("RESS: $response")
 
         val validResponse = """
             {
@@ -220,7 +219,8 @@ class PrefillP15000IntegrationTest {
                   "type" : "01"
                 }
               },
-              "pensjon" : { }
+              "pensjon" : { },
+              "sedGVer" : "4"
             }
         """.trimIndent()
 
@@ -479,7 +479,8 @@ class PrefillP15000IntegrationTest {
                     "land" : "NO"
                   }
                 }
-              }
+              },
+              "sedGVer" : "4"
             }
         """.trimIndent()
 
@@ -489,6 +490,7 @@ class PrefillP15000IntegrationTest {
     private fun gyldigResponse(bruker: String, gjenlevendeFnr: String, fyllesUt: Boolean): String = """
             {
               "sed" : "P15000",
+              "sedGVer" : "4",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -562,7 +564,8 @@ class PrefillP15000IntegrationTest {
                     "land" : "NO"
                   }
                 }
-              }
+              },
+              "sedGVer" : "4"
             }
             """.trimIndent()
 

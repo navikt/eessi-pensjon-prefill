@@ -946,6 +946,7 @@ class SedPrefillIntegrationSpringTest {
         val validResponse = """
                 {
                   "sed" : "X010",
+                  "sedGVer" : "4",
                   "nav" : {
                     "sak" : {
                       "kontekst" : {

@@ -174,7 +174,8 @@ class SedPrefillP8000IntegrationSpringTest {
             "anmodning" : {
               "referanseTilPerson" : "02"
             }
-          }
+          },
+          "sedGVer" : "4"
         }
         """.trimIndent()
 
@@ -282,7 +283,8 @@ class SedPrefillP8000IntegrationSpringTest {
             "anmodning" : {
               "referanseTilPerson" : "01"
             }
-          }
+          },
+          "sedGVer" : "4"
         }
         """.trimIndent()
 
@@ -325,6 +327,7 @@ class SedPrefillP8000IntegrationSpringTest {
         val validResponse = """
             {
               "sed" : "P8000",
+              "sedGVer" : "4",
               "nav" : {
               "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -499,7 +502,8 @@ class SedPrefillP8000IntegrationSpringTest {
             "anmodning" : {
               "referanseTilPerson" : "02"
             }
-          }
+          },
+          "sedGVer" : "4"
         }
         """.trimIndent()
 
@@ -521,6 +525,7 @@ class SedPrefillP8000IntegrationSpringTest {
         val validResponse = """
             {
               "sed" : "P8000",
+              "sedGVer" : "4",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -635,7 +640,8 @@ class SedPrefillP8000IntegrationSpringTest {
                     "land" : "NO"
                   }
                 }
-              }
+              },
+              "sedGVer" : "4"
             }
         """.trimIndent()
 

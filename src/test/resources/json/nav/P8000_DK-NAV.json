@@ -1,5 +1,6 @@
 {
   "sed" : "P8000",
+  "sedGVer" : "4",
   "nav" : {
     "eessisak" : [ {
       "saksnummer" : "21337890",

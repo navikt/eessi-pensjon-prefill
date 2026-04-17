@@ -177,7 +177,8 @@ class SedPrefillPDLIntegrationSpringTest {
               "dato" : "2014-06-04"
             },
             "etterspurtedokumenter" : "P5000 and P6000"
-          }
+          },
+          "sedGVer" : "4"
         }         
         """.trimIndent()
 
@@ -215,6 +216,7 @@ class SedPrefillPDLIntegrationSpringTest {
         val expected = """
             {
               "sed" : "P2100",
+              "sedGVer" : "4",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -379,7 +381,8 @@ class SedPrefillPDLIntegrationSpringTest {
             "kravDato" : {
               "dato" : "2014-06-04"
             }
-          }
+          },
+          "sedGVer" : "4"
         }
         """.trimIndent()
 

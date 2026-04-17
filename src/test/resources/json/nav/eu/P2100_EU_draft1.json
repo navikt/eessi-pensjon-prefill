@@ -68,6 +68,7 @@
         }
       ]
     },
+    "sedGVer": "4",
     "InsuredPersonDeathDetails": {
       "dateDeath": "2003-05-15",
       "CauseDeath": [

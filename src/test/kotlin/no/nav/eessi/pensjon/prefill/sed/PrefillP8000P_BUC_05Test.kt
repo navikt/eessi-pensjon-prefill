@@ -149,6 +149,7 @@ class PrefillP8000P_BUC_05Test {
         val expected = """
             {
               "sed" : "P8000",
+              "sedGVer" : "4",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
@@ -217,6 +218,7 @@ class PrefillP8000P_BUC_05Test {
         val expected = """
             {
               "sed" : "P8000",
+              "sedGVer" : "4",
               "nav" : {
                 "eessisak" : [ {
                   "institusjonsid" : "NO:noinst002",
