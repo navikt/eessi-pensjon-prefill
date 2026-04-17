@@ -159,14 +159,13 @@ class InnhentingService(
         }
     }
 
-    fun sjekkSakTypeKravSed(sak: P2xxxMeldingOmPensjonDto?, akseptabelSakstypeForSed: EessiSakType) {
-        val sakType = sak?.sak?.sakType
+fun sjekkSakTypeKravSed(sak: P2xxxMeldingOmPensjonDto?, akseptabelSakstypeForSed: EessiSakType) {
+            val sakType = sak?.sak?.sakType ?: return           // mangler saktype
+            if (sakType == akseptabelSakstypeForSed) return     // samme saktpe
 
-        if (sakType != akseptabelSakstypeForSed) {
             logger.warn("Du kan ikke opprette SED med saktype $sakType")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ugyldig saktype: $sakType")
         }
-    }
 
     private fun ResponseStatusExceptionFeilSak(
         prefillData: PrefillDataModel,
