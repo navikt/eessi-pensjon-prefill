@@ -36,6 +36,7 @@ class AutomatiseringStatistikkService(private val kafkaTemplate: KafkaTemplate<S
         try {
             publiserAutomatiseringStatistikk(
                 PrefillAutomatiseringMelding(
+                    sedVersjon = "1",
                     bucType = bucType,
                     sedType = sed.type,
                     antallPreutfylteFelter = antallPreutfylteFelter,
