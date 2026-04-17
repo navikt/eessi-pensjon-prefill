@@ -15,13 +15,11 @@ import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
 
-@Disabled
 class PrefillP2000MedUforeSakTest {
 
     private val personFnr = FodselsnummerGenerator.generateFnrForTest(68)

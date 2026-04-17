@@ -61,7 +61,6 @@ class PrefillP2200MedAlderSakTest {
     }
 
     @Test
-    @Disabled
     fun `forventer exception - ikke relevant saktype for krav-SED - aldersak ikke relevant for P2200`() {
         assertThrows<ResponseStatusException> {
             innhentingService.hentPensjoninformasjonCollection(prefillData)
