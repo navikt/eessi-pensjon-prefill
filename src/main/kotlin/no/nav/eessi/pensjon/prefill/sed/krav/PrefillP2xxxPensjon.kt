@@ -248,8 +248,10 @@ object PrefillP2xxxPensjon {
      */
     fun createYtelserItem(ytelsePrmnd: YtelsePerMaaned, pensak: Sak, personNr: String, penSaksnummer: String?, andreinstitusjonerItem: AndreinstitusjonerItem?): YtelserItem {
         logger.debug("4.1   YtelserItem")
-        val basertPaa = createPensionBasedOn(pensak, personNr)
+        val basertPaa = if (ytelsePrmnd.belop == null) null else createPensionBasedOn(pensak, personNr)
         val saktype = pensak.sakType
+        val totalbruttobeloepbostedsbasert = if (basertPaa.isNullOrEmpty()) null else createYtelseskomponentGrunnpensjon(ytelsePrmnd, valueOf(saktype.name))
+        val totalbruttobeloeparbeidsbasert = if (basertPaa.isNullOrEmpty()) null else createYtelseskomponentTilleggspensjon(ytelsePrmnd, valueOf(saktype.name))
         return YtelserItem(
 
                 //4.1.1
@@ -269,9 +271,9 @@ object PrefillP2xxxPensjon {
                 //4.1.10.1
                 mottasbasertpaa = basertPaa,
                 //4.1.10.2
-                totalbruttobeloepbostedsbasert = saktype.let { valueOf(it.name) }.let { createYtelseskomponentGrunnpensjon(ytelsePrmnd, it) },
+                totalbruttobeloepbostedsbasert = totalbruttobeloepbostedsbasert,
                 //4.1.10.3
-                totalbruttobeloeparbeidsbasert = saktype.let { valueOf(it.name) }.let { createYtelseskomponentTilleggspensjon( ytelsePrmnd, it) },
+                totalbruttobeloeparbeidsbasert = totalbruttobeloeparbeidsbasert
         )
     }
     private fun mapKravhistorikkStatus(kravHistorikk: List<KravHistorikk>): String {
@@ -331,9 +333,11 @@ object PrefillP2xxxPensjon {
      */
     private fun createYtelseItemBelop(ytelsePrMnd: YtelsePerMaaned): List<BeloepItem> {
         logger.debug("4.1.9         Beløp")
+        if (ytelsePrMnd.belop == null ) return emptyList()
+
         return listOf( BeloepItem(
                 //4.1.9.1
-                beloep = ytelsePrMnd.belop?.toString(),
+                beloep = ytelsePrMnd.belop.toString(),
 
                 //4.1.9.2
                 valuta = "NOK",
