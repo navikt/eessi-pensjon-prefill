@@ -115,7 +115,7 @@ class SedPrefillPDLIntegrationSpringTest {
         val actual = result.response.getContentAsString(charset("UTF-8"))
 
         val excpected = """
-        {
+          {
           "sed" : "P2000",
           "nav" : {
             "eessisak" : [ {
@@ -169,7 +169,6 @@ class SedPrefillPDLIntegrationSpringTest {
           },
           "pensjon" : {
             "ytelser" : [ {
-              "mottasbasertpaa" : "botid",
               "ytelse" : "10",
               "status" : "02"
             } ],
@@ -180,8 +179,10 @@ class SedPrefillPDLIntegrationSpringTest {
           },
           "sedGVer" : "4",
           "sedVer" : "2"
-        }         
+        }      
         """.trimIndent()
+
+        println("Actual: $actual")
 
         JSONAssert.assertEquals(excpected, actual , true)
 

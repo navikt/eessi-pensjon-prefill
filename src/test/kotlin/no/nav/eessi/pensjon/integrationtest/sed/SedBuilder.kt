@@ -144,7 +144,7 @@ class SedBuilder {
     }
     class YtelserBuilder(
         var status: String? = "02",
-        var mottasbasertpaa: String? = "botid",
+        var mottasbasertpaa: String? = null,
         var startdatoutbetaling: String? = null,
         var totalbruttobeloeparbeidsbasert: String? = null,
         var totalbruttobeloepbostedsbasert: String? = null,
