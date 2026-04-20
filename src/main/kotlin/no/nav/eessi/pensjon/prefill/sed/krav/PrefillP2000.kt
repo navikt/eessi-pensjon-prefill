@@ -2,6 +2,8 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.*
+import no.nav.eessi.pensjon.eux.model.sed.BasertPaa.botid
+import no.nav.eessi.pensjon.eux.model.sed.BasertPaa.i_arbeid
 import no.nav.eessi.pensjon.prefill.models.EessiInformasjon
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
@@ -111,7 +113,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
                             status = ytelser?.status,
                             startdatoutbetaling = ytelser?.startdatoutbetaling.also { logger.debug("startdatoUtbetaling: $it") },
                             startdatoretttilytelse = ytelser?.startdatoretttilytelse.also { logger.debug("StartdatoretTilYtelseStatus: $it") },
-                            mottasbasertpaa = settMottattBasertPaa(ytelser?.totalbruttobeloeparbeidsbasert).also {
+                            mottasbasertpaa = settMottattBasertPaa(ytelser?.totalbruttobeloeparbeidsbasert, ytelser?.totalbruttobeloepbostedsbasert).also {
                                 logger.debug(
                                     "mottasbasertpaa: $it"
                                 )
@@ -142,10 +144,19 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
     }
 
     //Regel: MottattBasertPaa skal ikke brukes dersom vi har totalBruttoArbBasert
-    private fun settMottattBasertPaa(totalBruttoArbBasert: String?): String? {
-        return if (totalBruttoArbBasert.isNullOrEmpty() || totalBruttoArbBasert == "0") {
-            BasertPaa.botid.name
-        } else null
+    private fun settMottattBasertPaa(totalBruttoArbBasert: String?, totalbruttobeloepbostedsbasert: String?): String? {
+        val tomArbeidsbasertBelop = totalBruttoArbBasert.isNullOrEmpty() || totalBruttoArbBasert == "0"
+        val tomBoBasertBelop = totalbruttobeloepbostedsbasert.isNullOrEmpty() || totalbruttobeloepbostedsbasert == "0"
+
+        return when {
+            tomArbeidsbasertBelop && tomBoBasertBelop -> null
+            tomArbeidsbasertBelop -> botid.name
+            tomBoBasertBelop -> i_arbeid.name
+            else -> totalBruttoArbBasert.let {
+                if (totalbruttobeloepbostedsbasert > it) botid.name
+                else i_arbeid.name
+            }
+        }
     }
 }
 
