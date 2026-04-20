@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.G
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.GJENLEV
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.OMSORG
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto.EessiSakType.UFOREP
+import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.shared.api.ApiRequest
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
@@ -90,8 +91,8 @@ class InnhentingService(
 
             P2000 -> {
                 validateInputs(penSak to "sakId", fnr to "fnr")
-
                 val p2000data = penSak?.let { pesysService.hentP2000data(fnr, penSak) }
+                sjekkSakTypeKravSed(p2000data, ALDER)
                 PensjonCollection(
                     p2xxxMeldingOmPensjonDto = p2000data.takeIf { p2000data?.sak?.sakType == ALDER } ,
                     vedtakId = vedtaksId,
@@ -112,6 +113,8 @@ class InnhentingService(
                 validateInputs(penSak to "sakId", fnr to "fnr")
 
                 val p2200data = penSak?.let { pesysService.hentP2200data(fnr, penSak) }
+                sjekkSakTypeKravSed(p2200data, UFOREP)
+
                 PensjonCollection(
                     p2xxxMeldingOmPensjonDto = p2200data.takeIf { p2200data?.sak?.sakType == UFOREP } ,
                     vedtakId = vedtaksId,
@@ -155,6 +158,14 @@ class InnhentingService(
             else -> PensjonCollection(sedType = prefillData.sedType)
         }
     }
+
+fun sjekkSakTypeKravSed(sak: P2xxxMeldingOmPensjonDto?, akseptabelSakstypeForSed: EessiSakType) {
+            val sakType = sak?.sak?.sakType ?: return           // mangler saktype
+            if (sakType == akseptabelSakstypeForSed) return     // samme saktpe
+
+            logger.warn("Du kan ikke opprette SED med saktype $sakType")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Ugyldig saktype: $sakType")
+        }
 
     private fun ResponseStatusExceptionFeilSak(
         prefillData: PrefillDataModel,
