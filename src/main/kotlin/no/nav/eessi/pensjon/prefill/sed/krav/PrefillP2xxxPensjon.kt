@@ -333,7 +333,7 @@ object PrefillP2xxxPensjon {
         logger.debug("4.1.9         Beløp")
         return listOf( BeloepItem(
                 //4.1.9.1
-                beloep = ytelsePrMnd.belop.toString(),
+                beloep = ytelsePrMnd.belop?.toString(),
 
                 //4.1.9.2
                 valuta = "NOK",
@@ -353,9 +353,9 @@ object PrefillP2xxxPensjon {
      *  Her fylles ut FOM-dato for hvert beløp i beløpshistorikk 5 år tilbake i tid.
      */
     // TODO: Sjekke formatering på dato
-    private fun createGjeldendesiden(ytelsePrMnd: YtelsePerMaaned): String {
+    private fun createGjeldendesiden(ytelsePrMnd: YtelsePerMaaned): String? {
         logger.debug("4.1.9.3         Gjeldende siden")
-        return ytelsePrMnd.fom.toString()
+        return ytelsePrMnd.fom?.toString()
     }
 
     /**
