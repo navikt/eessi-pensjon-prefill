@@ -40,8 +40,8 @@ class PrefillP4000(private val prefillSed: PrefillSed) {
                 val personDataNode = mapper.readTree(p4000json)
 
                 logger.debug("Prøver å preutfylle mappe om en p4000-innsendingsdata til P4000")
-                val personDataJson =  personDataNode["periodeInfo"].toString()
-                mapJsonToAny(personDataJson)
+                val personDataJson =  personDataNode["periodeInfo"]?.toString()
+                personDataJson?.let { mapJsonToAny(personDataJson) }
 
             } catch (ex: Exception) {
                 logger.debug("Feiler ved mapping av P4000, fortsetter, $ex")
