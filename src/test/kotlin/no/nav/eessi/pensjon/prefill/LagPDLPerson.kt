@@ -32,7 +32,7 @@ class LagPdlPerson {
                 oppholdsadresse = null,
                 statsborgerskap = listOf(Statsborgerskap(land, LocalDate.of(2000, 10, 1), LocalDate.of(2300, 10, 1), mockMeta())),
                 foedested = Foedested("NOR", "Oslo", null, null , mockMeta()),
-                foedselsdato = Foedselsdato(fdatoaar?.year, personfnr?.getBirthDateAsIso(), null,  mockMeta()),
+                foedselsdato = Foedselsdato(fdatoaar?.year, personfnr?.getBirthDate().toString(), null,  mockMeta()),
                 geografiskTilknytning = null,
                 kjoenn = Kjoenn(kjoennType, null, mockMeta()),
                 doedsfall = doeadfall,

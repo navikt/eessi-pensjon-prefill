@@ -34,7 +34,6 @@ class Fodselsnummer private constructor(@JsonValue val value: String) {
     fun erOverAlder(alder: Int): Boolean  = getAge() > alder
     fun erUnderAlder(alder: Int): Boolean = getAge() < alder
     fun isDNumber() = erDnummer
-    fun getBirthDateAsIso() = foedselsdato.toString()
 
     val kjoenn: Kjoenn
         get() {
