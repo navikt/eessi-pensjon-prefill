@@ -381,7 +381,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
             .filter { it.gyldigFraOgMed != null }
             .map {
                 logger.info("Sivilstand: {} dato: {}", it.type, it.gyldigFraOgMed)
-                val dato = it.gyldigFraOgMed.toString()
+                val dato = it.gyldigFraOgMed?.toString()
                 when (it.type) {
                     GIFT -> SivilstandItem(dato, SivilstandRina.gift)
                     SKILT -> SivilstandItem(dato, SivilstandRina.skilt)

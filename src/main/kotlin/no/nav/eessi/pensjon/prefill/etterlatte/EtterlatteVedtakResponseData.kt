@@ -19,7 +19,7 @@ data class EtterlatteVedtakResponseData(
                     BeregningItem(
                         beloepBrutto = BeloepBrutto(beloep = it.beloep),
                         periode = Periode(
-                            fom = it.fraOgMed.toString(),
+                            fom = it.fraOgMed?.toString(),
                             tom = it.tilOgMed?.toString() ?: ""
                         )
                     )

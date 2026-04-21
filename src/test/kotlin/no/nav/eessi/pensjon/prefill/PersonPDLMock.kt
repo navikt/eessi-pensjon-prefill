@@ -60,7 +60,7 @@ object PersonPDLMock {
                 ),
                 Foedselsdato(
                     null,
-                    fdatoaar.toString(),
+                    fdatoaar?.toString(),
                     folkeregisterMetadata,
                     metadata
                 ).also { println("Foedselsdato: ${it.toJsonSkipEmpty()}") },
