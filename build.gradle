@@ -97,7 +97,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.14.7")
 
     // Architecture tests la stå som 0.11.0
-    testImplementation ('com.tngtech.archunit:archunit:1.4.1')
+    testImplementation ('com.tngtech.archunit:archunit:1.4.2')
 
     // Forenklere mocking av beans, benyttes som mockito mockbean
     testImplementation('com.ninja-squad:springmockk:4.0.2')
