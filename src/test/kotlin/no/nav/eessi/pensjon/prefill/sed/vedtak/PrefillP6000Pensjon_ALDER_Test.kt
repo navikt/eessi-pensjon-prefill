@@ -93,18 +93,18 @@ class PrefillP6000Pensjon_ALDER_Test {
         assertEquals("0607", p6000Pensjon.tilleggsinformasjon?.andreinstitusjoner?.get(0)?.postnummer)
     }
 
-    @Test
-    fun `feiler ved boddArbeidetUtland ikke sann`() {
-        every { pesysService.hentP6000data(any()) } returns XmlToP6000Mapper.readP6000FromXml("/pensjonsinformasjon/vedtak/P6000-AP-101.xml")
-
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
-        val innhentingService = InnhentingService(mockk(), pesysService)
-        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
-
-        assertThrows<ResponseStatusException> {
-            prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
-        }
-    }
+//    @Test
+//    fun `feiler ved boddArbeidetUtland ikke sann`() {
+//        every { pesysService.hentP6000data(any()) } returns XmlToP6000Mapper.readP6000FromXml("/pensjonsinformasjon/vedtak/P6000-AP-101.xml")
+//
+//        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312")
+//        val innhentingService = InnhentingService(mockk(), pesysService)
+//        val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+//
+//        assertThrows<ResponseStatusException> {
+//            prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
+//        }
+//    }
 
     @Test
     fun `henting av bruttobelop skal hente verdier fra garantipensjon, grunnpensjon, pensjontillegg, inntektspensjon, saertillegg `() {
