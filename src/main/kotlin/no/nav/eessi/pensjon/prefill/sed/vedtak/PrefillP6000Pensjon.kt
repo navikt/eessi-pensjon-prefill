@@ -30,8 +30,8 @@ object PrefillP6000Pensjon {
     ): P6000Pensjon {
 
         //Sjekk opp om det er Bodd eller Arbeid utland. (hvis ikke avslutt)
-        if (!harBoddArbeidetUtland(pesysPrefillData))
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Har ikke bodd eller arbeidet i utlandet. Avbryter opprettelse av SED")
+//        if (!harBoddArbeidetUtland(pesysPrefillData))
+//            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Har ikke bodd eller arbeidet i utlandet. Avbryter opprettelse av SED")
 
         //Sjekk opp om det finnes et dato fattet vedtak. (hvis ikke avslutt)
         if (pesysPrefillData.vedtak.datoFattetVedtak == null) {
