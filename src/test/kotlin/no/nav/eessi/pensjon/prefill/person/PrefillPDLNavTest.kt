@@ -80,7 +80,7 @@ class PrefillPDLNavTest {
             foedselsdato = Foedselsdato(2000, "01-02-2000", null,  mockMeta()),
             geografiskTilknytning = null,
             kjoenn = Kjoenn(KjoennType.MANN, null, mockMeta()),
-            doedsfall = Doedsfall(metadata = mockMeta()),
+            doedsfall = no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall(metadata = mockMeta()),
             forelderBarnRelasjon = emptyList(),
             sivilstand = emptyList(),
             kontaktadresse = null,
@@ -153,7 +153,7 @@ class PrefillPDLNavTest {
             foedselsdato = Foedselsdato(2000, "01-02-2000", null,  mockMeta()),
             geografiskTilknytning = null,
             kjoenn = Kjoenn(KjoennType.MANN, null, mockMeta()),
-            doedsfall = Doedsfall(metadata = mockMeta()),
+            doedsfall = no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall(metadata = mockMeta()),
             forelderBarnRelasjon = emptyList(),
             sivilstand = emptyList(),
             kontaktadresse = null,
@@ -1080,7 +1080,7 @@ class PrefillPDLNavTest {
     @Test
     fun `isPersonAvdod gir true`() {
         val dodPerson =
-            lagPerson().copy(doedsfall = Doedsfall(LocalDate.of(2010, 10, 1), null, mockMeta()))
+            lagPerson().copy(doedsfall = no.nav.eessi.pensjon.personoppslag.pdl.model.Doedsfall(LocalDate.of(2010, 10, 1), null, mockMeta()))
         assertEquals(true, PrefillPDLNav.isPersonAvdod(dodPerson))
     }
 
