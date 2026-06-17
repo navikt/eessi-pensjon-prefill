@@ -53,7 +53,7 @@ class RestTemplateConfig(
 
     private fun opprettRestTemplate(url: String, oAuthKey: String) : RestTemplate {
         return RestTemplateBuilder()
-            .rootUri(url)
+            .baseUri(url)
             .errorHandler(DefaultResponseErrorHandler())
             .additionalInterceptors(
                 RequestIdHeaderInterceptor(),
