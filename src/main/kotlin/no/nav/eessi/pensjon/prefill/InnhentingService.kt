@@ -1,6 +1,8 @@
 package no.nav.eessi.pensjon.prefill
 
+import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.BucType.*
+import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident
@@ -53,7 +55,10 @@ class InnhentingService(
             P_BUC_02 -> {
                 val norskIdent = request.riktigAvdod() ?: run {
                     if(request.gjenny) return null
+
                     logger.error("Mangler fnr eller npid for avdød")
+                    if(request.sed == SedType.P2100) return null
+
                     throw ResponseStatusException(HttpStatus.BAD_REQUEST,"Mangler fnr for avdød")
                 }
                 try {
