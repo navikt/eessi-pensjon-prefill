@@ -200,6 +200,9 @@ object PrefillP2xxxPensjon {
     fun avsluttHvisKunDenneKravTypeIHistorikk(sak: Sak?, sedType: SedType, kravType: EessiKravGjelder) {
         if (kunDenneKravTypeIHistorikk(sak, kravType))  {
             logger.warn("Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
+
+            if(sedType == SedType.P2100) return //Godkjenner at P2100 / P_BUC_02 kan opprettes uten kravhistorikk
+
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Det er ikke markert for bodd/arbeidet i utlandet. Krav SED $sedType blir ikke opprettet")
         }
     }
