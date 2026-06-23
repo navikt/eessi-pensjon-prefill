@@ -54,7 +54,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
 
         val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
 
-        validerGyldigKravtypeOgArsak(sak, prefillData.sedType)
+        validerGyldigKravtypeOgArsak(sak, prefillData.sedType, prefillData.avdodfnrManuelt)
         var melding: String? = ""
         var pensjon = Pensjon()
 
@@ -97,10 +97,11 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
      * NY_SOKNAD       Ny søknad
      *
      */
-    private fun validerGyldigKravtypeOgArsak(sak: Sak?, sedType: SedType) {
+    private fun validerGyldigKravtypeOgArsak(sak: Sak?, sedType: SedType, avdodfnrManuelt: Boolean?) {
         logger.info("Start på validering av $sedType")
 
-        PrefillP2xxxPensjon.avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, FORSTEG_BH)
+        // ingen sjekk om avdodfnr er manuelt satt inn av saksbehandler (ikke hentet fra vedtak)
+        if(avdodfnrManuelt == false) PrefillP2xxxPensjon.avsluttHvisKunDenneKravTypeIHistorikk(sak, sedType, FORSTEG_BH)
 
         if (KravHistorikkHelper.hentKravhistorikkForGjenlevendeOgNySoknad(sak?.kravHistorikk) == null && (sak?.sakType in listOf(ALDER, UFOREP))) {
             logger.warn("Ikke korrekt kravårsak for P2100 (alder/uførep")

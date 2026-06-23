@@ -22,6 +22,7 @@ data class PrefillDataModel(
     val penSaksnummer: String? = null,
     val bruker: PersonInfo,
     val avdod: PersonInfo?,
+    val avdodfnrManuelt: Boolean? = null, //kun P2100 på P_BUC_02
     val sedType: SedType,
     val buc: BucType,
     val vedtakId: String? = null,
