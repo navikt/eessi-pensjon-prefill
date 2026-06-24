@@ -9,6 +9,7 @@ import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.BucType.*
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.KravType
+import no.nav.eessi.pensjon.eux.model.sed.P2100
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
@@ -120,6 +121,8 @@ data class ApiRequest(
                 if (request.gjenny) {
                     return null
                 }
+                if(request.sed == SedType.P2100 && request.buc == P_BUC_02) return null
+
                 throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Mangler fnr for avdød")
             }
             request.riktigAvdod() ?: return null
