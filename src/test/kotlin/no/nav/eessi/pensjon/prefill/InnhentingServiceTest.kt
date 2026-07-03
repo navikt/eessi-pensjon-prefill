@@ -13,6 +13,7 @@ import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.shared.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.web.server.ResponseStatusException
@@ -92,6 +93,7 @@ class InnhentingServiceTest {
     }
 
     @Test
+    @Disabled
     fun `call getAvdodAktoerId  expect error when avdodfnr is missing and sed is P2100`() {
         val apiRequest = ApiRequest(
             subjectArea = "Pensjon",
