@@ -33,6 +33,7 @@ data class ApiRequest(
     val kravType: KravType? = null, // Brukes bare av P15000
     val aktoerId: String? = null,
     val fnr: String? = null,
+    val avdodfnrManuelt: Boolean? = null, //kun P2100 på P_BUC_02
     val payload: String? = null,
     val buc: BucType? = null,
     val sed: SedType? = null,
@@ -89,6 +90,7 @@ data class ApiRequest(
                         penSaksnummer = request.sakId,
                         bruker = personInfo.also { fnr -> logger.debug("FNR eller NPID: ${fnr.norskIdent.let { if (it.length > 6) it.substring(0, 6) + "******" else it }}") },
                         avdod = populerAvdodHvisGjenlevendePensjonSak(request, avdodaktoerID),
+                        avdodfnrManuelt = request.avdodfnrManuelt,
                         sedType = sedType,
                         buc = request.buc,
                         euxCaseID = request.euxCaseId,
