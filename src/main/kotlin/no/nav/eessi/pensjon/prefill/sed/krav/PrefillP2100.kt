@@ -38,13 +38,13 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
     }
 
     private fun postLog(prefillData: PrefillDataModel, sak: Sak?) {
-        require(prefillData.avdod != null ) { "avdod er påkrevet for p2100" }
+        //require(prefillData.avdod != null ) { "avdod er påkrevet for p2100" }
         logger.debug("\n\n----------------------------------------------------------"
                 + "\nSaktype                : ${sak?.sakType} "
                 + "\nSøker sakId            : ${prefillData.penSaksnummer} "
                 + "\nKravdato, kravtype     : ${prefillData.kravDato}, ${prefillData.kravType} "
-                + "\nSøker avdodaktor       : ${prefillData.avdod.aktorId} "
-                + "\nerGyldigEtterlatt      : ${prefillData.avdod.aktorId?.isNotEmpty()} "
+                + "\nSøker avdodaktor       : ${prefillData.avdod?.aktorId} "
+                + "\nerGyldigEtterlatt      : ${prefillData.avdod?.aktorId?.isNotEmpty()} "
                 + "\nSøker gjenlevaktoer    : ${prefillData.bruker.aktorId} "
                 + "\n------------------| Preutfylling [${prefillData.sedType}] START |------------------ \n")
     }
