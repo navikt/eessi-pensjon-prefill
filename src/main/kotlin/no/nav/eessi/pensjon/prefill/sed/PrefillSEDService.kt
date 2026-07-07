@@ -155,6 +155,14 @@ class PrefillSEDService(private val eessiInformasjon: EessiInformasjon, private 
                 personDataCollection
             )
 
+            X009 -> PrefillX009(prefillPDLnav).prefill(
+                prefillData.penSaksnummer,
+                prefillData.bruker,
+                prefillData.avdod,
+                prefillData.getBankOgArbeidFromRequest(),
+                personDataCollection
+            )
+
             X010 -> PrefillX010(prefillPDLnav).prefill(
                 prefillData.penSaksnummer,
                 prefillData.bruker,
