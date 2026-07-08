@@ -46,7 +46,7 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 
     //flattenmap
-    implementation("com.github.wnameless.json:json-flattener:0.18.1")
+    implementation("com.github.wnameless.json:json-flattener:0.18.2")
 
     // Logging
     implementation("tools.jackson.core:jackson-core:3.2.0")
