@@ -32,7 +32,6 @@ benyttes under kjøring debug Q2 miljø
 SRVEESSIPENSJON_PASSWORD_Q  
 ```
 
-
 ## Oppdatere avhengigheter
 
 Det er viktig at man holder avhengigheter oppdatert for å unngå sikkerhetshull.
