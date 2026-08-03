@@ -61,7 +61,7 @@ class KrrService(private val krrRestTemplate: RestTemplate,
                 logger.error("Person: ${maskPersonIdent(personIdent)} ikke funnet (404)")
             }
             catch (e: Exception) {
-                logger.error("Feil ved henting av person fra KRR, ${e.stackTrace}")
+                logger.error("Feil ved henting av person fra KRR for personIdent: ${maskPersonIdent(personIdent)}", e)
             }
             logger.error("KRR: Fant ikke person for personIdent: ${maskPersonIdent(personIdent)}")
             null
