@@ -25,6 +25,12 @@ class KrrService(private val krrRestTemplate: RestTemplate,
         hentPersoner = metricsHelper.init("HentPerson", ignoreHttpCodes = listOf(HttpStatus.BAD_REQUEST))
     }
 
+    private fun maskPersonIdent(value: String?): String? {
+        return value?.replace(Regex("""\b\d{11}\b""")) { matchResult ->
+            matchResult.value.take(4) + "*".repeat(matchResult.value.length - 4)
+        }
+    }
+
     //Henter inn telefonnummer og epostadresse fra KRR for å preutfylle SED
     fun hentPersonerFraKrr(personIdent: String, inkluderSikkerDigitalPost: Boolean?= false) : DigitalKontaktinfo? {
         return hentPersoner.measure {
@@ -47,16 +53,17 @@ class KrrService(private val krrRestTemplate: RestTemplate,
                     String::class.java
                 )
 
-                logger.debug("Hent person fra KRR med nytt endepunkt: response: ${response.body}".trimMargin())
+                logger.debug("Hent person fra KRR med nytt endepunkt: response: ${maskPersonIdent(response.body)}".trimMargin())
 
                 return@measure response.body?.let { mapJsonToAny<DigitalKontaktinfoBolk>(it) }?.personer?.get(personIdent)
                     ?: throw IllegalArgumentException("Mangler melding fra KRR")
             } catch (e: HttpClientErrorException.NotFound) {
-                logger.error("Person: $personIdent ikke funnet (404)")
+                logger.error("Person: ${maskPersonIdent(personIdent)} ikke funnet (404)")
             }
             catch (e: Exception) {
-                logger.error("Feil ved henting av person fra KRR, ${e.message}")
+                logger.error("Feil ved henting av person fra KRR, ${e.stackTrace}")
             }
+            logger.error("KRR: Fant ikke person for personIdent: ${maskPersonIdent(personIdent)}")
             null
         }
     }
