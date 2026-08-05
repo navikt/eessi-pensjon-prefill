@@ -113,7 +113,7 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
                             status = ytelser?.status,
                             startdatoutbetaling = ytelser?.startdatoutbetaling.also { logger.debug("startdatoUtbetaling: $it") },
                             startdatoretttilytelse = ytelser?.startdatoretttilytelse.also { logger.debug("StartdatoretTilYtelseStatus: $it") },
-                            mottasbasertpaa = settMottattBasertPaa(ytelser?.totalbruttobeloeparbeidsbasert, ytelser?.totalbruttobeloepbostedsbasert).also {
+                            mottasbasertpaa = settMottattBasertPaa(ytelser?.totalbruttobeloeparbeidsbasert?.toDouble(), ytelser?.totalbruttobeloepbostedsbasert?.toDouble())?.name.also {
                                 logger.debug(
                                     "mottasbasertpaa: $it"
                                 )
@@ -143,18 +143,18 @@ class PrefillP2000(private val prefillNav: PrefillPDLNav) {
         }
     }
 
-    //Regel: MottattBasertPaa skal ikke brukes dersom vi har totalBruttoArbBasert
-    private fun settMottattBasertPaa(totalBruttoArbBasert: String?, totalbruttobeloepbostedsbasert: String?): String? {
-        val tomArbeidsbasertBelop = totalBruttoArbBasert.isNullOrEmpty() || totalBruttoArbBasert == "0"
-        val tomBoBasertBelop = totalbruttobeloepbostedsbasert.isNullOrEmpty() || totalbruttobeloepbostedsbasert == "0"
+    //I tilfelle der begge totalbruttobeloeparbeidsbasert og totalbruttobeloepbostedsbasert har verdi, skal alltid i_arbeid returneres
+    private fun settMottattBasertPaa(totalBruttoArbBasert: Double?, totalbruttobeloepbostedsbasert: Double?): BasertPaa? {
+        val tomArbeidsbasertBelop = (totalBruttoArbBasert == null) || (totalBruttoArbBasert == 0.0)
+        val tomBoBasertBelop = (totalbruttobeloepbostedsbasert == null) || (totalbruttobeloepbostedsbasert == 0.0)
 
         return when {
             tomArbeidsbasertBelop && tomBoBasertBelop -> null
-            tomArbeidsbasertBelop -> botid.name
-            tomBoBasertBelop -> i_arbeid.name
+            tomArbeidsbasertBelop -> botid
+            tomBoBasertBelop -> i_arbeid
             else -> totalBruttoArbBasert.let {
-                if (totalbruttobeloepbostedsbasert > it) botid.name
-                else i_arbeid.name
+                if (it > 0.0) i_arbeid
+                else botid
             }
         }
     }
