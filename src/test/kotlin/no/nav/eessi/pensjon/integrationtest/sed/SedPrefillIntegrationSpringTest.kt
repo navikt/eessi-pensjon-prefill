@@ -803,7 +803,7 @@ class SedPrefillIntegrationSpringTest {
                 forespurtstartdato = "2018-08-01"
                 ytelser = SedBuilder.YtelserBuilder(
                     status = "02",
-                    mottasbasertpaa = "botid",
+                    mottasbasertpaa = "i_arbeid",
                     startdatoutbetaling = "2018-08-01",
                     startdatoretttilytelse = "2018-08-01",
                     totalbruttobeloeparbeidsbasert = "14198",
