@@ -64,7 +64,7 @@ class PrefillP2100UforePRevurdering {
     }
 
     @Test
-    fun `forventet korrekt utfylt P2100 uforepensjon med kap4 og 9`() {
+    fun `forventet korrekt utfylt P2100 uforepensjon med kap 4 og 9`() {
         val personDataCollection = PersonPDLMock.createAvdodFamilie(personFnr, avdodPersonFnr)
 
         val innhentingService = InnhentingService(mockk(), pesysService = pesysService)
@@ -76,7 +76,6 @@ class PrefillP2100UforePRevurdering {
 
         assertNotNull(p2100.nav?.krav)
         assertEquals("2020-08-01", p2100.nav?.krav?.dato)
-        assertEquals("Kravdato fra det opprinnelige vedtak med gjenlevenderett er angitt i SED P2100", prefillData.melding)
     }
 
 }

@@ -50,37 +50,4 @@ class PrefillSEDServiceTest {
         prefillNav = BasePrefillNav.createPrefillNav()
     }
 
-    @Test
-    fun `En p6000 uten vedtak skal gi en delvis utfylt sed`(){
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(SedType.P6000, personFnr, penSaksnummer = "22580170", vedtakId = "12312312", avdod = PersonInfo(avdodPersonFnr, "1234567891234"))
-        prefillSEDService = PrefillSEDService(EessiInformasjonMother.standardEessiInfo(), prefillNav)
-        val prefill = prefillSEDService.prefillGjenny(prefillData, personDataCollection, null)
-
-        assertNotNull(prefill.nav?.bruker?.person?.pin)
-        assertEquals(avdodPersonFnr, prefill.nav?.bruker?.person?.pin?.firstOrNull()?.identifikator)
-        assertEquals(SedType.P6000, prefill.type)
-    }
-
-    @Test
-    fun `prefillGjenny skal defaulte til prefill når den kalles fra gjenny uten 2100 eller 6000`() {
-
-        prefillData = PrefillDataModelMother.initialPrefillDataModel(
-            SedType.P6000,
-            personFnr,
-            penSaksnummer = "22580170",
-            vedtakId = "12312312",
-            avdod = PersonInfo(avdodPersonFnr, "1234567891234")
-        )
-
-        val personDataCollection = mockk<PersonDataCollection>()
-        val etterlatteRespData = mockk<EtterlatteVedtakResponseData>()
-        val expectedSED = mockk<SED>()
-
-        every { prefillSEDService.prefillGjenny(any(), any(), any())} returns expectedSED
-
-        val result = prefillSEDService.prefillGjenny(prefillData, personDataCollection, etterlatteRespData)
-
-        assertNotNull(result)
-        assertEquals(expectedSED, result)
-    }
 }

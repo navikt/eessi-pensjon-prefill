@@ -221,8 +221,7 @@ class InnhentingServiceTest {
             kravType = null,
             euxCaseID = "1234569",
             institution = emptyList(),
-            refTilPerson = null,
-            melding = null,
+            refTilPerson = null
         )
     }
 }
