@@ -13,7 +13,6 @@ import no.nav.eessi.pensjon.EessiPrefillApplication
 import no.nav.eessi.pensjon.metrics.MetricsHelper
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.context.annotation.Scope
 import org.springframework.web.bind.annotation.RestController
@@ -167,7 +166,7 @@ class ArchitectureTest {
             .haveNameMatching("set[A-Z]+.*")
             .and().doNotHaveRawParameterTypes(MetricsHelper.Metric::class.java)
             .and().areDeclaredInClassesThat().areNotAnnotatedWith(Scope::class.java) // If scope is not singleton it might be ok
-            .and().areDeclaredInClassesThat().haveNameNotMatching(".*(STSService|Template|Config)") // these use setter injection
+            .and().areDeclaredInClassesThat().haveNameNotMatching(".*(Template|Config)") // these use setter injection
             .should().beDeclaredInClassesThat().areAnnotatedWith(springStereotype)
             .because("Spring-components (usually singletons) must not have mutable instance fields " +
                     "as they can easily be misused and create 'race conditions'")
