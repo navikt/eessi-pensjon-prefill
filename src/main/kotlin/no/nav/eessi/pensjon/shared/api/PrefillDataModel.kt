@@ -31,6 +31,7 @@ data class PrefillDataModel(
     val euxCaseID: String,
     val institution: List<InstitusjonItem>,
     val refTilPerson: ReferanseTilPerson? = null,
+    val avdodfnrManuelt: Boolean? = null, //kun P2100 på P_BUC_02
     val partSedAsJson: MutableMap<String, String> = mutableMapOf()
 ) {
 

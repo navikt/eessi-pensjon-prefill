@@ -84,7 +84,7 @@ class PrefillGjennyService(
                 logger.debug("[${prefillData.sedType}] Gjenny Preutfylling Utfylling Data")
 
                 val sed = when (prefillData.sedType) {
-                    P2100 -> PrefillP2100(prefillPdlNav).prefillSed(prefillData, personcollection, null).second
+                    P2100 -> PrefillP2100(prefillPdlNav).prefillSed(prefillData, personcollection, null)
                     P5000 -> prefillP5000(request, prefillData, personcollection)
                     P6000 -> prefillP6000(request, prefillData, personcollection, etterlatteRespData)
                     P8000 -> prefillP8000(request, prefillData, personcollection)

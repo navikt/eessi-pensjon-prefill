@@ -19,7 +19,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
 
     private val logger: Logger by lazy { LoggerFactory.getLogger(PrefillP2100::class.java) }
 
-    fun prefillSed(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: Sak?): Pair<String?, SED> {
+    fun prefillSed(prefillData: PrefillDataModel, personData: PersonDataCollection, sak: Sak?): SED {
         val pensjon = PrefillP2xxxPensjon.populerPensjon(prefillData, sak)
 
         //TPS
@@ -50,7 +50,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
     }
 
 
-    private fun prefillPen(prefillData: PrefillDataModel, nav: Nav, gjenlev: Bruker? = null, sak: Sak?): Pair<String?, SED> {
+    private fun prefillPen(prefillData: PrefillDataModel, nav: Nav, gjenlev: Bruker? = null, sak: Sak?): SED {
 
         val andreInstitusjondetaljer = EessiInformasjon().asAndreinstitusjonerItem()
 
@@ -81,7 +81,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
         )
 
         logger.debug("-------------------| Preutfylling [$SedType] END |------------------- ")
-        return Pair(melding, sed)
+        return sed
     }
 
     /**
