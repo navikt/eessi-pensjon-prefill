@@ -828,6 +828,85 @@ class SedPrefillIntegrationSpringTest {
 
     }
 
+    //Denne testen er lik den over, men skal fremheve at mottasbasertpaa viser botid og ikke arbeid, dersom denne mangler.
+    //Også fint å være obs på at så lenge beløp for arbeid finnes, så skal alltid i_arbeid preutfylles
+    @Test
+    fun `prefill sed med kravtype førstehangbehandling norge men med vedtak bodsatt utland skal prefylle sed med mottasbasertpaa botid`() {
+
+        every { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(AKTOER_ID)) } returns NorskIdent(FNR_VOKSEN_3)
+        every { personService.hentPerson(NorskIdent(FNR_VOKSEN_3)) } returns PersonPDLMock.createWith(
+            true, "Lever", "Gjenlev", FNR_VOKSEN_3
+        )
+
+        val kravdato = "2020-08-08"
+
+        val mockP2000 = mockk<P2xxxMeldingOmPensjonDto> {
+            every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
+                sakType = EessiFellesDto.EessiSakType.ALDER,
+                kravHistorikk = listOf(
+                    P2xxxMeldingOmPensjonDto.KravHistorikk(
+                        mottattDato = LocalDate.parse(kravdato),
+                        kravType = EessiFellesDto.EessiKravGjelder.F_BH_MED_UTL,
+                        virkningstidspunkt = LocalDate.parse("2018-05-31"),
+                        kravStatus = EessiFellesDto.EessiSakStatus.INNV    ,
+                    )
+                ),
+                ytelsePerMaaned = listOf(
+                    P2xxxMeldingOmPensjonDto.YtelsePerMaaned(
+                        fom = LocalDate.parse("2018-08-01"),
+                        belop = 21232,
+                        ytelseskomponent = listOf(
+                            Ytelseskomponent(
+                                ytelsesKomponentType = "GP", belopTilUtbetaling = 7034
+                            ),
+                        ),
+                    )
+                ),
+                forsteVirkningstidspunkt = LocalDate.parse("2018-08-01"),
+                status = EessiFellesDto.EessiSakStatus.INNV,
+            )
+            every { vedtak } returns null
+        }
+        every {
+            pesysService.hentP2000data(any(), any())
+        } returns mockP2000
+
+        val apijson = dummyApijson(sakid = "22580170", aktoerId = AKTOER_ID, vedtakid = "5134513451345")
+
+        val response = prefillFraRestOgVerifiserResultet(apijson)
+
+        val validResponse = SedBuilder.ValidResponseBuilder().apply {
+            sed = P2000
+            pensjon = SedBuilder.P2000PensjonBuilder().apply {
+                kravDato = Krav(kravdato)
+                forespurtstartdato = "2018-08-01"
+                ytelser = SedBuilder.YtelserBuilder(
+                    status = "02",
+                    mottasbasertpaa = "botid",
+                    startdatoutbetaling = "2018-08-01",
+                    startdatoretttilytelse = "2018-08-01",
+                    totalbruttobeloeparbeidsbasert = "0",
+                    totalbruttobeloepbostedsbasert = "7034",
+                    belop = SedBuilder.BelopBuilder("21232", Betalingshyppighet.maaned_12_per_aar).build()
+                ).build()
+            }.build()
+            nav {
+                eessisak[0].saksnummer = "22580170"
+                bruker {
+                    person {
+                        fornavn = "Lever"
+                        etternavn = "Gjenlev"
+                        pinList[0].identifikator = "12312312312"
+                        pinList[1].identifikator = "123123123"
+                    }
+                }
+                krav = SedBuilder.KravBuilder(kravdato)
+            }
+        }.build().toJsonSkipEmpty()
+        JSONAssert.assertEquals(validResponse, response, true)
+
+    }
+
 
     /** test på validering av pensjoninformasjon krav **/
     @Test

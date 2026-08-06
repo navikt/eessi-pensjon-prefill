@@ -121,6 +121,21 @@ class PrefillP2000APUtlandInnvTest {
     }
 
     @Test
+    fun `forventet korrekt utfylt P2000 alderpensjon og mottasbasertpaa satt til i arbeid`() {
+        pesysMock(listOf(YtelseskomponentType.TP.name))
+        pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+        prefillSEDService = BasePrefillNav.createPrefillSEDService()
+
+        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,) as P2000
+
+        println("Botid: ${P2000.p2000pensjon?.ytelser?.toJson()}")
+
+        assertNotNull(P2000.nav?.krav)
+        assertEquals("2015-11-25", P2000.nav?.krav?.dato)
+        assertEquals(BasertPaa.i_arbeid.name, P2000.p2000pensjon?.ytelser?.firstOrNull()?.mottasbasertpaa)
+    }
+
+    @Test
     fun `forventet korrekt utfylt P2000 med belop`() {
         pesysMock(listOf(YtelseskomponentType.GAP.name, YtelseskomponentType.TP.name))
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
@@ -138,6 +153,7 @@ class PrefillP2000APUtlandInnvTest {
 
         assertEquals("444", P2000.p2000pensjon?.ytelser?.firstOrNull()?.totalbruttobeloepbostedsbasert)
         assertEquals("444", P2000.p2000pensjon?.ytelser?.firstOrNull()?.totalbruttobeloeparbeidsbasert)
+        assertEquals("i_arbeid", P2000.p2000pensjon?.ytelser?.firstOrNull()?.mottasbasertpaa)
         assertEquals("123", P2000.p2000pensjon?.ytelser?.firstOrNull()?.beloep?.firstOrNull()?.beloep)
 
     }
