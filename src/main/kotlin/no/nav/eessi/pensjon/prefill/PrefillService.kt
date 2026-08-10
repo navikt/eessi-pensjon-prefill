@@ -82,7 +82,16 @@ class PrefillService(
         val personFraPdl = personService.hentPerson(bestemIdent(norskIdent))
         val fortrolig = personFraPdl?.adressebeskyttelse?.any { it == FORTROLIG }
 
-        val krrPerson = if (fortrolig == false) {
+        val krrPerson = if (fortrolig == true) {
+            logger.warn("Personen er fortrolig")
+            DigitalKontaktinfo(
+                reservert = false,
+                epostadresse = null,
+                mobiltelefonnummer = null,
+                aktiv = true,
+                personident = norskIdent
+            )
+        } else {
             krrService.hentPersonerFraKrr(norskIdent)?.let { personResponse ->
                 DigitalKontaktinfo(
                     reservert = personResponse.reservert,
@@ -92,19 +101,6 @@ class PrefillService(
                     personident = norskIdent
                 ).also { logger.debug("KrrPerson: ${it.toJson()}") }
             }
-        } else {
-            logger.warn("Personen er fortrolig")
-           null
-        }
-
-        if (krrPerson == null) {
-            DigitalKontaktinfo(
-                reservert = false,
-                epostadresse = null,
-                mobiltelefonnummer = null,
-                aktiv = true,
-                personident = norskIdent
-            )
         }
 
         val personInfo = if (krrPerson?.reservert == true) {
