@@ -2,6 +2,9 @@ package no.nav.eessi.pensjon.prefill
 
 import io.micrometer.core.instrument.Metrics
 import no.nav.eessi.pensjon.metrics.MetricsHelper
+import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
+import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering.FORTROLIG
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Ident.Companion.bestemIdent
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo.Companion.validateEmail
 import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
@@ -22,6 +25,7 @@ class PrefillService(
     private val krrService: KrrService,
     private val prefillSedService: PrefillSEDService,
     private val innhentingService: InnhentingService,
+    private val personService: PersonService,
     private val automatiseringStatistikkService: AutomatiseringStatistikkService,
     @Autowired(required = false) private val metricsHelper: MetricsHelper = MetricsHelper.ForTest()
 ) {
@@ -43,14 +47,13 @@ class PrefillService(
                 logger.info(" Buc:${request.buc}, sed: ${request.sed}, RinaID:${request.euxCaseId}, sed: ${request.documentid}, versjon: ${request.processDefinitionVersion}, gjenny: ${request.gjenny}, fnr: ${request.fnr?.let { if (it.length > 6) it.substring(0, 6) + "******" else it }}")
                 val norskIdent = innhentingService.hentFnrEllerNpidFraAktoerService(request.aktoerId)!!
                 val personInfo = hentKrrPerson(norskIdent, request)
-
                 val prefillData = ApiRequest.buildPrefillDataModelOnExisting(request, personInfo, innhentingService.getAvdodAktoerIdPDL(request))
 
                 eessiRequire(prefillData.sedType.kanPrefilles() ) {"SedType ${prefillData.sedType} kan ikke prefilles!"}
 
                 val personcollection = innhentingService.hentPersonData(prefillData)
 
-                val pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
+                val pensjonCollection = prefillData.bruker.norskIdent.let { innhentingService.hentPensjoninformasjonCollection(prefillData) }
                 secureLog.info("PensjonCollection: ${pensjonCollection.toJson()}")
                 val sed = prefillSedService.prefill(prefillData, personcollection, pensjonCollection, null)
 
@@ -75,24 +78,36 @@ class PrefillService(
         }
     }
 
-    private fun hentKrrPerson(norskIdent: String, request: ApiRequest): PersonInfo {
-        val krrPerson = krrService.hentPersonerFraKrr(norskIdent)?.let { personResponse ->
+    fun hentKrrPerson(norskIdent: String, request: ApiRequest): PersonInfo {
+        val personFraPdl = personService.hentPerson(bestemIdent(norskIdent))
+        val fortrolig = personFraPdl?.adressebeskyttelse?.any { it == FORTROLIG }
+
+        val krrPerson = if (fortrolig == false) {
+            krrService.hentPersonerFraKrr(norskIdent)?.let { personResponse ->
+                DigitalKontaktinfo(
+                    reservert = personResponse.reservert,
+                    epostadresse = personResponse.epostadresse.validateEmail(request.processDefinitionVersion),
+                    mobiltelefonnummer = personResponse.mobiltelefonnummer,
+                    aktiv = true,
+                    personident = norskIdent
+                ).also { logger.debug("KrrPerson: ${it.toJson()}") }
+            }
+        } else {
+            logger.warn("Personen er fortrolig")
+           null
+        }
+
+        if (krrPerson == null) {
             DigitalKontaktinfo(
-                reservert = personResponse.reservert,
-                epostadresse = personResponse.epostadresse.validateEmail(request.processDefinitionVersion),
-                mobiltelefonnummer = personResponse.mobiltelefonnummer,
+                reservert = false,
+                epostadresse = null,
+                mobiltelefonnummer = null,
                 aktiv = true,
                 personident = norskIdent
-            ).also { logger.debug("KrrPerson: ${it.toJson()}") }
-        } ?: DigitalKontaktinfo(
-            reservert = false,
-            epostadresse = null,
-            mobiltelefonnummer = null,
-            aktiv = true,
-            personident = norskIdent
-        )
+            )
+        }
 
-        val personInfo = if (krrPerson.reservert == true) {
+        val personInfo = if (krrPerson?.reservert == true) {
             PersonInfo(
                 norskIdent,
                 request.aktoerId
@@ -101,10 +116,10 @@ class PrefillService(
             PersonInfo(
                 norskIdent = norskIdent,
                 aktorId = request.aktoerId,
-                reservert = krrPerson.reservert,
-                epostKrr = krrPerson.epostadresse,
-                telefonKrr = krrPerson.mobiltelefonnummer
-            ).also { secureLog.info("Hentet telefon og epost fra KRR: ${krrPerson.toJson()}") }
+                reservert = krrPerson?.reservert,
+                epostKrr = krrPerson?.epostadresse,
+                telefonKrr = krrPerson?.mobiltelefonnummer
+            ).also { secureLog.info("Hentet telefon og epost fra KRR: ${krrPerson?.toJson()}") }
         }
         return personInfo
     }

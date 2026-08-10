@@ -18,7 +18,7 @@ data class DigitalKontaktinfo(
     val kanVarsles: Boolean? = null,
     val reservert: Boolean? = null,
     val mobiltelefonnummer: String? = null,
-    val personident: String,
+    val personident: String? = null,
 ) {
     companion object {
         fun String?.validateEmail(processDefinitionVersion: String? = null): String? {
