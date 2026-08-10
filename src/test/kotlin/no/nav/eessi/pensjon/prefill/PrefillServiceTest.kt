@@ -5,6 +5,16 @@ import io.mockk.junit5.MockKExtension
 import no.nav.eessi.pensjon.eux.model.BucType
 import no.nav.eessi.pensjon.eux.model.SedType
 import no.nav.eessi.pensjon.eux.model.sed.SED
+import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
+import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Endring
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Endringstype
+import no.nav.eessi.pensjon.personoppslag.pdl.model.ForelderBarnRelasjon
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentInformasjon
+import no.nav.eessi.pensjon.personoppslag.pdl.model.Metadata
+import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.model.PdlPerson
 import no.nav.eessi.pensjon.prefill.PersonDataServiceTest.Companion.FNR_VOKSEN
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
@@ -20,6 +30,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import java.time.LocalDateTime
 
 @ExtendWith(MockKExtension::class)
 class PrefillServiceTest{
@@ -29,6 +40,7 @@ class PrefillServiceTest{
     var prefillSedService: PrefillSEDService = mockk()
     var etterlatteService: EtterlatteService = mockk()
     var innhentingService: InnhentingService = mockk()
+    var personService: PersonService = mockk()
     var automatiseringStatistikkService: AutomatiseringStatistikkService = mockk()
 
     private lateinit var personcollection: PersonDataCollection
@@ -47,11 +59,20 @@ class PrefillServiceTest{
             krrService,
             prefillSedService,
             innhentingService,
+            personService,
             automatiseringStatistikkService,
         )
         every { innhentingService.getAvdodAktoerIdPDL(any())} returns avdodPersonFnr
         every { innhentingService.hentFnrEllerNpidFraAktoerService(any()) } returns personFnr
         every { innhentingService.hentPersonData(any()) } returns personcollection
+        every { personService.hentPerson(any()) } returns PdlPerson(
+            identer = listOf(IdentInformasjon("08016943380", IdentGruppe.FOLKEREGISTERIDENT)),
+            adressebeskyttelse = listOf(AdressebeskyttelseGradering.UGRADERT),
+            statsborgerskap = emptyList(),
+            forelderBarnRelasjon = listOf(ForelderBarnRelasjon(null, null, metadata = mockMeta())),
+            sivilstand = emptyList(),
+            utenlandskIdentifikasjonsnummer = emptyList(),
+        )
         every { innhentingService.hentPensjoninformasjonCollection(any()) } returns mockk(relaxed = true)
 
         justRun { automatiseringStatistikkService.genererAutomatiseringStatistikk(any(), any()) }
@@ -82,5 +103,22 @@ class PrefillServiceTest{
 
         if(forventetEpost.contains("null")) assertNull(capture.bruker.epostKrr)
         else assertEquals(forventetEpost, capture.bruker.epostKrr)
+    }
+
+    internal fun mockMeta(registrert: LocalDateTime = LocalDateTime.of(2010, 4, 2, 10, 14, 12)) : Metadata {
+        return Metadata(
+            listOf(
+                Endring(
+                    "DOLLY",
+                    registrert,
+                    "Dolly",
+                    "FREG",
+                    Endringstype.OPPRETT
+                )
+            ),
+            false,
+            "FREG",
+            "23123123-12312312-123123"
+        )
     }
 }

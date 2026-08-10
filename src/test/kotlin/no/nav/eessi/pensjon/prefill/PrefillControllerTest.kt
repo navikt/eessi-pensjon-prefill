@@ -8,8 +8,15 @@ import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
 import no.nav.eessi.pensjon.eux.model.SedType.P6000
 import no.nav.eessi.pensjon.eux.model.sed.*
 import no.nav.eessi.pensjon.logging.AuditLogger
+import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
+import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
+import no.nav.eessi.pensjon.personoppslag.pdl.model.ForelderBarnRelasjon
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentInformasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
+import no.nav.eessi.pensjon.personoppslag.pdl.model.PdlPerson
 import no.nav.eessi.pensjon.prefill.PersonDataServiceTest.Companion.FNR_VOKSEN
+import no.nav.eessi.pensjon.prefill.PersonPDLMock.mockMeta
 import no.nav.eessi.pensjon.prefill.etterlatte.EtterlatteService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
@@ -38,6 +45,7 @@ class PrefillControllerTest {
     var personDataService: PersonDataService = mockk()
     var krrService: KrrService = mockk()
     var pesysService: PesysService = mockk()
+    var personService: PersonService = mockk()
     val automatiseringStatistikkService: AutomatiseringStatistikkService = mockk(relaxed = true)
     val etterlatteService: EtterlatteService = mockk(relaxed = true)
     val prefillGjennyService: PrefillGjennyService = mockk(relaxed = true)
@@ -50,11 +58,21 @@ class PrefillControllerTest {
         prefillNav = BasePrefillNav.createPrefillNav()
 
         every { mockPrefillSEDService.prefill(any(), any(), any(), any()) } returns SED(type = P6000)
+        every { personService.hentPerson(any()) } returns PdlPerson(
+            identer = listOf(IdentInformasjon("08016943380", IdentGruppe.FOLKEREGISTERIDENT)),
+            adressebeskyttelse = listOf(AdressebeskyttelseGradering.UGRADERT),
+            statsborgerskap = emptyList(),
+            forelderBarnRelasjon = listOf(ForelderBarnRelasjon(null, null, metadata = mockMeta())),
+            sivilstand = emptyList(),
+            utenlandskIdentifikasjonsnummer = emptyList(),
+        )
+
         val innhentingService = InnhentingService(personDataService, pesysService = pesysService)
         val prefillService = PrefillService(
             krrService,
             mockPrefillSEDService,
             innhentingService,
+            personService,
             automatiseringStatistikkService
         )
 
