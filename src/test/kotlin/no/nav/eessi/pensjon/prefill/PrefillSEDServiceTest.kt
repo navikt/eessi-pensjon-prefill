@@ -42,6 +42,7 @@ class PrefillSEDServiceTest {
             krrService,
             mockPrefillSEDService,
             innhentingService,
+            mockk(),
             automatiseringStatistikkService
         )
         personcollection = PersonDataCollection(null, null)

@@ -12,11 +12,16 @@ import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
+import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
+import no.nav.eessi.pensjon.personoppslag.pdl.model.ForelderBarnRelasjon
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
+import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentInformasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Npid
+import no.nav.eessi.pensjon.personoppslag.pdl.model.PdlPerson
 import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBarn
@@ -24,6 +29,7 @@ import no.nav.eessi.pensjon.prefill.PersonPDLMock.medFodsel
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medForeldre
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medKjoenn
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medSivilstand
+import no.nav.eessi.pensjon.prefill.PersonPDLMock.mockMeta
 import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
@@ -94,6 +100,14 @@ class PrefillUfoereIntegrationTest {
     fun setUp() {
         every { kodeverkClient.hentPostSted(any()) } returns Postnummer("1068", "SØRUMSAND")
         every { kodeverkClient.finnLandkode(any()) } returns "XQ"
+//        every { personService.hentPerson(any()) } returns PdlPerson(
+//            identer = listOf(IdentInformasjon("26028643348", IdentGruppe.FOLKEREGISTERIDENT)),
+//            adressebeskyttelse = listOf(AdressebeskyttelseGradering.UGRADERT),
+//            statsborgerskap = emptyList(),
+//            forelderBarnRelasjon = listOf(ForelderBarnRelasjon(null, null, metadata = mockMeta())),
+//            sivilstand = emptyList(),
+//            utenlandskIdentifikasjonsnummer = emptyList(),
+//        )
 
         every { pesysService.hentP2200data(any(), any()) } returns mockk{
             every { sak } returns P2xxxMeldingOmPensjonDto.Sak(
@@ -277,7 +291,7 @@ class PrefillUfoereIntegrationTest {
         val response = result.response.getContentAsString(charset("UTF-8"))
 
         verify (exactly = 1) { personService.hentIdent(FOLKEREGISTERIDENT, AktoerId(aktoerHovedperson)) }
-        verify (exactly = 1) { personService.hentPerson(NorskIdent(pinHovedperson)) }
+        verify (exactly = 2) { personService.hentPerson(NorskIdent(pinHovedperson)) } //hentes to ganger, først... og så ved KRR
         verify (exactly = 1) { personService.hentPerson(NorskIdent(pinEktefelleperson)) }
         verify (exactly = 1) { personService.hentPerson(NorskIdent(pinBarn1)) }
 
