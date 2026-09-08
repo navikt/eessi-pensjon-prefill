@@ -38,7 +38,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aspectj")
     implementation("org.springframework.retry:spring-retry:2.0.13")
 
-    implementation("org.yaml:snakeyaml:2.6") // Pga https://security.snyk.io/package/maven/org.yaml:snakeyaml
+    implementation("org.yaml:snakeyaml:2.7") // Pga https://security.snyk.io/package/maven/org.yaml:snakeyaml
 
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.22.2")
     implementation("com.fasterxml.jackson.core:jackson-core:${jacksonModuleKotlinVersion}")
