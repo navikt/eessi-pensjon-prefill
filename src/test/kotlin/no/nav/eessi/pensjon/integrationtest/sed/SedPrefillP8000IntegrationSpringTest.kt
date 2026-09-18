@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.integrationtest.sed
 
 import com.ninjasquad.springmockk.MockkBean
-import com.ninjasquad.springmockk.MockkBeans
 import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
@@ -45,9 +44,7 @@ import org.springframework.web.client.RestTemplate
 @AutoConfigureMockMvc
 @DirtiesContext
 @EmbeddedKafka
-@MockkBeans(
-    MockkBean(name = "pdlRestTemplate", classes = [RestTemplate::class])
-)
+@MockkBean(name = "pdlRestTemplate", types = [RestTemplate::class])
 class SedPrefillP8000IntegrationSpringTest {
 
     @MockkBean

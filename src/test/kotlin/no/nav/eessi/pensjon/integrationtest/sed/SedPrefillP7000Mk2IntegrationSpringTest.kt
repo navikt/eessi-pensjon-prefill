@@ -1,7 +1,6 @@
 package no.nav.eessi.pensjon.integrationtest.sed
 
 import com.ninjasquad.springmockk.MockkBean
-import com.ninjasquad.springmockk.MockkBeans
 import io.mockk.every
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.BucType
@@ -56,9 +55,7 @@ private const val NPID_VOKSEN = "01220049651"
 @ActiveProfiles("unsecured-webmvctest", "excludeKodeverk")
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-@MockkBeans(
-    MockkBean(name = "pdlRestTemplate", classes = [RestTemplate::class])
-)
+@MockkBean(name = "pdlRestTemplate", types = [RestTemplate::class])
 @EmbeddedKafka
 class SedPrefillP7000Mk2IntegrationSpringTest {
     @MockkBean

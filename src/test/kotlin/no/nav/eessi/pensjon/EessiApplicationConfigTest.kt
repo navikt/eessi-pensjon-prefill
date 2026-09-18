@@ -2,7 +2,6 @@ package no.nav.eessi.pensjon
 
 import com.fasterxml.jackson.databind.ser.std.StringSerializer
 import com.ninjasquad.springmockk.MockkBean
-import com.ninjasquad.springmockk.MockkBeans
 import no.nav.eessi.pensjon.config.RestTemplateConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
@@ -28,10 +27,8 @@ import org.springframework.web.client.RestTemplate
 @EmbeddedKafka
 @EnableMockOAuth2Server
 @AutoConfigureMockMvc
-@MockkBeans(
-    MockkBean(name = "pdlRestTemplate", classes = [RestTemplate::class]),
-    MockkBean(name = "kodeverkClient", classes = [KodeverkClient::class], relaxed = true)
-)
+@MockkBean(name = "pdlRestTemplate", types = [RestTemplate::class])
+@MockkBean(name = "kodeverkClient", types = [KodeverkClient::class], relaxed = true)
 class EessiApplicationConfigTest {
 
     @TestConfiguration
