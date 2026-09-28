@@ -7,6 +7,7 @@ import io.mockk.verify
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
 import no.nav.eessi.pensjon.eux.model.SedType.P2200
+import no.nav.eessi.pensjon.eux.model.sed.P2200
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
@@ -303,10 +304,10 @@ class PrefillUfoereIntegrationTest {
 
         println("barn1 fdato: $barn1fdato, barn1fnr: $pinBarn1")
 
-        val xP2200 = SED.fromJsonToConcrete(response)
+        val p2200 = SED.fromJsonToConcrete(response) as P2200
 
-        assertEquals(3, xP2200.nav?.barn?.size)
-
+        assertEquals(3, p2200.navP2200?.barn?.size)
+        
         val validResponse = """
             {
               "sed" : "P2200",
