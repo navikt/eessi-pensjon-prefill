@@ -253,7 +253,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 person = createPersonData(pdlperson, personInfo),
                 adresse = prefillAdresse.createPersonAdresse(pdlperson),
                 bank = bank,
-                arbeidsforhold = ansettelsesforhold,)
+                arbeidsforhold = ansettelsesforhold)
     }
 
     fun createP2200Bruker(pdlperson: PdlPerson,
@@ -264,7 +264,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
             person = createPersonData(pdlperson, personInfo),
             adresse = prefillAdresse.createPersonAdresse(pdlperson),
             bank = bank,
-            arbeidsforhold = ansettelsesforhold,)
+            arbeidsforhold = ansettelsesforhold)
     }
 
     fun createPersonBarn(pdlperson: PdlPerson, personData: PersonDataCollection): Bruker? {
@@ -390,7 +390,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         return Ektefelle(
                 //type
                 //5.1   -- 01 - ektefelle, 02, part i partnerskap, 3, samboer
-                type = createEktefelleType(ekteTypeValue!!),
+                type = ekteTypeValue?.let { createEktefelleType(it) },
                 //ektefelle (personobj kjører på nytt)
                 person = ektefellpartnerbruker.person
         )
@@ -402,7 +402,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         return EktefelleP2200(
             //type
             //5.1   -- 01 - ektefelle, 02, part i partnerskap, 3, samboer
-            type = createEktefelleType(ekteTypeValue!!),
+            type = ekteTypeValue?.let { createEktefelleType(it) },
             //ektefelle (personobj kjører på nytt)
             person = ektefellpartnerbruker.person
         )
