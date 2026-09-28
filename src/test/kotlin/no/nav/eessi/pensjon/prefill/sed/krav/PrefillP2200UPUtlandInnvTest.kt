@@ -101,32 +101,38 @@ class PrefillP2200UPUtlandInnvTest {
 
         assertEquals(null, p2200.navP2200?.barn)
 
-        assertEquals("", p2200.navP2200?.bruker?.arbeidsforhold?.get(0)?.yrke)
-        assertEquals("2018-11-11", p2200.navP2200?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
-        assertEquals("2018-11-13", p2200.navP2200?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
-        assertEquals("07", p2200.navP2200?.bruker?.arbeidsforhold?.get(0)?.type)
-
-        assertEquals("foo", p2200.navP2200?.bruker?.bank?.navn)
-        assertEquals("bar", p2200.navP2200?.bruker?.bank?.konto?.sepa?.iban)
-        assertEquals("baz", p2200.navP2200?.bruker?.bank?.konto?.sepa?.swift)
-
-        assertEquals("ODIN ETTØYE", p2200.navP2200?.bruker?.person?.fornavn)
-        assertEquals("BALDER", p2200.navP2200?.bruker?.person?.etternavn)
-        val navfnr1 = Fodselsnummer.fra(p2200.navP2200?.bruker?.person?.pin?.get(0)?.identifikator!!)
+        val p2200Bruker = p2200.navP2200?.bruker
+        assertEquals("ODIN ETTØYE", p2200Bruker?.person?.fornavn)
+        assertEquals("BALDER", p2200Bruker?.person?.etternavn)
+        val navfnr1 = Fodselsnummer.fra(p2200Bruker?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(68, navfnr1?.getAge())
 
-        assertNotNull(p2200.navP2200?.bruker?.person?.pin)
-        val pinlist = p2200.navP2200?.bruker?.person?.pin
+        val arbeidsforhold = p2200Bruker.arbeidsforhold?.get(0)
+        assertEquals("", arbeidsforhold?.yrke)
+        assertEquals("2018-11-11", arbeidsforhold?.planlagtstartdato)
+        assertEquals("2018-11-13", arbeidsforhold?.planlagtpensjoneringsdato)
+        assertEquals("07", arbeidsforhold?.type)
+
+        val bank = p2200Bruker.bank
+        assertEquals("foo", bank?.navn)
+        assertEquals("bar", bank?.konto?.sepa?.iban)
+        assertEquals("baz", bank?.konto?.sepa?.swift)
+
+
+        val pinlist = p2200Bruker.person?.pin
+        assertNotNull(pinlist)
         val pinitem = pinlist?.get(0)
+
         assertEquals(null, pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
         assertEquals("NO:noinst002", pinitem?.institusjonsid)
         assertEquals(personFnr, pinitem?.identifikator)
 
-        assertEquals("THOR-DOPAPIR", p2200.navP2200?.ektefelle?.person?.fornavn)
-        assertEquals("RAGNAROK", p2200.navP2200?.ektefelle?.person?.etternavn)
+        val ektefelle = p2200.navP2200?.ektefelle?.person
+        assertEquals("THOR-DOPAPIR", ektefelle?.fornavn)
+        assertEquals("RAGNAROK", ektefelle?.etternavn)
 
-        val navfnr = Fodselsnummer.fra(p2200.navP2200?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
+        val navfnr = Fodselsnummer.fra(ektefelle?.pin?.get(0)?.identifikator!!)
         assertEquals(70, navfnr?.getAge())
     }
 
