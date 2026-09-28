@@ -167,7 +167,7 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                                     it,
                                     bankOgArbeid?.let { createBankData(it) },
                                     bankOgArbeid?.let { createInformasjonOmAnsettelsesforhold(it) },
-                                    bruker.also { logger.debug("Brukerr 171: ${it?.toJson()}") },
+                                    bruker,
                             )
                 },
 
@@ -187,6 +187,59 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
         )
     }
 
+    fun prefillP2200(
+        penSaksnummer: String?,
+        bruker: PersonInfo?,
+        personData: PersonDataCollection,
+        bankOgArbeid: BankOgArbeid?,
+        krav: Krav? = null,
+    ): NavP2200 {
+        val forsikretPerson = personData.forsikretPerson
+        val avdodEllerGjenlevende = personData.gjenlevendeEllerAvdod
+        val ektefellePerson = personData.ektefellePerson
+        val barnPersonList = personData.barnPersonList
+
+        logger.debug(
+            """
+                ----------------------------------------------------------------------------------------
+                forsikret: ${forsikretPerson?.navn?.sammensattNavn}
+                avdød    : ${avdodEllerGjenlevende?.navn?.sammensattNavn}
+                ----------------------------------------------------------------------------------------
+            """.trimIndent()
+        )
+
+        return NavP2200(
+            //1.0
+            eessisak = createEssisakItem(penSaksnummer, institutionid, institutionnavn),
+
+            //createBruker fra Persondataløsning
+            //2.0 For levende, eller hvis person er dod (hvis dod flyttes levende til 3.0)
+            //3.0 Anstalleseforhold og
+            //8.0 Bank
+            bruker = avdodEllerGjenlevende?.let { it ->
+                createP2200Bruker(
+                    it,
+                    bankOgArbeid?.let { createBankData(it) },
+                    bankOgArbeid?.let { createInformasjonOmAnsettelsesforhold(it) },
+                    bruker.also { logger.debug("Bruker 171: ${it?.toJson()}") },
+                )
+            },
+
+            //4.0 Ytelser ligger under pensjon object (P2000)
+
+            //5.0 ektefelle eller partnerskap
+            ektefelle = ektefellePerson?.let {
+                createEktefellePartnerP2200(createBruker(it, null, null, bruker), avdodEllerGjenlevende?.sivilstand?.firstOrNull()?.type)
+            },
+
+            //6.0 skal denne kjøres hver gang? eller kun under P2000? P2100
+            //sjekke om SED er P2x00 for utfylling av BARN
+            //sjekke punkt for barn. pkt. 6.0 for P2000 og P2200 pkt. 8.0 for P2100
+            barn = createBarnliste(barnPersonList.map { createPersonBarn(it, personData) }),
+            krav = krav
+        )
+    }
+
     fun createGjenlevende(gjenlevendeBruker: PdlPerson?, personInfoBruker: PersonInfo): Bruker? {
         logger.info("          Utfylling gjenlevende (etterlatt persjon.gjenlevende)")
         return createBruker(gjenlevendeBruker!!, personInfo = personInfoBruker)
@@ -201,6 +254,17 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 adresse = prefillAdresse.createPersonAdresse(pdlperson),
                 bank = bank,
                 arbeidsforhold = ansettelsesforhold,)
+    }
+
+    fun createP2200Bruker(pdlperson: PdlPerson,
+                     bank: Bank? = null,
+                     ansettelsesforhold: List<ArbeidsforholdItem>? = emptyList(),
+                     personInfo: PersonInfo?): BrukerP2200? {
+        return BrukerP2200(
+            person = createPersonData(pdlperson, personInfo),
+            adresse = prefillAdresse.createPersonAdresse(pdlperson),
+            bank = bank,
+            arbeidsforhold = ansettelsesforhold,)
     }
 
     fun createPersonBarn(pdlperson: PdlPerson, personData: PersonDataCollection): Bruker? {
@@ -329,6 +393,18 @@ class PrefillPDLNav(private val prefillAdresse: PrefillPDLAdresse,
                 type = createEktefelleType(ekteTypeValue!!),
                 //ektefelle (personobj kjører på nytt)
                 person = ektefellpartnerbruker.person
+        )
+    }
+
+    private fun createEktefellePartnerP2200(ektefellpartnerbruker: Bruker?, ekteTypeValue: Sivilstandstype?): EktefelleP2200? {
+        logger.debug("5.0           Utfylling av ektefelle")
+        if (ektefellpartnerbruker == null) return null
+        return EktefelleP2200(
+            //type
+            //5.1   -- 01 - ektefelle, 02, part i partnerskap, 3, samboer
+            type = createEktefelleType(ekteTypeValue!!),
+            //ektefelle (personobj kjører på nytt)
+            person = ektefellpartnerbruker.person
         )
     }
 

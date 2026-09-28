@@ -36,19 +36,18 @@ class PrefillP2200(private val prefillNav: PrefillPDLNav) {
         val pensjon = populerPensjonP2200(prefillData, sak)
 
         //henter opp persondata
-        val nav = prefillNav.prefill(
+        val nav = prefillNav.prefillP2200(
             penSaksnummer = prefillData.penSaksnummer,
             bruker = prefillData.bruker,
             personData = personData,
             bankOgArbeid = prefillData.getBankOgArbeidFromRequest(),
             krav = pensjon?.kravDato,
-            annenPerson = null
         )
 
         PrefillP2xxxPensjon.validerGyldigVedtakEllerKravtypeOgArsak(sak, sedType, vedtak)
 
         return P2200(
-            nav = nav,
+            navP2200 = nav,
             pensjon = pensjon
         ).also {
             logger.debug("-------------------| Preutfylling [$sedType] END |------------------- ")
