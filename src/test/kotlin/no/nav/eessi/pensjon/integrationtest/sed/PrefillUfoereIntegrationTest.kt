@@ -7,6 +7,7 @@ import io.mockk.verify
 import no.nav.eessi.pensjon.UnsecuredWebMvcTestLauncher
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_06
 import no.nav.eessi.pensjon.eux.model.SedType.P2200
+import no.nav.eessi.pensjon.eux.model.sed.P2200
 import no.nav.eessi.pensjon.eux.model.sed.SED
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
@@ -237,27 +238,27 @@ class PrefillUfoereIntegrationTest {
             .medKjoenn(KjoennType.MANN)
 
         val ektefellePerson = PersonPDLMock.createWith(true, "JESSINE TORDNU", "BOUWMANS", fnr =  pinEktefelleperson, aktoerid = pinEktefelleperson+11)
-            .medFodsel(Fodselsnummer.fra(pinEktefelleperson)?.getBirthDate()!!,)
+            .medFodsel(Fodselsnummer.fra(pinEktefelleperson)?.getBirthDate()!!)
             .medKjoenn(KjoennType.KVINNE)
             .medSivilstand(hovedPerson)
 
         val barn1 = PersonPDLMock.createWith(true, "TOPPI DOTTO", "UNG", fnr = pinBarn1, aktoerid = pinBarn1+12)
             .medForeldre(hovedPerson)
             .medForeldre(ektefellePerson)
-            .medFodsel(Fodselsnummer.fra(pinBarn1)?.getBirthDate()!!,)
+            .medFodsel(Fodselsnummer.fra(pinBarn1)?.getBirthDate()!!)
             .medKjoenn(KjoennType.MANN)
 
         val barn2 = PersonPDLMock.createWith(true, "EGIDIJS ER", "MED", fnr = pinBarn2, aktoerid = pinBarn2+18)
             .medForeldre(hovedPerson)
             .medForeldre(ektefellePerson)
             .medKjoenn(KjoennType.KVINNE)
-            .medFodsel(Fodselsnummer.fra(pinBarn2)?.getBirthDate()!!,)
+            .medFodsel(Fodselsnummer.fra(pinBarn2)?.getBirthDate()!!)
 
         val barn3 = PersonPDLMock.createWith(true, "BARN VOKSEN", "GAMMELT", fnr = pinBarn3, aktoerid = pinBarn3+19)
             .medForeldre(hovedPerson)
             .medForeldre(ektefellePerson)
             .medKjoenn(KjoennType.KVINNE)
-            .medFodsel(Fodselsnummer.fra(pinBarn3)?.getBirthDate()!!,)
+            .medFodsel(Fodselsnummer.fra(pinBarn3)?.getBirthDate()!!)
 
         val hovedPersonMedbarn = hovedPerson
             .medBarn(barn1)
@@ -303,9 +304,9 @@ class PrefillUfoereIntegrationTest {
 
         println("barn1 fdato: $barn1fdato, barn1fnr: $pinBarn1")
 
-        val xP2200 = SED.fromJsonToConcrete(response)
+        val p2200 = SED.fromJsonToConcrete(response) as P2200
 
-        assertEquals(3, xP2200.nav?.barn?.size)
+        assertEquals(3, p2200.navP2200?.barn?.size)
 
         val validResponse = """
             {

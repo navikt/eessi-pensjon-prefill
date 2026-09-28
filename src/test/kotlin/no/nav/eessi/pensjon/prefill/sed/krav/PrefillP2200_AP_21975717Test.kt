@@ -5,6 +5,7 @@ import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_01
 import no.nav.eessi.pensjon.eux.model.SedType.P2000
 import no.nav.eessi.pensjon.eux.model.SedType.P2200
+import no.nav.eessi.pensjon.eux.model.sed.P2200
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
@@ -23,6 +24,7 @@ import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.Fodselsnummer
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
 import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -79,26 +81,28 @@ class PrefillP2200_AP_21975717Test {
     @Test
     fun `forventet korrekt utfylt P2200 uforerpensjon med mockdata fra testfiler`() {
 
-        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
+        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
+        val p2200Json = mapAnyToJson(p2200)
+        val p2200Sed = mapJsonToAny<P2200>(p2200Json)
 
-        assertEquals(null, p2200.nav?.barn)
+        assertEquals(null, p2200Sed.navP2200?.barn)
 
-        assertEquals("", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.yrke)
-        assertEquals("2018-11-11", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
-        assertEquals("2018-11-13", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
-        assertEquals("07", p2200.nav?.bruker?.arbeidsforhold?.get(0)?.type)
+        assertEquals("", p2200Sed.navP2200?.bruker?.arbeidsforhold?.get(0)?.yrke)
+        assertEquals("2018-11-11", p2200Sed.navP2200?.bruker?.arbeidsforhold?.get(0)?.planlagtstartdato)
+        assertEquals("2018-11-13", p2200Sed.navP2200?.bruker?.arbeidsforhold?.get(0)?.planlagtpensjoneringsdato)
+        assertEquals("07", p2200Sed.navP2200?.bruker?.arbeidsforhold?.get(0)?.type)
 
-        assertEquals("foo", p2200.nav?.bruker?.bank?.navn)
-        assertEquals("bar", p2200.nav?.bruker?.bank?.konto?.sepa?.iban)
-        assertEquals("baz", p2200.nav?.bruker?.bank?.konto?.sepa?.swift)
+        assertEquals("foo", p2200Sed.navP2200?.bruker?.bank?.navn)
+        assertEquals("bar", p2200Sed.navP2200?.bruker?.bank?.konto?.sepa?.iban)
+        assertEquals("baz", p2200Sed.navP2200?.bruker?.bank?.konto?.sepa?.swift)
 
-        assertEquals("ODIN ETTØYE", p2200.nav?.bruker?.person?.fornavn)
-        assertEquals("BALDER", p2200.nav?.bruker?.person?.etternavn)
-        val navfnr1 = Fodselsnummer.fra(p2200.nav?.bruker?.person?.pin?.get(0)?.identifikator!!)
+        assertEquals("ODIN ETTØYE", p2200Sed.navP2200?.bruker?.person?.fornavn)
+        assertEquals("BALDER", p2200Sed.navP2200?.bruker?.person?.etternavn)
+        val navfnr1 = Fodselsnummer.fra(p2200Sed.navP2200?.bruker?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(68, navfnr1?.getAge())
 
-        assertNotNull(p2200.nav?.bruker?.person?.pin)
-        val pinlist = p2200.nav?.bruker?.person?.pin
+        assertNotNull(p2200Sed.navP2200?.bruker?.person?.pin)
+        val pinlist = p2200Sed.navP2200?.bruker?.person?.pin
         val pinitem = pinlist?.get(0)
         assertEquals(null, pinitem?.sektor)
         assertEquals("NOINST002, NO INST002, NO", pinitem?.institusjonsnavn)
@@ -107,21 +111,21 @@ class PrefillP2200_AP_21975717Test {
 
         assertEquals("NO", pinitem?.land)
 
-        assertEquals("NO", p2200.nav?.bruker?.adresse?.land)
-        assertEquals("FORUSBEEN 2294", p2200.nav?.bruker?.adresse?.gate)
-        assertEquals("0010", p2200.nav?.bruker?.adresse?.postnummer)
-        assertEquals("OSLO", p2200.nav?.bruker?.adresse?.by)
+        assertEquals("NO", p2200Sed.navP2200?.bruker?.adresse?.land)
+        assertEquals("FORUSBEEN 2294", p2200Sed.navP2200?.bruker?.adresse?.gate)
+        assertEquals("0010", p2200Sed.navP2200?.bruker?.adresse?.postnummer)
+        assertEquals("OSLO", p2200Sed.navP2200?.bruker?.adresse?.by)
 
-        assertEquals("THOR-DOPAPIR", p2200.nav?.ektefelle?.person?.fornavn)
-        assertEquals("RAGNAROK", p2200.nav?.ektefelle?.person?.etternavn)
+        assertEquals("THOR-DOPAPIR", p2200Sed.navP2200?.ektefelle?.person?.fornavn)
+        assertEquals("RAGNAROK", p2200Sed.navP2200?.ektefelle?.person?.etternavn)
 
-        val navfnr = Fodselsnummer.fra(p2200.nav?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
+        val navfnr = Fodselsnummer.fra(p2200Sed.navP2200?.ektefelle?.person?.pin?.get(0)?.identifikator!!)
         assertEquals(70, navfnr?.getAge())
     }
 
     @Test
     fun `testing av komplett P2200 med utskrift og testing av innsending`() {
-        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
+        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
         val json = mapAnyToJson(createMockApiRequest(p2200.toJson()))
         assertNotNull(json)
     }

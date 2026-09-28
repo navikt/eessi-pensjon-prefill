@@ -111,7 +111,7 @@ class PrefillP2000APUtlandInnvTest {
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
 
-        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,) as P2000
+        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null) as P2000
 
         println("Botid: ${P2000.p2000pensjon?.ytelser?.toJson()}")
 
@@ -126,7 +126,7 @@ class PrefillP2000APUtlandInnvTest {
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
 
-        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,) as P2000
+        val P2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null) as P2000
 
         println("Botid: ${P2000.p2000pensjon?.ytelser?.toJson()}")
 
@@ -163,7 +163,7 @@ class PrefillP2000APUtlandInnvTest {
         pesysMock(listOf(YtelseskomponentType.GAP.name, YtelseskomponentType.TP.name))
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
-        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
+        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
         assertEquals(null, p2000.nav?.barn)
 
@@ -204,7 +204,7 @@ class PrefillP2000APUtlandInnvTest {
         pensjonCollection = innhentingService.hentPensjoninformasjonCollection(prefillData)
         prefillSEDService = BasePrefillNav.createPrefillSEDService()
 
-        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
+        val p2000 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
 
         val json = mapAnyToJson(createMockApiRequest(p2000.toJson()))
         assertNotNull(json)

@@ -3,6 +3,7 @@ package no.nav.eessi.pensjon.prefill.sed.krav
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.SedType
+import no.nav.eessi.pensjon.eux.model.sed.P2200
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.InnhentingService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
@@ -18,6 +19,8 @@ import no.nav.eessi.pensjon.prefill.sed.PrefillSEDService
 import no.nav.eessi.pensjon.prefill.sed.krav.PensjonsInformasjonHelper.readJsonResponse
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
+import no.nav.eessi.pensjon.utils.mapAnyToJson
+import no.nav.eessi.pensjon.utils.mapJsonToAny
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -68,16 +71,17 @@ class PrefillP2200UforpensjonTest {
     fun `Testing av komplett utfylling kravsøknad uførepensjon P2200`() {
         val persondataCollection = PersonPDLMock.createEnkeWithBarn(personFnr, barn1Fnr, barn2Fnr)
 
-        val P2200 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
-        val p2200Actual = P2200.toJsonSkipEmpty()
-        assertNotNull(p2200Actual)
-        assertEquals(SedType.P2200, P2200.type)
-        assertEquals("JESSINE TORDNU", P2200.nav?.bruker?.person?.fornavn)
-        assertEquals("BOUWMANS", P2200.nav?.bruker?.person?.etternavn)
-        assertEquals(2, P2200.nav?.barn?.size)
+        val p2200 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
+        val p2200Json = mapAnyToJson(p2200)
+        val p2200Sed = mapJsonToAny<P2200>(p2200Json)
 
-        val barn1 = P2200.nav?.barn?.first()
-        val barn2 = P2200.nav?.barn?.last()
+        assertEquals(SedType.P2200, p2200Sed.type)
+        assertEquals("JESSINE TORDNU", p2200Sed.navP2200?.bruker?.person?.fornavn)
+        assertEquals("BOUWMANS", p2200Sed.navP2200?.bruker?.person?.etternavn)
+        assertEquals(2, p2200Sed.navP2200?.barn?.size)
+
+        val barn1 = p2200Sed.navP2200?.barn?.first()
+        val barn2 = p2200Sed.navP2200?.barn?.last()
 
         assertEquals("BOUWMANS", barn1?.person?.etternavn)
         assertEquals("TOPPI DOTTO", barn1?.person?.fornavn)
@@ -92,14 +96,17 @@ class PrefillP2200UforpensjonTest {
             forsikretPerson = PersonPDLMock.createWith(),
             gjenlevendeEllerAvdod = PersonPDLMock.createWith(),
             barnPersonList = listOf(PersonPDLMock.createWith(fornavn = "Barn", etternavn = "Barnesen", fnr = "01010436857")
-                .medFodsel(LocalDate.of(2004, 1, 1),)
+                .medFodsel(LocalDate.of(2004, 1, 1))
             )
         )
 
-        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null,)
+        val p2200 = prefillSEDService.prefill(prefillData, personDataCollection, pensjonCollection, null)
         assertEquals(SedType.P2200, p2200.type)
 
-        val barn1 = p2200.nav?.barn?.first()
+        val p2200Json = mapAnyToJson(p2200)
+        val p2200Sed = mapJsonToAny<P2200>(p2200Json)
+
+        val barn1 = p2200Sed.navP2200?.barn?.first()
         assertEquals("2004-01-01", barn1?.person?.foedselsdato)
 
     }

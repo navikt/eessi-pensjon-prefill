@@ -73,7 +73,7 @@ class PrefillP2000_AP_SLUTT_BH_UTLTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpensjon skal hente kravdato for SLUTT_BH_UTL`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
 
         val P2000pensjon = SED(
                 type = P2000,
@@ -87,7 +87,7 @@ class PrefillP2000_AP_SLUTT_BH_UTLTest {
 
     @Test
     fun `forventet korrekt utfylt P2000 alderpersjon med mockdata fra testfiler`() {
-        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null,)
+        val p2000 = prefillSEDService.prefill(prefillData, persondataCollection, pensjonCollection, null)
 
         assertEquals(null, p2000.nav?.barn)
 
