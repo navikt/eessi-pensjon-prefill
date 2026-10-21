@@ -373,7 +373,7 @@ class SedPrefillP8000IntegrationSpringTest {
                 }
               },
               "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedVer" : "4"
             }
         """.trimIndent()
 
@@ -503,7 +503,7 @@ class SedPrefillP8000IntegrationSpringTest {
             }
           },
           "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedVer" : "4"
         }
         """.trimIndent()
 
@@ -567,7 +567,7 @@ class SedPrefillP8000IntegrationSpringTest {
                 }
               },
               "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedVer" : "4"
             }
         """.trimIndent()
 
@@ -641,7 +641,7 @@ class SedPrefillP8000IntegrationSpringTest {
                 }
               },
               "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedVer" : "4"
             }
         """.trimIndent()
 
@@ -689,4 +689,3 @@ class SedPrefillP8000IntegrationSpringTest {
         """.trimIndent()
     }
 }
-

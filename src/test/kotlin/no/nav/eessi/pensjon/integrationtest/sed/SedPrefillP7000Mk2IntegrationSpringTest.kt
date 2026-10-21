@@ -276,7 +276,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             }
           },
           "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedVer" : "4"
         }
         """.trimIndent()
 
@@ -383,7 +383,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             }
           },
           "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedVer" : "4"
         }
         """.trimIndent()
 
@@ -587,7 +587,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             }
           },
           "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedVer" : "4"
         }    
         """.trimIndent()
 
@@ -637,7 +637,7 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
                 }
               },
               "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedVer" : "4"
             }        
         """.trimIndent()
 
@@ -1077,7 +1077,6 @@ class SedPrefillP7000Mk2IntegrationSpringTest {
             
         """.trimIndent()
     }
-
 
 
 

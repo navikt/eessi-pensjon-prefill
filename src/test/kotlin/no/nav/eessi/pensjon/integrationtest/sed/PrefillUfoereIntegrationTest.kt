@@ -13,16 +13,11 @@ import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.Postnummer
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
-import no.nav.eessi.pensjon.personoppslag.pdl.model.AdressebeskyttelseGradering
 import no.nav.eessi.pensjon.personoppslag.pdl.model.AktoerId
-import no.nav.eessi.pensjon.personoppslag.pdl.model.ForelderBarnRelasjon
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe
 import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentGruppe.FOLKEREGISTERIDENT
-import no.nav.eessi.pensjon.personoppslag.pdl.model.IdentInformasjon
 import no.nav.eessi.pensjon.personoppslag.pdl.model.KjoennType
 import no.nav.eessi.pensjon.personoppslag.pdl.model.NorskIdent
 import no.nav.eessi.pensjon.personoppslag.pdl.model.Npid
-import no.nav.eessi.pensjon.personoppslag.pdl.model.PdlPerson
 import no.nav.eessi.pensjon.prefill.KrrService
 import no.nav.eessi.pensjon.prefill.PersonPDLMock
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medBarn
@@ -30,7 +25,6 @@ import no.nav.eessi.pensjon.prefill.PersonPDLMock.medFodsel
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medForeldre
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medKjoenn
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medSivilstand
-import no.nav.eessi.pensjon.prefill.PersonPDLMock.mockMeta
 import no.nav.eessi.pensjon.prefill.PesysService
 import no.nav.eessi.pensjon.prefill.models.DigitalKontaktinfo
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
@@ -214,7 +208,7 @@ class PrefillUfoereIntegrationTest {
                 "etterspurtedokumenter" : "P5000 and P6000"
               },
               "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedVer" : "4"
 
             }    
         """.trimIndent()
@@ -569,7 +563,7 @@ class PrefillUfoereIntegrationTest {
                "etterspurtedokumenter" : "P5000 and P6000"
               },
               "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedVer" : "4"
             }
         """.trimIndent()
 
@@ -692,7 +686,7 @@ class PrefillUfoereIntegrationTest {
                     "etterspurtedokumenter" : "P5000 and P6000"
                   },
                   "sedGVer" : "4",
-                  "sedVer" : "2"
+                  "sedVer" : "4"
                 }
             """.trimIndent()
 

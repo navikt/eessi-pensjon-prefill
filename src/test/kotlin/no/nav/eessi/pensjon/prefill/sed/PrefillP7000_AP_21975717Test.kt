@@ -51,8 +51,7 @@ class PrefillP7000_AP_21975717Test {
 
     @Test
     fun `forventet P7000 er lik sedfil med MockData fra testfiler`() {
-        val filepath = "src/test/resources/json/nav/P7000_OK_NAV.json"
-        val json = String(Files.readAllBytes(Paths.get(filepath)))
+        val json = javaClass.getResource("/json/nav/P7000_OK_NAV.json")!!.readText()
         assertTrue(validateJson(json))
 
         val p7000 = prefillSEDService.prefill(prefillData, personCollection, pensjonCollection, null)

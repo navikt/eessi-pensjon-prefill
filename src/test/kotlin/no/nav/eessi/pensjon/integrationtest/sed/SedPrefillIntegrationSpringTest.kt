@@ -14,8 +14,6 @@ import no.nav.eessi.pensjon.eux.model.SedType.*
 import no.nav.eessi.pensjon.eux.model.sed.Betalingshyppighet
 import no.nav.eessi.pensjon.eux.model.sed.Krav
 import no.nav.eessi.pensjon.eux.model.sed.KravType
-import no.nav.eessi.pensjon.eux.model.sed.SED
-import no.nav.eessi.pensjon.eux.model.sed.X009
 import no.nav.eessi.pensjon.integrationtest.IntegrasjonsTestConfig
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
 import no.nav.eessi.pensjon.kodeverk.Postnummer
@@ -1047,7 +1045,7 @@ class SedPrefillIntegrationSpringTest {
                 }
               },
               "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedVer" : "4"
             }
         """.trimIndent()
 

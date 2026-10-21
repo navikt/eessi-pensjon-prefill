@@ -23,7 +23,6 @@ import org.hamcrest.Matchers
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
@@ -114,7 +113,7 @@ class PrefillP15000IntegrationTest {
         val response = result.response.getContentAsString(charset("UTF-8"))
         val validResponse = gyldigResponse(NPID, FNR_VOKSEN_3, true)
 
-        JSONAssert.assertEquals(validResponse, response,  true)
+        JSONAssert.assertEquals(validResponse, response, true)
 
     }
 
@@ -221,7 +220,7 @@ class PrefillP15000IntegrationTest {
               },
               "pensjon" : { },
               "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedVer" : "4"
 
             }
         """.trimIndent()
@@ -351,7 +350,7 @@ class PrefillP15000IntegrationTest {
         val response = result.response.getContentAsString(charset("UTF-8"))
         val validResponse = gyldigResponse(FNR_VOKSEN_2, FNR_VOKSEN, false)
 
-        JSONAssert.assertEquals(validResponse, response,  true)
+        JSONAssert.assertEquals(validResponse, response, true)
 
     }
 
@@ -483,7 +482,7 @@ class PrefillP15000IntegrationTest {
                 }
               },
               "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedVer" : "4"
 
             }
         """.trimIndent()
@@ -570,7 +569,7 @@ class PrefillP15000IntegrationTest {
                 }
               },
               "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedVer" : "4"
 
               
             }
@@ -586,4 +585,3 @@ class PrefillP15000IntegrationTest {
     }
 
     private fun relasjonTilAvdod(): String = """"relasjontilavdod" : { "relasjon" : "06" },""" }
-

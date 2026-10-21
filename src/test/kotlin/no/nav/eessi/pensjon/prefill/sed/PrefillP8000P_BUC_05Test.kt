@@ -5,35 +5,30 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.eessi.pensjon.eux.model.BucType.P_BUC_05
 import no.nav.eessi.pensjon.eux.model.SedType
-import no.nav.eessi.pensjon.eux.model.sed.P15000
 import no.nav.eessi.pensjon.eux.model.sed.P8000
 import no.nav.eessi.pensjon.kodeverk.KodeverkClient
-
 import no.nav.eessi.pensjon.personoppslag.pdl.PersonService
 import no.nav.eessi.pensjon.prefill.BasePrefillNav
 import no.nav.eessi.pensjon.prefill.LagPdlPerson
 import no.nav.eessi.pensjon.prefill.LagPdlPerson.Companion.medAdresse
 import no.nav.eessi.pensjon.prefill.PersonPDLMock.medUtlandAdresse
 import no.nav.eessi.pensjon.prefill.PesysService
-import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.prefill.models.PersonDataCollection
 import no.nav.eessi.pensjon.prefill.models.PrefillDataModelMother
 import no.nav.eessi.pensjon.prefill.models.pensjon.EessiFellesDto
-import no.nav.eessi.pensjon.prefill.models.pensjon.P2xxxMeldingOmPensjonDto
 import no.nav.eessi.pensjon.prefill.models.pensjon.P8000AnmodningOmTilleggsinformasjon
+import no.nav.eessi.pensjon.prefill.models.pensjon.PensjonCollection
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLAdresse
 import no.nav.eessi.pensjon.prefill.person.PrefillPDLNav
 import no.nav.eessi.pensjon.shared.api.PersonInfo
 import no.nav.eessi.pensjon.shared.api.PrefillDataModel
 import no.nav.eessi.pensjon.shared.api.ReferanseTilPerson
 import no.nav.eessi.pensjon.shared.person.FodselsnummerGenerator
-import no.nav.eessi.pensjon.utils.toJson
 import no.nav.eessi.pensjon.utils.toJsonSkipEmpty
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import java.time.LocalDate
 
 class PrefillP8000P_BUC_05Test {
 
@@ -196,7 +191,7 @@ class PrefillP8000P_BUC_05Test {
                 }
               },
               "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedVer" : "4"
             }
         """.trimIndent()
 
@@ -268,7 +263,7 @@ class PrefillP8000P_BUC_05Test {
                 }
               },
               "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedVer" : "4"
             }
 
         """.trimIndent()
@@ -277,4 +272,3 @@ class PrefillP8000P_BUC_05Test {
     }
 
 }
-
