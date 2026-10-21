@@ -82,6 +82,9 @@ spec:
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
       value: "The Norwegian Labour and Welfare Administration"
 
+    - name: EESSI_SED_VERSJON
+      value: "4"
+
     - name: ENV
       value: p
 

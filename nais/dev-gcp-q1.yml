@@ -82,6 +82,9 @@ spec:
     - name: EESSI_PENSJON_INSTITUSJON_NAVN
       value: NAV ACCEPTANCE TEST 07
 
+    - name: EESSI_SED_VERSJON
+      value: "4"
+
     - name: AZURE_APP_SAF_CLIENT_ID
       value: dev-fss.teamdokumenthandtering.saf
     - name: ENV
