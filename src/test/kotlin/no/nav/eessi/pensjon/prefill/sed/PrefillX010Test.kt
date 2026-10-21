@@ -56,7 +56,7 @@ class PrefillX010Test {
         )
         val json = x010sed.toJsonSkipEmpty()
 
-        JSONAssert.assertEquals(expectedX010medfleredetaljer(), json , true)
+        JSONAssert.assertEquals(expectedX010medfleredetaljer(), json, true)
     }
 
     @Test
@@ -74,7 +74,7 @@ class PrefillX010Test {
 
         val json = x010sed.toJsonSkipEmpty()
 
-        JSONAssert.assertEquals(expectedX010MedmangelfullX009(), json , true)
+        JSONAssert.assertEquals(expectedX010MedmangelfullX009(), json, true)
     }
 
     private fun expectedX010MedmangelfullX009(): String {
@@ -110,7 +110,7 @@ class PrefillX010Test {
                 }
               },
               "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedVer" : "4"
             }
         """.trimIndent()
     }
@@ -155,10 +155,9 @@ class PrefillX010Test {
             }
           },
           "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedVer" : "4"
         }
             """.trimIndent()
     }
 
 }
-

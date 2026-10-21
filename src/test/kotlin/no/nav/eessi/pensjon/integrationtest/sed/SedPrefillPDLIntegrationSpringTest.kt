@@ -178,13 +178,13 @@ class SedPrefillPDLIntegrationSpringTest {
             "etterspurtedokumenter" : "P5000 and P6000"
           },
           "sedGVer" : "4",
-          "sedVer" : "2"
+          "sedVer" : "4"
         }      
         """.trimIndent()
 
         println("Actual: $actual")
 
-        JSONAssert.assertEquals(excpected, actual , true)
+        JSONAssert.assertEquals(excpected, actual, true)
 
     }
 
@@ -308,7 +308,7 @@ class SedPrefillPDLIntegrationSpringTest {
                 }
               },
               "sedGVer" : "4",
-              "sedVer" : "2"
+              "sedVer" : "4"
             }
           """.trimIndent()
 
