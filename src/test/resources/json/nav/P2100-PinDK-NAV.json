@@ -48,7 +48,6 @@
         "fornavn": "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu",
         "kjoenn": "K",
         "nyttEkteskapPartnerskapEtterForsikredeDod": {
-          "borsammen": "1",
           "fornavn": "fgadfgadfgdagsf",
           "fraDato": "2015-09-09",
           "etternavn": "fgafgadfgadfgad"
@@ -81,6 +80,7 @@
         ],
         "tidligereetternavn": "rtqertqertqertqertqer",
         "foedselsdato": "1969-09-11",
+        "bormednypartner": "1",
         "statsborgerskap": [
           {
             "land": "NO"
