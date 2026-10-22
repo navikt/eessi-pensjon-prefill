@@ -1,5 +1,6 @@
 package no.nav.eessi.pensjon.prefill
 
+import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -33,7 +34,15 @@ class SedVersjonKontroll(@Value("\${EESSI_SED_VERSJON}") private val forventetSe
     ): Any? = body.also { if (it is String) kontrollerSedVersjon(it) }
 
     fun kontrollerSedVersjon(sedJson: String): Boolean {
-        val sed = runCatching { mapper.readTree(sedJson) }.getOrNull() ?: return true
+        val sed = try {
+            mapper.readTree(sedJson)
+        } catch (_: JsonProcessingException) {
+            null
+        }
+        if (sed == null) {
+            logger.error("Could not check sedVer for prefilled SED: invalid or empty JSON")
+            return false
+        }
         val sedVer = sed.get("sedVer")?.takeUnless { it.isNull }?.asText()
         if (sedVer == forventetSedVersjon) return true
 
