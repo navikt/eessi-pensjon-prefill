@@ -3,14 +3,13 @@ NAIS_APP_NAME: 'eessi-pensjon-fagmodul'
 NAIS_APP_IMAGE: 'someimage'
 
 ENV : "test"
+EESSI_SED_VERSJON: "4"
 
 PDL_URL: 'http://example.com:8090'
-
 KODEVERK_URL: 'http://example.com:8093'
 
-eessi-pensjon-active-profiles: ${spring.profiles.active}
-
 eessi-pensjon-institusjon: 'NO:noinst002'
+eessi-pensjon-active-profiles: ${spring.profiles.active}
 eessi-pensjon-institusjon-navn: 'NOINST002, NO INST002, NO'
 
 METRICS_REQUESTFILTER_ENABLE: true
