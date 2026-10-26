@@ -40,7 +40,7 @@ class SedVersjonKontroll(@Value("\${EESSI_SED_VERSJON}") private val forventetSe
             null
         }
         if (sed == null) {
-            logger.error("Could not check sedVer for prefilled SED: invalid or empty JSON")
+            logger.error("Klarte ikke å lese SED: feilaktig eller tom JSON")
             return false
         }
         val sedVer = sed.get("sedVer")?.takeUnless { it.isNull }?.asText()
