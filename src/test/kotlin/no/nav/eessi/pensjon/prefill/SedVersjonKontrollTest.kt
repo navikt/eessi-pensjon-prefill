@@ -34,7 +34,7 @@ class SedVersjonKontrollTest {
         for (json in listOf("""{"sed":"P8000","sedVer":""", "", "   ")) {
             assertFalse(kontroll.kontrollerSedVersjon(json))
         }
-        assertTrue(output.all.contains("Could not check sedVer"))
+        assertTrue(output.all.contains("Klarte ikke å lese SED: feilaktig eller tom JSON"))
     }
 
     @Test
