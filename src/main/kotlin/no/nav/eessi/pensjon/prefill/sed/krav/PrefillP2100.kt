@@ -56,7 +56,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
 
         validerGyldigKravtypeOgArsak(sak, prefillData.sedType, prefillData.avdodfnrManuelt)
         var melding: String? = ""
-        var pensjon = Pensjon()
+        var pensjon = P2100Pensjon()
 
         try {
                 val meldingOmPensjon : MeldingOmPensjon = PrefillP2xxxPensjon.populerMeldinOmPensjon(
@@ -67,7 +67,7 @@ class PrefillP2100(private val prefillNav: PrefillPDLNav) {
                         gjenlev,
                     prefillData.kravId)
                 melding = meldingOmPensjon.melding
-                pensjon = Pensjon(
+                pensjon = P2100Pensjon(
                         kravDato =  meldingOmPensjon.pensjon.kravDato,
                         gjenlevende = meldingOmPensjon.pensjon.gjenlevende
                 ) //vi skal ha blank pensjon, men vi må ha med kravdato
