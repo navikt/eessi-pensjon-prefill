@@ -8,7 +8,7 @@ class SedP2100Test {
     @Test
     fun `create SED P2100 from json datafile`() {
 
-        val p2100json = getTestJsonFile("P2100-PinDK-NAV.json")
+        val p2100json = javaClass.getResource("/json/nav/P2100-PinDK-NAV.json")!!.readText()
         SED.fromJson(p2100json)
     }
 }
