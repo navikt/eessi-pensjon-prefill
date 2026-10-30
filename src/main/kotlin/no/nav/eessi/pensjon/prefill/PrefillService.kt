@@ -40,11 +40,20 @@ class PrefillService(
 
     fun prefillSedtoJson(request: ApiRequest): String {
         return PrefillSed.measure {
-            logger.info(" ******* Starter med preutfylling ******* ")
+            logger.info(
+                "Prefill start: buc={}, sed={}, rinaId={}, documentId={}, processDefinitionVersion={}, gjenny={}, sakId={}, fnr={}",
+                request.buc,
+                request.sed,
+                request.euxCaseId,
+                request.documentid,
+                request.processDefinitionVersion,
+                request.gjenny,
+                request.sakId,
+                request.fnr?.let { if (it.length > 6) it.substring(0, 6) + "******" else it }
+            )
             if (request.aktoerId.isNullOrEmpty()) throw HttpClientErrorException(HttpStatus.NOT_FOUND)
 
             try {
-                logger.info(" Buc:${request.buc}, sed: ${request.sed}, RinaID:${request.euxCaseId}, sed: ${request.documentid}, versjon: ${request.processDefinitionVersion}, gjenny: ${request.gjenny}, fnr: ${request.fnr?.let { if (it.length > 6) it.substring(0, 6) + "******" else it }}")
                 val norskIdent = innhentingService.hentFnrEllerNpidFraAktoerService(request.aktoerId)!!
                 val personInfo = hentKrrPerson(norskIdent, request)
                 val prefillData = ApiRequest.buildPrefillDataModelOnExisting(request, personInfo, innhentingService.getAvdodAktoerIdPDL(request))
