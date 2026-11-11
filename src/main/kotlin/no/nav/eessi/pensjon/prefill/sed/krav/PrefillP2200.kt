@@ -83,7 +83,6 @@ class PrefillP2200(private val prefillNav: PrefillPDLNav) {
                         YtelserItem(
                             ytelse = pensjonsInformasjon.pensjon.ytelser?.first()?.ytelse,
                             status = ytelser?.status,
-                            startdatoutbetaling = ytelser?.startdatoutbetaling.also { logger.debug("startdatoUtbetaling: $it") },
                             startdatoretttilytelse = ytelser?.startdatoretttilytelse.also { logger.debug("StartdatoretTilYtelseStatus: $it") },
                             mottasbasertpaa = settMottattBasertPaa(ytelser?.totalbruttobeloeparbeidsbasert),
                             totalbruttobeloepbostedsbasert = ytelser?.totalbruttobeloepbostedsbasert.also {
